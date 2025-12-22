@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Jitter Mitigation Experiment</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>前端抖动抑制算法实验台 (Jitter Mitigation Workbench)</h1>
+        <p>在下方区域快速移动鼠标或输入文字，对比不同算法的效果。</p>
+
+        <div class="control-panel">
+            <div class="input-group">
+                <label>测试场景：</label>
+                <select id="scenarioSelect">
+                    <option value="mousemove">鼠标移动 (Mouse Move)</option>
+                    <option value="typing">键盘输入 (Typing)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <button id="resetBtn">重置数据</button>
+            </div>
+        </div>
+
+        <div class="interaction-area" id="interactionArea">
+            <p id="instructionText">在此区域快速移动鼠标...</p>
+            <input type="text" id="testInput" placeholder="在此快速输入文字..." style="display:none;">
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>原始输入 (Raw)</h3>
+                <div class="value" id="rawCount">0</div>
+                <div class="label">Events</div>
+            </div>
+            <div class="metric-card">
+                <h3>Debounce (300ms)</h3>
+                <div class="value" id="debounceCount">0</div>
+                <div class="label">Events</div>
+                <div class="sub-value">Reduction: <span id="debounceRed">0%</span></div>
+            </div>
+            <div class="metric-card">
+                <h3>Throttle (100ms)</h3>
+                <div class="value" id="throttleCount">0</div>
+                <div class="label">Events</div>
+                <div class="sub-value">Reduction: <span id="throttleRed">0%</span></div>
+            </div>
+            <div class="metric-card highlight">
+                <h3>AHF (Adaptive)</h3>
+                <div class="value" id="ahfCount">0</div>
+                <div class="label">Events</div>
+                <div class="sub-value">Reduction: <span id="ahfRed">0%</span></div>
+                <div class="param-display">Current λ: <span id="ahfLambda">0</span></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="eventChart"></canvas>
+        </div>
+
+        <div class="log-area">
+            <h3>实时日志 (Last 5 events)</h3>
+            <ul id="logList"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

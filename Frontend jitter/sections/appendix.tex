@@ -1,0 +1,75 @@
+\section{Proof of Theorem~\ref{thm:rate-distortion}}
+
+\begin{proof}
+By the data processing inequality:
+\[
+I(X; \hat{X}) \leq I(X; Y)
+\]
+
+For the filtered output with rate $R$:
+\[
+I(X; \hat{X}) \leq H(\hat{X}) \leq R
+\]
+
+The minimum distortion $D = H(X|hat{X})$ satisfies:
+\[
+H(X) = I(X; \hat{X}) + H(X|\hat{X}) \leq R + D
+\]
+
+Thus $D \geq H(X) - R$.
+\end{proof}
+
+\section{Implementation Details}
+
+\subsection{TypeScript Implementation of AHF}
+
+\begin{verbatim}
+interface AHFConfig {
+  alpha: number;      // latency-stability trade-off
+  beta: number;       // learning rate
+  lambdaInit: number; // initial rate estimate
+}
+
+function createAHF(config: AHFConfig) {
+  let lambda = config.lambdaInit;
+  let lastEventTime = -Infinity;
+  let lastEmitTime = -Infinity;
+  let timer: number | null = null;
+
+  return function filter<T>(
+    event: T, 
+    timestamp: number,
+    emit: (e: T) => void
+  ) {
+    // Update rate estimate
+    if (lastEventTime > 0) {
+      const tau = timestamp - lastEventTime;
+      lambda = (1 - config.beta) * lambda 
+             + config.beta / tau;
+    }
+    lastEventTime = timestamp;
+
+    // Compute optimal parameters
+    const deltaOpt = (1 / lambda) 
+                   * Math.log((1 - config.alpha) / config.alpha);
+    const tOpt = 1 / (2 * lambda);
+
+    // Throttle check
+    if (timestamp - lastEmitTime < tOpt) {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        emit(event);
+        lastEmitTime = Date.now();
+      }, deltaOpt);
+      return;
+    }
+
+    // Debounce
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      emit(event);
+      lastEmitTime = Date.now();
+    }, deltaOpt);
+  };
+}
+\end{verbatim}

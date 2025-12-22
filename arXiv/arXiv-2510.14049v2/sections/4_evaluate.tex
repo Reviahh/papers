@@ -1,0 +1,295 @@
+\section{Evaluation}
+\label{se:eve}
+
+In this section, we first evaluate various CRL approaches that embody different principles under unmet assumptions in our
+scenarios, including both static images and temporal sequences. We also 
+demonstrate how CausalVerse’s flexibility allows us to organize data that
+satisfies the assumptions needed to test CRL methods. Through these experiments, we illustrate how CausalVerse enables researchers to thoroughly explore diverse CRL scenarios and
+approaches from empirical insights.
+
+\subsection{Evaluation metrics}
+
+
+To evaluate both component-wise and block-wise identifiability in CausalVerse, we adopt three metrics, including the Mean Correlation Coefficient (MCC), the coefficient of determination \(R^2\), and the over-completed MCC. Specifically, let \(Z \in \mathbb{R}^D\) be the ground-truth latent vector and \(\widehat{Z} \in \mathbb{R}^{\widehat{D}}\) the estimated vector, we have: 
+\begin{itemize}[leftmargin=14pt]
+    \item \textbf{Mean Correlation Coefficient (MCC):}  
+    To calculate MCC, we first compute the Pearson correlations
+\(
+R_{ij} = \mathrm{corr}(Z_i,\widehat Z_j),
+\)
+then select an injective matching \(\pi:\{1,\dots,D\}\to\{1,\dots,\widehat D\}\) maximizing \(\sum_{i=1}^D|R_{i,\pi(i)}|\).
+Finally, the MCC value is defined as \(
+\mathrm{MCC} = \frac{1}{D}\sum_{i=1}^D\bigl|R_{i,\pi(i)}\bigr|.
+\)
+    \item \textbf{Coefficient of Determination (\(R^2\)):}
+    \(R^2\) measures the proportion of variance in the ground-truth block \(\mathbf{z}_b\) that is explained by the estimated block \(\hat{\mathbf{z}}_b\). Formally,
+    \[
+      R^2 \;=\; 1 \;-\; \frac{\displaystyle \Var\!\bigl(\mathbf{z}_b - f(\hat{\mathbf{z}}_b)\bigr)}{\displaystyle \Var(\mathbf{z}_b)},
+    \]
+    where \(f\) is the regression function (linear or non-linear) that best predicts \(\mathbf{z}_b\) from \(\hat{\mathbf{z}}_b\). A value of \(R^2=1\) indicates perfect block-wise identifiability.
+    \item \textbf{Over-complete MCC:}
+        In real-world applications, the true number of latent variables is typically unknown. Without model selection techniques, learned representations often become over-complete, containing both essential information and redundant or noisy components, i.e., \(\widehat{D} > D\). To address this, we refine the MCC metric to focus only on the most informative components by selecting the top \(D\) estimated variables that best match the ground-truth ones. We then apply the standard MCC computation over this subset to evaluate identifiability.
+\end{itemize}
+
+\subsection{Implementation}
+
+To fairly compare the performance of different CRL methods on our dataset, we selected some representative ones to conduct unsupervised learning and estimate latent variables from images under unmet assumptions. These methods, based on established literature, include: {Sufficient Change}~\cite{kong2022partial}, which leverages the sufficient change principle to learn a generative model while incorporating structured assumptions from probabilistic graph modeling; {Mechanism Sparsity}~\cite{disentang}, which utilizes sparsity constraints to encourage minimal dependencies between latent variables; {Multiview}~\cite{von2021self}, which learns the invariant representations by the alignment cross different views without explicit labels; and {Contrastive Learning}~\cite{buchholz2023linear}, which uses contrastive learning to identify the latent variables. Moreover, 
+{IDOL}~\cite{li2024idol},
+{CaRiNG}~\cite{chen2024caring},
+{TDRL}~\cite{yao2022temporally},
+{TCL}~\cite{hyvarinen2016unsupervised},
+and {iVAE}~\cite{khemakhem2020variational} are utilized for temporal causal representation learning from videos. All methods adopt the same VAE architecture in their implementations to ensure a fair comparison. Additionally, we introduced a supervised model, {Supervised} (encoder + MLP head trained on ground-truth latents), as an upper bound, incorporating an MLP layer after the ResNet output to learn latent variables with access to ground truth data.
+
+\subsection{Evaluation under unmet assumptions}
+To benchmark CRL methods under realistic scenarios, we directly train the models on our dataset, even when the data do not strictly satisfy the underlying assumptions of these methods. Specifically, we conduct experiments on three static scenes: Ball on the Slope, Cylinder Spring, and Light Refraction. Table~\ref{tab:image_mcc_r2} reports both the MCC and block-wise $R^2$ scores.
+
+\begin{table}[t]
+  \centering
+  \small
+  \setlength{\tabcolsep}{6pt}
+  \caption{\textbf{MCC and $R^2$ on image-based scenes under unsatisfied assumptions.}}
+
+  \vspace{0.2cm}
+  \label{tab:image_mcc_r2}
+  \begin{tabular}{lcccccccc}
+    \toprule
+    \multirow{2}{*}{Algorithm}
+      & \multicolumn{2}{c}{Ball on the Slope}
+      & \multicolumn{2}{c}{Cylinder Spring}
+      & \multicolumn{2}{c}{Light Refraction}
+      & \multicolumn{2}{c}{Avg} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+      & MCC & $R^2$ & MCC & $R^2$ & MCC & $R^2$ & MCC & $R^2$ \\
+    \midrule
+    Supervised & 0.9878 & 0.9962 & 0.9970 & 0.9910 & 0.9900 & 0.9800 & 0.9916 & 0.9891 \\
+    Sufficient Change~\cite{kong2022partial} & 0.4434 & 0.9630 & 0.6092 & 0.9344 & 0.6778 & 0.8420 & 0.5768 & 0.9131 \\
+    Mechanism Sparsity~\cite{disentang} & 0.2491 & 0.3242 & 0.3353 & 0.2340 & 0.1836 & 0.4067 & 0.2560 & 0.3216 \\
+    Multiview~\cite{von2021self} & 0.4109 & 0.9658 & 0.4523 & 0.7841 & 0.3363 & 0.7841 & 0.3998 & 0.8447 \\
+    Contrastive Learning~\cite{buchholz2023linear} & 0.2853 & 0.9604 & 0.6342 & 0.9920 & 0.3773 & 0.9677 & 0.4323 & 0.9734 \\
+    \bottomrule
+  \end{tabular}
+  \vspace{-0.4cm}
+\end{table}
+
+
+
+\paragraph{Justification for Dissatisfaction.}
+The dataset is simulated to resemble realistic scenarios without imposing explicit constraints on the generation process. Thus, the assumptions for specific methods may not be satisfied. For example, Sufficient Change~\cite{kong2022partial} requires enough ($2*n_{z}+1$) domains to provide sufficient distribution changing, while our datasets only contain 4 views. Besides, we don't constrain the causal graph to be sparse, which conflicts with the assumptions in  Mechanism Sparsity~\cite{disentang}. The Multiview~\cite{von2021self} and Contrastive Learning~\cite{buchholz2023linear} are designed for block-wise identification rather than the component-wise mapping. Nevertheless, we still evaluate MCC for these two methods to provide researchers with additional insights into their behavior.
+
+
+
+\paragraph{Results and Discussions.}
+Across the three scenes, the supervised upper bound achieves near-perfect performance on both metrics, confirming the encoder’s capacity. However, current CRL methods remain unsatisfactory in terms of MCC, with all methods averaging below 0.6. This suggests a substantial gap still exists when applying current CRL approaches in real-world applications to obtain component-wise identifiable representations.
+Among current methods, Sufficient Change~\cite{kong2022partial} gains the highest average MCC because this method is designed for component-wise identifiability, and it pays more attention to balancing reconstruction and invariance. 
+For $R^2$, Sufficient Change~\cite{kong2022partial}, Multiview~\cite{von2021self}, and Contrastive Learning~\cite{buchholz2023linear} all perform well, as the assumptions for block-wise identification are satisfied.
+
+
+
+
+
+
+\subsection{Evaluation for temporal causal representation learning}
+\label{sec:temporal_crl}
+
+
+\begin{wraptable}{r}{0.59\textwidth}
+\vspace{-0.4cm}
+  \centering
+  \small
+  \setlength{\tabcolsep}{8pt}
+  \caption{\textbf{MCC and $R^2$ on video-based scenes.}}
+
+  \label{tab:video_mcc_r2}
+  \begin{tabular}{lcccc}
+    \toprule
+    \multirow{2}{*}{Algorithm}
+      & \multicolumn{2}{c}{Fall Simple}
+      & \multicolumn{2}{c}{Robotics Study} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+      & MCC & $R^2$ & MCC & $R^2$ \\
+    \midrule
+    IDOL~\cite{li2024idol} & 0.2527 & 0.5901 & 0.2500 & 0.6503 \\
+    CaRiNG~\cite{chen2024caring} & 0.2280 & 0.5457 & 0.2225 & 0.6476 \\
+    TDRL~\cite{yao2022temporally} & 0.2003 & 0.5525 & 0.2440 & 0.6394 \\
+    TCL~\cite{hyvarinen2016unsupervised} & 0.1717 & 0.4892 & 0.2163 & 0.6150 \\
+    iVAE~\cite{khemakhem2020variational} & 0.1881 & 0.5233 & 0.1948 & 0.6165 \\
+    \bottomrule
+  \end{tabular}
+   \vspace{-0.4cm}
+\end{wraptable}
+
+We evaluated five temporal CRL methods on two video scenes, {Fall Simple} and {Robotics Study}
+, representing the domains of Dynamic Physical Simulation and Robotic Manipulation, respectively.
+As shown in Table~\ref{tab:video_mcc_r2}, temporal CRL under difficult dynamic scenarios remains challenging, as all methods exhibit low MCC values. Despite low absolute MCC values, we find that methods incorporating sparsity constraints~\cite{li2024idol} and leveraging temporal context~\cite{chen2024caring} achieve relatively better performance. Besides, we find that the Robotics Study scene, which contains denser relational structures, consistently yields higher $R^2$ values than the Fall Simple scene. Upon examining the data, we attribute this to the smaller object sizes in Fall Simple, which make the temporal relations more difficult to capture.
+
+
+
+
+\subsection{Evaluation for testing  assumptions}
+\label{sec:unmet_assumptions}
+We stress-test robustness by weakening the environment signal and corrupting domain labels in static image generation. We compare \textbf{Four-Scenes} (informative domains), \textbf{One-Scene} (insufficient variation), and \textbf{Wrong Scene Labels} (incorrect environmental indices). We report MCC and block-wise $R^2$ in~\cref{tab:ablation_domain}. We find that reducing the number of domains weakens the sufficient-change signal and slightly degrades the performance of the Sufficient Change method. In contrast, injecting incorrect domain labels is even more detrimental, sometimes resulting in large negative $R^2$ values. Meanwhile, the supervised upper bound remains stable across all settings, highlighting the requirement of sufficient change in distribution. 
+
+\begin{table}[t]
+  \centering
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \caption{\textbf{Ablation on domain assumption violations in static image generation.}}
+  % Methods: Supervised, Sufficient Change~\cite{kong2022partial}, Mechanism Sparsity~\cite{disentang}.}
+\vspace{0.2cm}
+  \label{tab:ablation_domain}
+  \begin{tabular}{lcccccccc}
+    \toprule
+    \multirow{2}{*}{Algorithm}
+      & \multicolumn{2}{c}{Four-Scenes}
+      & \multicolumn{2}{c}{One-Scene}
+      & \multicolumn{2}{c}{Wrong Scene Labels}
+      & \multicolumn{2}{c}{Avg} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+      & MCC & $R^2$ & MCC & $R^2$ & MCC & $R^2$ & MCC & $R^2$ \\
+    \midrule
+    Supervised & 0.9001 & 0.6882 & 0.8646 & 0.5808 & 0.9001 & 0.6882 & 0.8883 & 0.6524 \\
+    Sufficient Change~\cite{kong2022partial} & 0.3264 & 0.2898 & 0.3197 & 0.2671 & 0.1412 & $-6.7706$ & 0.2624 & $-2.0712$ \\
+
+    \bottomrule
+  \end{tabular}
+  \vspace{-8pt}
+  
+\end{table}
+
+
+
+
+
+
+
+
+\subsection{Configurable evaluation under specific assumptions}
+
+
+
+\begin{wrapfigure}{r}{0.3\textwidth}
+  \vspace{-0.3cm}
+  \centering
+  \includegraphics[width=\linewidth]{figs/experiments/1.pdf}
+  \vspace{-4pt}
+  \caption{MCC comparison of sufficient change in satisfied and unmet dataset.}
+  \label{fig:sufficient_change}
+  \vspace{-0.6cm}
+\end{wrapfigure}
+
+
+By open-sourcing the simulator with flexible control over the latent generation process, CausalVerse enables the evaluation of CRL methods under specific assumptions. For example, Sufficient Change decomposes the latent vector as \( z = (z_c, z_s) \): \( z_c \) is the content/invariant component and, in CausalVerse, aligns with the ground-truth latent that is shared across views; \( z_s \) captures view-dependent variation. A key assumption of Sufficient Change is that at least \( 2 n_s + 1 \) distinct views are available, where \( n_s \) is the dimensionality of \( z_s \).
+For the configurable evaluation, we generate a new {Cylinder Spring} scene comprising 40040 images with enough views for testing Sufficient Change. As shown in Figure \ref{fig:sufficient_change}, adding enough domains shows a clear MCC improvement, which highlights the importance of sufficient change assumptions. We expect that this flexible evaluation framework will enable researchers to adapt CausalVerse to align with the specific assumptions required by their methods.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \subsection{Evaluation under satisfied sufficient change assumption}
+
+
+% We show how we can modify the dataset to investigate the effectiveness of the sufficient change principle in causal representation learning.  We conduct controlled experiments within the domain of static image generation. Specifically, we design a setting involving four domains that provide partial sufficient changes in the underlying causal factors. At the same time, we ensure that the causal relations among variables are dense.
+
+
+% We compare two representative methods grounded in different principles: {CRL\_SP}, which follows the sparsity principle, and {CRL\_SC}, which is based on the sufficient change principle. 
+% \begin{wrapfigure}{r}{0.6\textwidth}
+%   \vspace{-0.1cm}
+%   \centering
+%   \includegraphics[width=0.6\textwidth]{figs/compare2.png}
+%   \vspace{-5pt}
+%   \caption{\textbf{MCC comparison under static image domains with sufficient change assumption.} CRL\_SC (sufficient change) outperforms CRL\_SP (sparsity), highlighting the benefit of structured domain shifts.}
+%   \label{fig:sufficient_change}
+%    \vspace{-0.5cm}
+% \end{wrapfigure}
+% \par\medskip
+% The comparative results, shown in Figure~\ref{fig:sufficient_change}, highlight a clear advantage of the sufficient change principle in terms of representation quality. As illustrated, CRL\_SC achieves significantly higher MCC scores than CRL\_SP, suggesting that leveraging the sufficient change principle under the data meeting the corresponding assumptions enables more accurate identification of latent causal variables. This result aligns with the experiments on small synthetic datasets, which demonstrate the ability of our dataset to support evaluations on special settings or assumptions. 
+
+
+
+% \begin{wraptable}{r}{0.5\textwidth}  % r 表示表格靠右，宽度占页面宽度的 50%
+%   \centering
+%   \small
+%   \vspace{-0.7cm}
+%   \caption{ \textbf{The MCC result of various CRL methods which are used to learn the latent variables in unsupervised learning from images of physical dynamic scenes. }}
+   
+%   \begin{tabular}{lccc}
+%     \toprule
+%     Algorithm & Spring & Refraction \\
+%     \midrule
+%     SUP     & 0.9970 & 0.9900 & \\
+%     CRL\_SC & 0.6530 & 0.6200 & \\
+%     CRL\_SP & 0.3270 & 0.5250 & \\
+%     CRL\_SF & 0.4523 & 0.3363 & \\
+%     \bottomrule
+%   \end{tabular}
+%   \label{tab:2}
+%   \vspace{-0.5cm}
+% \end{wraptable}
+
+
+
+
+
+% \subsection{Evaluation under unmet assumptions}
+
+% \paragraph{Result and discussion}We observe that SUP achieves an MCC very close to 1, indicating that the backbone is sufficiently expressive to extract the necessary information. The method {CRL\_SC} outperforms the others, since Sufficient Change is specifically tailored for block-wise identifiability and therefore yields superior MCC in this setting. Both {CRL\_SP} and {CRL\_SF} exhibit mixed results, suggesting that sparsity-driven and contrastive-learning approaches perform comparably on this task. We also measured the coefficient of determination \(R^2\); further experimental details are provided in the Appendix. It should be noted that the three CRL methods do not actually achieve good results. Considering that the potential variables are actually only 5 or 3 dimensions, it is foreseeable that when faced with high dimensions and the assumptions cannot be met, the existing CRL methods will definitely not be enough. However, comparative results across the three methods suggest that the principle of sufficient change may offer a more practical and robust solution for practitioners conducting causal representation learning without access to prior knowledge.
+
+
+
+
+
+% \subsection{Evaluation for temporal causal representation learning} 
+
+% \begin{wraptable}{r}{0.5\textwidth}  % 表格靠右，宽度占页面宽度的 50%
+%   \centering
+%   \small
+%   \vspace{-0.5cm}
+%   \caption{\textbf{MCC on different scenes with CaRiNG~\cite{chen2024caring} and IDOL~\cite{li2024idol} methods.}}
+%   \label{tab:causalverse_results}
+%   \setlength{\tabcolsep}{3pt}
+%   \vspace{-0.5em}
+%   \begin{tabular}{lcccc}
+%     \toprule
+%     \multirow{2}{*}{Method} & \multicolumn{2}{c}{\texttt{projectile\_complex}} & \multicolumn{2}{c}{\texttt{kitchen}} \\
+%     \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+%     & SUP & CRL & SUP & CRL \\
+%     \midrule
+%     CaRiNG~\cite{chen2024caring} & 0.2306 & 0.1863 & 0.3488 & 0.2670 \\
+%     IDOL~\cite{li2024idol}   & 0.2120 & 0.1725 & 0.3323 & 0.2327 \\
+%     \bottomrule
+%   \end{tabular}
+%   \vspace{-0.4cm}
+% \end{wraptable}
+% In this section, we investigate the problem of learning temporal causal representations from latent temporal processes, with video data serving as the primary modality. Our objective is to recover the underlying causal factors that govern complex temporal dynamics in sequential visual observations. To this end, we conduct experiments on representative datasets drawn from two distinct domains: (a) \texttt{projectile\_complex}, which, in contrast to its simpler counterpart \texttt{projectile\_simple}, exhibits not only global illumination variations but also significantly more intricate object motions—beyond horizontal translation, objects are characterized by motion in multiple directions as well as angular velocity, with increased object diversity and interactions; (b) \texttt{kitchen}, which features robotic manipulation and object-centric interactions in a realistic kitchen setting. These datasets collectively span a wide spectrum of generative latent structures and enable comprehensive evaluation across diverse temporal causal mechanisms.
+% For quantitative evaluation, we adopt MCC as our primary metric. Specifically, we report the top-20 MCC, which averages the twenty highest correlation coefficients between the learned latent dimensions and the ground-truth generative factors. This metric captures the degree of alignment between the representations and the underlying factors, and is widely employed in benchmarking disentangled and causal representation learning methods.
+
+% A central principle considered in our evaluation is the sufficient change principle in a temporal setting, which posits that in order to reliably identify the latent variables responsible for generating observed data, the data must be collected across sufficiently diverse domains or conditions. Concretely, the variable indexing different environments, such as styles, contexts, or experimental settings, should assume a broad range of distinct values, and these values should differ meaningfully. Such diversity induces observable shifts in the data distribution, which in turn facilitates the disentanglement and identification of the true underlying causal factors.
+
+% We compare our approach with two state-of-the-art causal representation learning baselines: CaRiNG and IDOL. We report the top-20 MCC scores on the selected datasets under both supervised and trained (unsupervised) settings. In the supervised setting, each superpixel is first encoded using a 3D VAE and then passed through a dedicated head network. The resulting representations are additionally matched with the corresponding metadata of each sample, which encapsulates both global content and dynamic style attributes. The detailed results are presented in Table~\ref{tab:causalverse_results}. It is evident that causal representation learning remains far from mature in addressing the challenges posed by complex real-world scenarios.
+

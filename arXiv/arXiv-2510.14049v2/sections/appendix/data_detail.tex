@@ -1,0 +1,390 @@
+
+\subsection{Static image generation}
+The static image generation domain is fully parameterized by 19 controllable variables that jointly govern the synthesis and rendering of a human subject in a single frame. We further partition this domain into four distinct scenes, each corresponding to a unique indoor setting. 
+Each setting is characterized by diverse lighting conditions and distinct background layouts. As summarized in Table~\ref{tab:static-image-cfg}, the domain comprises four scene categories: Human in Retail Store, Human in Living Room, Human in Modern Apartment, and Human against Background Wall. The showcase examples can be found in Figures~\ref{se:static-human-1} and \ref{se:static-human-2}.
+
+\begin{table}[htbp]
+  \centering
+  \newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}  % centered fixed-width
+% \newcolumntype{L}[1]{>{\raggedright\arraybackslash}m{#1}} % left-aligned fixed-width
+
+  \caption{Causal graph, data size, and description for the domain static image generation}
+  
+  \begin{tabularx}{\linewidth}{C{1.4cm} C{0.8cm} C{4.5 cm} C{6.2cm}}
+  % {L  L >{\centering\arraybackslash}m{6cm} Y} 
+    \toprule
+    \textbf{Showcases} & \textbf{Data Size} & \textbf{Causal Graph} & \textbf{Description} \\
+    \midrule
+    \cref{se:static-human-1,se:static-human-2}  & \textasciitilde 40 k & \tblimg{figs/causal_graph/1.png} & This figure presents a \textbf{partial causal graph} for static character generation and rendering. Variables shown are gender (gnd), cup size (cup), clothing style (clo), body weight (wgt), overall appearance (app), and eyebrows (ebr). Gender directly influences clothing style and cup size, and these two variables together shape the character’s final appearance. Other factors, such as weight and eyebrows, act independently, each contributing to the rendered appearance without interacting with one another. \\
+    \bottomrule
+  \end{tabularx}
+  \label{tab:static-image-cfg}
+\end{table}
+
+% \newpage aggregated and dynamic
+
+
+
+
+
+\subsection{Dynamic physical simulations (aggregated image)}
+
+We provide four aggregated image-based dynamic physical scenarios in \cref{tab:phy}, which are arranged to impose a controlled escalation of causal dimensionality, ranging from a three-factor system up to a seven-factor environment.  Specifically, the Cylinder–Spring scene comprises five latent variables; the Light Refraction scenario involves three latent variables; the Ball on the Slope configuration encompasses seven latent variables; and the Ball Meets Plasticine sequence comprises four latent variables. In each case, every sample provides multiple visually inferable quantities—such as compression length, refracted angle, sliding distance, or penetration depth—from which one can, under the physical laws, deduce additional, less immediately apparent factors (e.g., spring stiffness, initial velocity, medium viscosity). Moreover, each sample includes multiple views of the same scene to facilitate diverse research tasks. The detailed image examples can be found in \cref{se:dynamic_spring,se:dynamic_re,se:dynamic_sl,se:dynamic_fa}.
+
+
+
+
+
+\renewcommand{\arraystretch}{1.5}  
+\setlength{\extrarowheight}{2pt}  
+\setlength{\tabcolsep}{6pt}      
+
+\begin{table}[tb]
+  \centering
+  \caption{Causal graph, data size, and scene description for aggregated images for dynamic physical simulations}
+  \label{tab:phy}
+  \begin{tabular}{
+    @{} 
+    >{\centering\arraybackslash}m{2cm}  
+    >{\centering\arraybackslash}m{1cm}  
+    >{\centering\arraybackslash}m{3.5cm}  
+    >{\centering\arraybackslash}m{6cm}    
+    @{}}
+    \toprule
+    \makecell{\textbf{Scene}} 
+      & \makecell{\textbf{Data} \\ \textbf{size}}
+      & \makecell{\textbf{Causal} \\ \textbf{graph} }
+      & \textbf{Description} \\
+    \midrule
+    \makecell{Cylinder Spring\\  \\ \cref{se:dynamic_spring}} 
+      & 40k  
+      & \includegraphics[width=3.5cm]{figs/causal_graph/2.png} 
+      & This scene simulates a homogeneous cylinder compressing an ideal spring under gravity until static equilibrium, with the cylinder’s mass scaling as \(m \propto h r^{2}\) (where \(h\) and \(r\) denote the cylinder’s height and radius, respectively) and the resulting spring deformation scaling as \(l \propto m/k\), where \(k\) is the spring stiffness coefficient. \\
+      \makecell{Light Refraction\\  \\ \cref{se:dynamic_re}}
+    % Light Refraction \ref{se:dynamic_re} 
+      & 40k  
+      & \includegraphics[width=3.5cm]{figs/causal_graph/3.png} 
+      & This scene simulates a collimated light ray refracting at a flat boundary between air and an aqueous ink solution of varying concentration (and hence varying refractive index \(n_{2}\)). For each sample, the incident angle \(\theta_{1}\) and ink concentration are changed, which determines \(n_{2}\), and the refracted angle \(\theta_{2}\) is computed via Snell’s law \(\sin(\theta_{1}) = n_{2}\sin(\theta_{2})\). Images capture the resulting ray path for downstream causal representation evaluation. \\
+      \makecell{Ball on \\ the Slope \\  \\ \cref{se:dynamic_sl}}
+    % Ball on the Slope \ref{se:dynamic_sl} 
+      & 40k  
+      & \includegraphics[width=3.5cm]{figs/causal_graph/4.png} 
+      & This scene simulates a small sphere given an initial speed \(v_{1}\) across a horizontal surface for a fixed time \(2T\). The table friction coefficient \(\mu_{1}\) is proportional to the sphere’s roughness \(r\), causing it to decelerate to \(v_{2} = v_{1} - \mu_{1} g (2T)\). The sphere then ascends an incline of angle \(\theta\) with slope friction \(\mu_{2}\propto r\), traveling a distance \(l = \frac{v_{2}^{2}}{2g(\sin\theta + \mu_{2}\cos\theta)}\). Each sample varies \(v_{1}\), \(\theta\), and roughness \(r\) to generate diverse sliding distances \(l\). \\
+      \makecell{Ball Meets \\ Plasticine \\  \\ \cref{se:dynamic_fa}}
+    % Ball Meets Plasticine \ref{se:dynamic_fa} 
+      & 40k  
+      & \includegraphics[width=3.5cm]{figs/causal_graph/5.png} 
+      & This scene simulates a small sphere whose mass \(m \propto r^{3}\) undergoing free fall from a height \(h\) under gravity \(g\). Upon striking a viscous clay medium with viscosity coefficient \(u\), the sphere penetrates to a depth \(l = \tfrac{m}{u}\sqrt{2gh}\). Each sample varies \(h\), \(r\), and \(u\), producing diverse penetration depths \(l\). \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+
+
+
+\subsection{Dynamic physical simulations (video)}
+For the video-based dynamic physical simulations domain, we provide six distinct scenes: Fall Simple, Fall Complex, Projectile Simple, Projectile Complex, Collision Simple, and Collision Complex.
+Regarding the distinction between simple and complex scenes: for Fall, the simple version contains only a single object undergoing free fall, without additional global factors such as lighting. For Projectile, the complex version introduces object-specific angular velocity, vertical linear velocity, and global lighting conditions. For Collision, the complex version adds distinct angular velocities to both objects and incorporates global lighting changes.
+Each scene features multiple camera viewpoints, which opens up opportunities for exploring view-specific features and their entanglements.
+We group the six scenes into three categories: Fall, Projectile, and Collision. A more intuitive and detailed overview of the representative simple scenes is provided in Table~\ref{tab:physical-process-dyn-part1}. Since the complex scenes are essentially extensions of their simple counterparts, we selectively showcase representative complex examples, while illustrative examples of the complex scenes can be found in Figures~\ref{se:sample_fall} to~\ref{se:sample_collision}.
+
+
+
+\subsection{Robotic manipulations}
+For the Robotic Manipulations domain, we provide five distinct scenes: Kitchen, Living, Study, General, and Mobile. The first four involve fixed robotic arms operating under different environmental conditions, while the last features a mobile robot within a closed environment.
+Detailed examples of robotics video ysamples can be found in Figures~\ref{se:sample_kitchen} to~\ref{se:sample_mobile}. We represent the temporal causal structures of these five scenes using encapsulated temporal causal graphs. A more intuitive and detailed overview, including data size, causal graph, and description, is provided in Table~\ref{tab:robotics-cfg}.
+
+
+
+\subsection{Traffic situation analysis}
+For the Traffic Situation Analysis domain, we provide five distinct scenes corresponding to traffic conditions across five different urban maps. Here, we use the indicators Town01, Town02, Town04, Town05, and Town10 to represent different city environments. The detailed examples of traffic videos in these maps can be found in \cref{se:traffic-situation-2} to \cref{se:traffic-situation-3}. These five scenes share a similar driving logic for vehicles, which allows them to utilize a common causal structural graph. However, the distribution of environmental noise differs significantly in these scenes. Specifically, each city exhibits unique road layouts, varying traffic flow patterns, and differences in both vehicle numbers and pedestrian densities. A more intuitive and detailed overview is provided in Table~\ref{tab:traffic-cfg}.
+
+
+\subsection{Comparative analysis of dataset realism}
+
+Bridging the domain gap is crucial for enabling effective real-world generalization from synthetic data. Thus, we qualitatively compare our dataset with standard synthetic alternatives.
+Compared with standard synthetic datasets, our collection narrows the gap between synthetic and real-world data by explicitly increasing both rendering granularity and scene realism.
+
+\paragraph{Image data comparison}
+We take the domain of 
+static image generation as an example to be compared with other synthetic datasets, such as Causal3DIdent~\cite{von2021self}.  Figure~\ref{fig:image-comparison} presents a side-by-side comparison between our static images and those in Causal3DIdent~\cite{von2021self}. In contrast to the simple backgrounds and single-light sources that dominate most synthetic datasets, we introduce complex scenes together with multiple light types during rendering, which reproduces more realistic illumination and richer background detail.  In addition, we rely on high-resolution assets and render every image in $1024\times1024$ pixels, resulting in a sharper appearance and finer textures.  
+
+
+
+\paragraph{Video data comparison}
+Taking the domain of traffic situation analysis as an example, the use of Unreal~Engine~4 combined with a carefully curated city asset library allows realistic simulation of urban traffic.  The native weather system of Unreal~Engine~4 further permits diverse and dynamic atmospheric conditions, increasing environmental realism beyond that of existing synthetic video datasets. Figure~\ref{fig:video-comparison} contrasts frames from our traffic scenes with those in Cloth~\cite{li2020causal}. Our data demonstrates greater visual complexity and realism, offering a more faithful approximation of real-world applications.
+
+
+
+
+
+\begin{table}[htbp]
+  \centering
+  
+  \newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}  
+
+  \caption{Data size, causal graph,  and description for dynamic physical process analysis. }
+  
+  \begin{tabularx}{\linewidth}{C{1.5cm} C{0.8cm} C{6.3 cm} C{4.0cm}}
+    \toprule
+    \textbf{Scene} & \textbf{Data Size} & \textbf{Causal Graph} & \textbf{Description} \\
+    \midrule \makecell{
+     Fall  \\ \\ \cref{se:sample_fall}} & \small{\textasciitilde 29k} & \tblimg{figs/causal_graph_fall.pdf} & This scene simulates the free fall motion of an object. The temporal transition function defines the state evolution over time as follows: $v_{t+1,1} = v_{t,1} + g \cdot \Delta t$, $h_{t+1,1} = h_{t,1} + v_{t,1} \cdot \Delta t + 0.5 \cdot g \cdot (\Delta t)^2$, where \( v_{t,1} \) denotes the velocity in the first dimension (i.e., the vertical \( y \)-axis) at time step \( t \), under a 3D Cartesian coordinate system. \( h_{t,1} \) represents the height of the object at time \( t \), which is associated with the vertical coordinate \( x_{t,1} \). For convenience, we will use coordinates for mathematical formulation hereafter. As the partial causal graph of \textbf{Fall Simple}, this serves as a simplified version of \textbf{Fall Complex} to some extent. \\
+     \midrule
+     \makecell{Projectile \\ \\ \\ \cref{se:sample_projectile} } & \small{\textasciitilde 29k} & \tblimg{figs/causal_graph_projectile.pdf} & This scene simulates the horizontal projectile motion of an object. The
+temporal transition function defines the state evolution over time as follows: $v_{t+1,1} = v_{t,1} + g \cdot \Delta t $, $x_{t+1,1} = x_{t,1} + v_{t,1} \cdot \Delta t + 0.5 \cdot g \cdot (\Delta t)^2
+$, $v_{t+1,0} = v_{t,0}
+$, $x_{t+1,0}=x_{t,0}+ v_{t,0} 
+$. \\
+    \bottomrule
+  \end{tabularx}
+  \label{tab:physical-process-dyn-part1}
+\end{table}
+
+
+\begin{table}[htbp]
+  \centering
+  
+  \newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}} 
+  \caption*{Table 4: Data size, causal graph,  and description for dynamic physical process analysis. }
+ 
+  \begin{tabularx}{\linewidth}{C{1.3 cm} C{0.8cm} C{6.3 cm} C{4.0cm}}
+    \toprule
+    \textbf{Scene} & \textbf{Data Size} & \textbf{Causal Graph} & \textbf{Description} \\
+    \midrule
+    \makecell{
+     Collision \\  \\ \\ \cref{se:sample_collision} } & \small{\textasciitilde 30k} & \tblimg{figs/causal_graph_collision.pdf} & This scene simulates the collision motion of two objects. The
+temporal transition function defines the state evolution over time as follows: $v_{t+1,0}^{(1)} = \frac{(m^{(1)} - m^{(2)})v_{t,0}^{(1)} + 2m^{(2)} v_{t,0}^{(2)}}{m^{(1)} + m^{(2)}}
+$, $v_{t+1,0}^{(2)} = \frac{(m^{(2)} - m^{(1)})v_{t,0}^{(1)} + 2m^{(1)} v_{t,0}^{(1)}}{m^{(1)} + m^{(2)}}$, $x_{1,0}^{(t+1)} = x_{1,0}^{(t)} + v_{t,0}^{(1)} \cdot \Delta t $, $x_{2,0}^{(t+1)} = x_{2,0}^{(t)} + v_{t,0}^{(2)} \cdot \Delta t$.  \\
+    \bottomrule
+  \end{tabularx}
+  \label{tab:physical-process-dyn-part2}
+\end{table}
+
+
+\begin{table}[htbp]
+  \centering
+  
+  \newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}  
+
+  \caption{Data size, causal graph,  and description for robotics analysis. }
+ 
+  \begin{tabularx}{\linewidth}{C{1.3cm} C{0.8cm} C{6.3 cm} C{4.0cm}}
+    \toprule
+    \textbf{Showcase} & \textbf{Data Size} & \textbf{Causal Graph} & \textbf{Description} \\
+    \midrule
+      \cref{se:sample_kitchen} to \cref{se:sample_mobile} & \textasciitilde 18k & \tblimg{figs/causal_graph_robotics.pdf} &  The figure abstractly illustrates the interaction processes between the robot, the environment, and objects across five different robotics scenes. Here, $E$ encapsulates global environmental factors such as table texture, material, and lighting variations. $R$ abstractly represents the robot’s internal states induced by its actions during interactions. These states include joint positions reflecting the movement of multiple robot arm joints, gripper position, end-effector position, and the robot’s orientation (rotation), among others. In the Robotics Mobile scene, $R$ also involves significant changes in the robot’s overall position, whereas in the other scenarios, the robot’s position remains fixed. As shown in the figure, in fixed settings, the robot’s joints and end-effector (ee) exhibit diverse motion patterns over time, resulting in rich video dynamics. Finally, $O$ encapsulates the positions and rotations of manipulable objects in the environment, representing the interaction between the robot and these objects.  \\
+    \bottomrule
+  \end{tabularx}
+  \label{tab:robotics-cfg}
+\end{table}
+
+
+\begin{table}[htbp]
+  \centering
+  
+  \newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}  
+
+  \caption{Data size, causal graph,  and description for traffic situation analysis. }
+ 
+  \begin{tabularx}{\linewidth}{C{1.3cm} C{0.8cm} C{6.3 cm} C{4.0cm}}
+    \toprule
+    \textbf{Showcase} & \textbf{Data Size} & \textbf{Causal Graph} & \textbf{Description} \\
+    \midrule
+      \cref{se:traffic-situation-2} to \cref{se:traffic-situation-3} & \textasciitilde 33k & \tblimg{figs/traffic_cfg_new.png} & The left panel depicts a \textbf{partial causal graph} obtained after abstracting the latent variables. All traffic lights in the scene are collectively represented as $Lit_{i}$, the operational states of every vehicle (including throttle, brake, and steering .etc) are represented as $Ani_{i}$, the orientation of each vehicle is represented as $Rot_{i}$, and the position of each vehicle is represented as $Loc_{i}$, where $i$ denotes the current time step. Please note that the variables and relations are more complex in the real case than in the left partial graph.\\
+    \bottomrule
+  \end{tabularx}
+  \label{tab:traffic-cfg}
+\end{table}
+
+
+
+\begin{figure}[htbp]
+    
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Static_Image_Generation/static-human-1.pdf}
+    \vspace{0cm}
+    \caption{\textbf{Example images from the two indoor scene categories: Human in Living Room and Human in Modern Apartment. } The variations across scenes affect only the environmental context, like background and light conditions.}
+    \label{se:static-human-1}
+    \vspace{0cm}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Static_Image_Generation/static-human-2.pdf}
+    \vspace{0cm}
+    \caption{\textbf{Example images from the two indoor scene categories Human in Retail Store and Human against Background Wall}.}
+    \label{se:static-human-2}
+    \vspace{0cm}
+\end{figure}
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_physical_simulations-Image/Spring_00.jpg}
+    \caption{\textbf{Sample frame from the {Cylinder Spring} scene.} It shows a homogeneous cylinder compressing an ideal spring under gravity until static equilibrium is reached.}
+    \label{se:dynamic_spring}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_physical_simulations-Image/re_00.jpg}
+    \caption{\textbf{Sample frame from the \textbf{Light Refraction.}} This scene depicts a collimated light ray refracting at the interface between air and an aqueous ink solution of varied refractive index, following Snell’s law.}
+    \label{se:dynamic_re}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_physical_simulations-Image/slope_00.jpg}
+    \caption{\textbf{Sample frame from the \textbf{Ball on the Slope} scene.} It illustrates a sphere decelerating across a flat surface due to friction and then ascending an incline, with travel distance governed by initial speed, incline angle, and surface roughness.}
+    \label{se:dynamic_sl}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_physical_simulations-Image/fall_00.jpg}
+    \caption{\textbf{Sample frame from the \textbf{Ball Meets Plasticine} scene.} This sense shows a sphere in free fall impacting a viscous clay medium, with penetration depth determined by its mass and the medium’s viscosity.}
+    \label{se:dynamic_fa}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_Physical_Simulation_Video/sample_fall4.pdf}
+    \caption{\textbf{Visualization of two samples from the \textbf{Fall Complex} scene.}
+The two samples depict free-fall scenarios involving a single object and multiple objects, respectively. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Within each row, we present color frames and depth frames captured by different sensors from the same viewpoint.
+Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames.}
+    \label{se:sample_fall}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_Physical_Simulation_Video/sample_projectile4.pdf}
+    \caption{\textbf{Visualization of two samples from the \textbf{Projectile Complex} scene.}
+Sample 1 illustrates a complex projectile motion of a large object (a table) exhibiting rotational dynamics. Sample 2 showcases projectile motion under varying scenes and lighting conditions. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Each row presents color frames and depth frames captured by different sensors from the same viewpoint.
+Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames.}
+    \label{se:sample_projectile}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_Physical_Simulation_Video/sample_collision4.pdf}
+    \caption{\textbf{Visualization of two samples from the \textbf{Collision Complex} scene.}
+The two samples depict free-fall scenarios involving a single object and multiple objects, respectively. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Within each row, we present color frames and depth frames captured by different sensors from the same viewpoint.
+Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames.}
+    \label{se:sample_collision}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_Physical_Simulation_Video/sample_kitchen4.pdf}
+    \caption{\textbf{Visualization of two samples from the \textbf{Robotics Kitchen} scene.} Sample 1 shows the robot grasping a small bowl on the table, while Sample 2 illustrates the robot attempting to grasp a kettle on the table — potentially for subsequent actions such as reclassification, placing it near a heating area, or even failure. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions.  }
+    \label{se:sample_kitchen}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_Physical_Simulation_Video/sample_living.pdf}
+    \caption{\textbf{Visualization of two samples from the \textbf{Robotics Living} scene.} This scene captures various actions performed by a robot in a home living room environment. Sample 1 shows the robot grasping a book on the table, while Sample 2 depicts the robot attempting to grasp a beverage can on the table, potentially for later organization. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions. }
+    \label{se:sample_living}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_Physical_Simulation_Video/sample_study.pdf}
+    \caption{\textbf{Visualization of two samples from the \textbf{Robotics Study} scene.} This scene showcases various actions performed by a robot in a study room environment, where a wide variety of objects are placed on the table. Sample 1 illustrates the robot grasping a book from the table and attempting to place it on a small bookshelf. Sample 2 shows the robot trying to grasp another book from the table, potentially for later organization. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions. }
+    \label{se:sample_study}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_Physical_Simulation_Video/sample_general4.pdf}
+    \caption{\textbf{Visualization of two samples from the \textbf{Robotics General} scene.} This scenario captures various actions of a robot operating in an open and general environment (i.e., not limited to a specific household setting, hence the name General).
+Sample 1 shows the robot grasping a small bowl on the table, while Sample 2 illustrates the robot attempting to grasp a container on the table. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions. }
+    \label{se:sample_general}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Dynamic_Physical_Simulation_Video/sample_mobile.pdf}
+    \caption{\textbf{Visualization of six frames from the \textbf{Robotics Mobile} scene sampled from one sequence to illustrate temporal continuity.} The scene depicts a robot moving in all directions and waving its robotic arm in a confined environment. For each frame, we concatenate a 512×512 third-person video frame of the main agent with four 128×128 frames captured from two additional agent perspectives (including both color and depth views), forming a complete frame. Users can selectively extract and utilize different parts according to their specific needs.}
+    \label{se:sample_mobile}
+\end{figure}
+
+
+\begin{figure}[htbp]
+    
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Traffic_Situation/traffic-situation-2.pdf}
+    \vspace{0cm}
+    \caption{\textbf{Example traffic scene video captured in \textbf{Town10}.} Six frames are sampled from one sequence to illustrate temporal continuity. Although global variables such as traffic density differ among cities, the fundamental driving logic of vehicles remains unchanged.}
+    \label{se:traffic-situation-2}
+    \vspace{0cm}
+\end{figure}
+
+\begin{figure}[htbp]
+    
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Traffic_Situation/traffic-situation-town01.pdf}
+    \vspace{0cm}
+    \caption{\textbf{Example traffic scene video captured in \textbf{Town01}.}}
+    \label{se:traffic-situation-town01}
+    \vspace{0cm}
+\end{figure}
+
+\begin{figure}[htbp]
+    
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Traffic_Situation/traffic-situation-1.pdf}
+    \vspace{0cm}
+    \caption{\textbf{Example traffic scene video captured in \textbf{Town02}.}}
+    \label{se:traffic-situation-1}
+    \vspace{0cm}
+\end{figure}
+
+\begin{figure}[htbp]
+    
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Traffic_Situation/traffic-situation-town04.pdf}
+    \vspace{0cm}
+    \caption{\textbf{Example traffic scene video captured in \textbf{Town04}.}}
+    \label{se:traffic-situation-town04}
+    \vspace{0cm}
+\end{figure}
+
+\begin{figure}[htbp]
+    
+    \centering
+    \includegraphics[width=1\textwidth]{figs/data/Traffic_Situation/traffic-situation-3.pdf}
+    \vspace{0cm}
+    \caption{\textbf{Example traffic scene video captured in \textbf{Town05}.}}
+    \label{se:traffic-situation-3}
+    \vspace{0cm}
+\end{figure}
+
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/compare-image-2v2.pdf}
+    \caption{\textbf{Comparison of image realism.} The top row shows static images from our dataset rendered in complex scenes with multiple light sources, while the bottom row shows images from the Causal3DIdent dataset rendered against a uniform background with a single light source.}
+    \label{fig:image-comparison}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/compare-video-2v2.pdf}
+    
+    \caption{\textbf{Comparison of video data realism.} The top row shows two video frames from the Traffic Situation domain of our dataset, featuring realistic and complex urban scenes populated by numerous interacting agents. The bottom row presents two frames from the Cloth~\cite{li2020causal} dataset, which uses synthetic backgrounds and depicts only a single simple object per frame.}
+    \label{fig:video-comparison}
+\end{figure}
+
+\clearpage
+
+
+
+
+
+
+
+

@@ -1,0 +1,37 @@
+\section{Introduction}
+
+\subsection{Motivation: The Ubiquity of Jitter}
+
+Modern web applications are fundamentally \textit{event-driven}. User interactions—keystrokes, mouse movements, scroll events, window resizing—generate streams of events that trigger computational responses. However, the mismatch between \textbf{human input frequency} and \textbf{system processing capacity} creates a phenomenon we term \textit{interaction jitter}:
+
+\begin{itemize}
+    \item \textbf{Input Jitter}: Rapid keystrokes in a search box triggering multiple API calls
+    \item \textbf{Scroll Jitter}: High-frequency scroll events causing layout thrashing
+    \item \textbf{Resize Jitter}: Window resize events firing hundreds of times per second
+    \item \textbf{Rendering Jitter}: State updates faster than display refresh rates
+\end{itemize}
+
+\subsection{Limitations of Current Approaches}
+
+The de facto solutions—\texttt{debounce} and \texttt{throttle}—suffer from critical limitations:
+
+\begin{enumerate}
+    \item \textbf{Ad-hoc Parameter Selection}: Delay values (e.g., 300ms) are chosen by intuition
+    \item \textbf{Static Configuration}: Parameters cannot adapt to varying user behavior
+    \item \textbf{No Optimality Guarantees}: No theoretical framework guides the choice
+    \item \textbf{Hidden Trade-offs}: The latency-stability trade-off is not quantified
+\end{enumerate}
+
+\subsection{Our Contributions}
+
+We present the first \textbf{mathematically rigorous framework} for analyzing and optimizing jitter mitigation in web applications:
+
+\begin{enumerate}
+    \item \textbf{Formal Model} (Section~\ref{sec:model}): We model user input as a \textit{marked point process} and mitigation strategies as \textit{signal filters}
+    
+    \item \textbf{Theoretical Analysis} (Section~\ref{sec:theory}): We derive closed-form expressions for optimal parameters under various loss functions
+    
+    \item \textbf{Adaptive Algorithm} (Section~\ref{sec:algorithm}): We propose an online algorithm that learns optimal parameters from user behavior
+    
+    \item \textbf{Empirical Validation} (Section~\ref{sec:experiments}): We validate our theory on real-world datasets and demonstrate practical improvements
+\end{enumerate}

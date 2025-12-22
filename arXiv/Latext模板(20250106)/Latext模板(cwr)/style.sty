@@ -1,0 +1,73 @@
+\ProvidesPackage{style}
+
+\RequirePackage{ctex}
+\RequirePackage{fancyhdr}
+\RequirePackage{geometry}
+\RequirePackage{caption}
+\RequirePackage{titletoc}
+\RequirePackage{fontspec}
+
+\fancyhf{}
+% 主要部分的页眉页脚
+\fancypagestyle{mainmatter}{
+    \fancyhead[CO]{\zihao{-5}苏州大学本科生毕业设计(论文)}
+    \fancyfoot[CO]{\zihao{-5}-\ \thepage\ -}
+    \fancyhead[CE]{\zihao{-5}苏州大学本科生毕业设计(论文)}
+    \fancyfoot[CE]{\zihao{-5}-\ \thepage\ -}
+}
+% 声明部分的页眉页脚
+\fancypagestyle{frontmatter}{
+    \fancyhead[CO]{苏州大学本科生毕业设计(论文)}
+    \fancyhead[CE]{苏州大学本科生毕业设计(论文)}
+}
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\geometry{
+    a4paper,
+    includehead, includefoot,
+    left=30mm,right=25mm,top=26mm,bottom=20mm,
+    headheight=7mm,footskip=7mm
+}
+
+% 图表号使用横线作为分隔符
+\captionsetup[figure]{labelformat=simple, labelsep=quad}
+\captionsetup[table]{labelformat=simple, labelsep=quad}
+\renewcommand {\thetable} {\thechapter{}-\arabic{table}}
+\renewcommand {\thefigure} {\thechapter{}-\arabic{figure}}
+
+% 1.5倍行距
+\linespread{1.625}
+
+% 目录章节标题格式
+\titlecontents{chapter}[0em]{\sffamily\zihao{4}}
+{\thecontentslabel}{}{\titlerule*{·}\contentspage}
+\titlecontents{section}[2em]{\rmfamily\zihao{4}}
+{\thecontentslabel}{}{\titlerule*{·}\contentspage}
+\titlecontents{subsection}[4em]{\rmfamily\zihao{4}}
+{\thecontentslabel}{}{\titlerule*{·}\contentspage}
+% “目录”两个字也要用四号宋体么？好丑啊！
+\renewcommand{\contentsname}{{\zihao{4}\textrm{目\ 录}}}
+
+% 正文章节标题格式
+\ctexset{
+    chapter = {
+        format = \zihao{-3} \bfseries \centering,
+        pagestyle = mainmatter, % 为每一章首页加上页眉页脚
+        beforeskip = 0ex,
+        afterskip = 2ex, % 标题之后只空一行
+    },
+    section = {
+        format = \zihao{-3} \bfseries,
+    },
+    subsection = {
+        format = \zihao{-3} \bfseries,
+    },
+    subsubsection = {
+        format = \zihao{-3} \bfseries,
+    }
+}
+
+% 使用上标的引用标注
+\newcommand{\citess}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} 

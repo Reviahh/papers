@@ -1,0 +1,388 @@
+\relax 
+\providecommand \babel@aux [2]{\global \let \babel@toc \@gobbletwo }
+\@nameuse{bbl@beforestart}
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{yao2022temporally,yao2021learning,li2020causal}
+\citation{liu2025causal3d,zimmermann2021contrastive}
+\citation{yao2021learning}
+\citation{kong2022partial,salaudeen2024domain}
+\citation{chen2024caring}
+\providecommand \oddpage@label [2]{}
+\babel@aux{english}{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\newlabel{sec:intro@cref}{{[section][1][]1}{[1][1][]1}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {The CausalVerse dataset.} CausalVerse is organized with a hierarchical domain-scene-instance structure. We showcase four diverse domains: static generation, physical simulation, robotic manipulation, and traffic analysis. Within each domain, multiple scenes are designed to reflect distinct causal variables and structures. Sample instances are generated using simulation tools such as Unreal Engine 4, with each instance grounded in a predefined causal graph. }}{2}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:benchmark_overall}{{1}{2}{\textbf {The CausalVerse dataset.} CausalVerse is organized with a hierarchical domain-scene-instance structure. We showcase four diverse domains: static generation, physical simulation, robotic manipulation, and traffic analysis. Within each domain, multiple scenes are designed to reflect distinct causal variables and structures. Sample instances are generated using simulation tools such as Unreal Engine 4, with each instance grounded in a predefined causal graph}{figure.caption.2}{}}
+\newlabel{fig:benchmark_overall@cref}{{[figure][1][]1}{[1][2][]2}{}{}{}}
+\citation{scholkopf2021toward}
+\citation{comon1994independent,hyvarinen2002independent,zhang2008minimal,zhang2007kernel,huang2022latent}
+\citation{yao2022temporally,yao2021learning,kong2022partial,chen2024caring,zhang2011general}
+\citation{von2021self,reizinger2024cross,brehmer2022weakly}
+\citation{yao2023multi,sun2024causal}
+\citation{zheng2022identifiability,lachapelle2022partial,xu2024sparsity,li2024idol,russo2023shapley}
+\citation{li2020causal}
+\citation{yao2021learning}
+\citation{yao2022temporally}
+\citation{von2021self}
+\citation{liu2025causal3d}
+\citation{brehmer2022weakly}
+\citation{blender2024}
+\citation{todorov2012mujoco}
+\citation{Karis2013_UE4Shading}
+\citation{yang2020causalvae}
+\citation{yang2020causalvae}
+\citation{liu2025causal3d}
+\citation{von2021self}
+\citation{zimmermann2021contrastive}
+\citation{brehmer2022weakly}
+\citation{li2020causal}
+\citation{li2020causal}
+\citation{gamella2025sanity}
+\citation{cadei2024smoke}
+\citation{kong2022partial}
+\citation{li2023subspace}
+\citation{salaudeen2024domain}
+\citation{chen2024caring,ates2020craft}
+\citation{stein2025causalrivers}
+\citation{reizinger2024cross,yao2023multi}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces \textbf  {Comparison of benchmarks related to Causal Representation Learning.} The number of video frames is used to represent the scale of each video dataset.}}{3}{table.caption.3}\protected@file@percent }
+\newlabel{tab:causal_benchmarks}{{1}{3}{\textbf {Comparison of benchmarks related to Causal Representation Learning.} The number of video frames is used to represent the scale of each video dataset}{table.caption.3}{}}
+\newlabel{tab:causal_benchmarks@cref}{{[table][1][]1}{[1][3][]3}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
+\citation{zimmermann2021contrastive}
+\citation{li2020causal,liu2025causal3d}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {Data examples of the dataset across four domains.} The \textcolor {humanColor}{\textbf  {Static Image Generation}} domain features the human images in diverse indoor environments. The \textcolor {objectColor}{\textbf  {Dynamic Physical Simulations}} domain describes different physical processes like spring compression, light refraction, and projectile motion. The \textcolor {trafficColor}{\textbf  {Traffic Situation Analysis}} domain shows the traffic situations under different cities, scenes, and conditions. The \textcolor {robotColor}{ \textbf  {Robotic Manipulations}} domain offers six scenes in which a robot operates in different indoor settings and performs various tasks.}}{4}{figure.caption.4}\protected@file@percent }
+\newlabel{overall}{{2}{4}{\textbf {Data examples of the dataset across four domains.} The \textcolor {humanColor}{\textbf {Static Image Generation}} domain features the human images in diverse indoor environments. The \textcolor {objectColor}{\textbf {Dynamic Physical Simulations}} domain describes different physical processes like spring compression, light refraction, and projectile motion. The \textcolor {trafficColor}{\textbf {Traffic Situation Analysis}} domain shows the traffic situations under different cities, scenes, and conditions. The \textcolor {robotColor}{ \textbf {Robotic Manipulations}} domain offers six scenes in which a robot operates in different indoor settings and performs various tasks}{figure.caption.4}{}}
+\newlabel{overall@cref}{{[figure][2][]2}{[1][4][]4}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}The CausalVerse Dataset}{4}{section.3}\protected@file@percent }
+\newlabel{sec:dataset}{{3}{4}{The CausalVerse Dataset}{section.3}{}}
+\newlabel{sec:dataset@cref}{{[section][3][]3}{[1][4][]4}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Dataset composition}{4}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Dataset statistics}{5}{subsection.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {Latent variable numbers across all scenes in CausalVerse.} please zoom in for details, like scene name.}}{5}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:benchmark_variables}{{3}{5}{\textbf {Latent variable numbers across all scenes in CausalVerse.} please zoom in for details, like scene name}{figure.caption.5}{}}
+\newlabel{fig:benchmark_variables@cref}{{[figure][3][]3}{[1][5][]5}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textbf  {Sample statistics across all scenes in CausalVerse.} The pie chart illustrates the relative data scale for all scenes, where the radius length reflects the number of images/videos (rather than frames), and colors indicate different domains. For example, the scene {Cylinder Compressing Spring} contains 40k images.}}{6}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:benchmark_pie}{{4}{6}{\textbf {Sample statistics across all scenes in CausalVerse.} The pie chart illustrates the relative data scale for all scenes, where the radius length reflects the number of images/videos (rather than frames), and colors indicate different domains. For example, the scene {Cylinder Compressing Spring} contains 40k images}{figure.caption.6}{}}
+\newlabel{fig:benchmark_pie@cref}{{[figure][4][]4}{[1][5][]6}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}{Data simulation pipeline}}{6}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Defining domains and scenes.}{6}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Latent variable sampling.}{6}{section*.9}\protected@file@percent }
+\citation{bastioni2008makehuman}
+\citation{Denninger2023}
+\citation{coumans2021}
+\citation{replica19arxiv}
+\citation{robosuite2020}
+\citation{pmlr-v78-dosovitskiy17a}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces \textbf  {Data construction pipeline illustrated using the dynamic physical simulation domain.} Starting from a task type such as dynamic physical simulation, we first identify candidate scenes and collect relevant causal variables and structures using human domain expertise. Instances are then generated using a rendering engine to ensure alignment with the designed causal structures.}}{7}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:data_gen}{{5}{7}{\textbf {Data construction pipeline illustrated using the dynamic physical simulation domain.} Starting from a task type such as dynamic physical simulation, we first identify candidate scenes and collect relevant causal variables and structures using human domain expertise. Instances are then generated using a rendering engine to ensure alignment with the designed causal structures}{figure.caption.8}{}}
+\newlabel{fig:data_gen@cref}{{[figure][5][]5}{[1][6][]7}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Static rendering.}{7}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Dynamic rendering.}{7}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Flexibility and use cases}{7}{subsection.3.4}\protected@file@percent }
+\citation{kong2022partial}
+\citation{disentang}
+\citation{von2021self}
+\citation{buchholz2023linear}
+\citation{li2024idol}
+\citation{chen2024caring}
+\citation{yao2022temporally}
+\citation{hyvarinen2016unsupervised}
+\citation{khemakhem2020variational}
+\citation{kong2022partial}
+\citation{disentang}
+\citation{von2021self}
+\citation{buchholz2023linear}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Evaluation}{8}{section.4}\protected@file@percent }
+\newlabel{se:eve}{{4}{8}{Evaluation}{section.4}{}}
+\newlabel{se:eve@cref}{{[section][4][]4}{[1][8][]8}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Evaluation metrics}{8}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Implementation}{8}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Evaluation under unmet assumptions}{8}{subsection.4.3}\protected@file@percent }
+\citation{kong2022partial}
+\citation{disentang}
+\citation{von2021self}
+\citation{buchholz2023linear}
+\citation{kong2022partial}
+\citation{kong2022partial}
+\citation{von2021self}
+\citation{buchholz2023linear}
+\citation{li2024idol}
+\citation{chen2024caring}
+\citation{yao2022temporally}
+\citation{hyvarinen2016unsupervised}
+\citation{khemakhem2020variational}
+\citation{li2024idol}
+\citation{chen2024caring}
+\citation{kong2022partial}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \textbf  {MCC and $R^2$ on image-based scenes under unsatisfied assumptions.}}}{9}{table.caption.12}\protected@file@percent }
+\newlabel{tab:image_mcc_r2}{{2}{9}{\textbf {MCC and $R^2$ on image-based scenes under unsatisfied assumptions.}}{table.caption.12}{}}
+\newlabel{tab:image_mcc_r2@cref}{{[table][2][]2}{[1][8][]9}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Justification for Dissatisfaction.}{9}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Results and Discussions.}{9}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Evaluation for temporal causal representation learning}{9}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:temporal_crl}{{4.4}{9}{Evaluation for temporal causal representation learning}{subsection.4.4}{}}
+\newlabel{sec:temporal_crl@cref}{{[subsection][4][4]4.4}{[1][9][]9}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces \textbf  {MCC and $R^2$ on video-based scenes.}}}{9}{table.caption.15}\protected@file@percent }
+\newlabel{tab:video_mcc_r2}{{3}{9}{\textbf {MCC and $R^2$ on video-based scenes.}}{table.caption.15}{}}
+\newlabel{tab:video_mcc_r2@cref}{{[table][3][]3}{[1][9][]9}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Evaluation for testing assumptions}{9}{subsection.4.5}\protected@file@percent }
+\newlabel{sec:unmet_assumptions}{{4.5}{9}{Evaluation for testing assumptions}{subsection.4.5}{}}
+\newlabel{sec:unmet_assumptions@cref}{{[subsection][5][4]4.5}{[1][9][]9}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces \textbf  {Ablation on domain assumption violations in static image generation.}}}{10}{table.caption.16}\protected@file@percent }
+\newlabel{tab:ablation_domain}{{4}{10}{\textbf {Ablation on domain assumption violations in static image generation.}}{table.caption.16}{}}
+\newlabel{tab:ablation_domain@cref}{{[table][4][]4}{[1][9][]10}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Configurable evaluation under specific assumptions}{10}{subsection.4.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces MCC comparison of sufficient change in satisfied and unmet dataset.}}{10}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:sufficient_change}{{6}{10}{MCC comparison of sufficient change in satisfied and unmet dataset}{figure.caption.17}{}}
+\newlabel{fig:sufficient_change@cref}{{[figure][6][]6}{[1][10][]10}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Ethical Considerations, Limitations, and Conclusion}{10}{section.5}\protected@file@percent }
+\newlabel{sec:con}{{5}{10}{Ethical Considerations, Limitations, and Conclusion}{section.5}{}}
+\newlabel{sec:con@cref}{{[section][5][]5}{[1][10][]10}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Ethical considerations and limitations}{10}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Conclusion}{10}{section*.19}\protected@file@percent }
+\bibstyle{unsrtnat}
+\bibdata{ref}
+\bibcite{yao2022temporally}{{1}{2022}{{Yao et~al.}}{{Yao, Chen, and Zhang}}}
+\bibcite{yao2021learning}{{2}{2021}{{Yao et~al.}}{{Yao, Sun, Ho, Sun, and Zhang}}}
+\bibcite{li2020causal}{{3}{2020}{{Li et~al.}}{{Li, Torralba, Anandkumar, Fox, and Garg}}}
+\bibcite{liu2025causal3d}{{4}{2025}{{Liu et~al.}}{{Liu, Qiao, Liu, Lu, Zhou, Liang, Yin, and Ma}}}
+\bibcite{zimmermann2021contrastive}{{5}{2021}{{Zimmermann et~al.}}{{Zimmermann, Sharma, Schneider, Bethge, and Brendel}}}
+\bibcite{kong2022partial}{{6}{2022}{{Kong et~al.}}{{Kong, Xie, Yao, Zheng, Chen, Stojanov, Akinwande, and Zhang}}}
+\bibcite{salaudeen2024domain}{{7}{}{{Salaudeen et~al.}}{{Salaudeen, Chiou, and Koyejo}}}
+\bibcite{chen2024caring}{{8}{2024}{{Chen et~al.}}{{Chen, Shen, Chen, Song, Sun, Yao, Liu, and Zhang}}}
+\bibcite{scholkopf2021toward}{{9}{2021}{{Sch{\"o}lkopf et~al.}}{{Sch{\"o}lkopf, Locatello, Bauer, Ke, Kalchbrenner, Goyal, and Bengio}}}
+\bibcite{comon1994independent}{{10}{1994}{{Comon}}{{}}}
+\bibcite{hyvarinen2002independent}{{11}{2002}{{Hyvarinen et~al.}}{{Hyvarinen, Karhunen, and Oja}}}
+\bibcite{zhang2008minimal}{{12}{2008}{{Zhang and Chan}}{{}}}
+\bibcite{zhang2007kernel}{{13}{2007}{{Zhang and Chan}}{{}}}
+\bibcite{huang2022latent}{{14}{2022}{{Huang et~al.}}{{Huang, Low, Xie, Glymour, and Zhang}}}
+\bibcite{zhang2011general}{{15}{2011}{{Zhang and Hyv{\"a}rinen}}{{}}}
+\bibcite{von2021self}{{16}{2021}{{Von~K{\"u}gelgen et~al.}}{{Von~K{\"u}gelgen, Sharma, Gresele, Brendel, Sch{\"o}lkopf, Besserve, and Locatello}}}
+\bibcite{reizinger2024cross}{{17}{2024}{{Reizinger et~al.}}{{Reizinger, Bizeul, Juhos, Vogt, Balestriero, Brendel, and Klindt}}}
+\bibcite{brehmer2022weakly}{{18}{2022}{{Brehmer et~al.}}{{Brehmer, De~Haan, Lippe, and Cohen}}}
+\bibcite{yao2023multi}{{19}{2023}{{Yao et~al.}}{{Yao, Xu, Lachapelle, Magliacane, Taslakian, Martius, von K{\"u}gelgen, and Locatello}}}
+\bibcite{sun2024causal}{{20}{2024}{{Sun et~al.}}{{Sun, Kong, Chen, Li, Luo, Li, Zhang, Zheng, Yang, Stojanov, et~al.}}}
+\bibcite{zheng2022identifiability}{{21}{2022}{{Zheng et~al.}}{{Zheng, Ng, and Zhang}}}
+\bibcite{lachapelle2022partial}{{22}{2022}{{Lachapelle and Lacoste-Julien}}{{}}}
+\bibcite{xu2024sparsity}{{23}{2024}{{Xu et~al.}}{{Xu, Yao, Lachapelle, Taslakian, Von~K{\"u}gelgen, Locatello, and Magliacane}}}
+\bibcite{li2024idol}{{24}{2024}{{Li et~al.}}{{Li, Shen, Zheng, Cai, Song, Gong, Zhu, Chen, and Zhang}}}
+\bibcite{russo2023shapley}{{25}{2023}{{Russo and Toni}}{{}}}
+\bibcite{blender2024}{{26}{2024}{{Blender Online Community}}{{}}}
+\bibcite{todorov2012mujoco}{{27}{2012}{{Todorov et~al.}}{{Todorov, Erez, and Tassa}}}
+\bibcite{Karis2013_UE4Shading}{{28}{2013}{{Karis}}{{}}}
+\bibcite{yang2020causalvae}{{29}{2020}{{Yang et~al.}}{{Yang, Liu, Chen, Shen, Hao, and Wang}}}
+\bibcite{gamella2025sanity}{{30}{2025}{{Gamella et~al.}}{{Gamella, Bing, and Runge}}}
+\bibcite{cadei2024smoke}{{31}{2024}{{Cadei et~al.}}{{Cadei, Lindorfer, Cremer, Schmid, and Locatello}}}
+\bibcite{li2023subspace}{{32}{2023}{{Li et~al.}}{{Li, Cai, Chen, Sun, Hao, and Zhang}}}
+\bibcite{ates2020craft}{{33}{2020}{{Ates et~al.}}{{Ates, Atesoglu, Yigit, Kesen, Kobas, Erdem, Erdem, Goksun, and Yuret}}}
+\bibcite{stein2025causalrivers}{{34}{2025}{{Stein et~al.}}{{Stein, Shadaydeh, Blunk, Penzel, and Denzler}}}
+\bibcite{bastioni2008makehuman}{{35}{2008}{{Bastioni et~al.}}{{Bastioni, Re, and Misra}}}
+\bibcite{Denninger2023}{{36}{2023}{{Denninger et~al.}}{{Denninger, Winkelbauer, Sundermeyer, Boerdijk, Knauer, Strobl, Humt, and Triebel}}}
+\bibcite{coumans2021}{{37}{2016--2021}{{Coumans and Bai}}{{}}}
+\bibcite{replica19arxiv}{{38}{2019}{{Straub et~al.}}{{Straub, Whelan, Ma, Chen, Wijmans, Green, Engel, Mur-Artal, Ren, Verma, Clarkson, Yan, Budge, Yan, Pan, Yon, Zou, Leon, Carter, Briales, Gillingham, Mueggler, Pesqueira, Savva, Batra, Strasdat, Nardi, Goesele, Lovegrove, and Newcombe}}}
+\bibcite{robosuite2020}{{39}{2020}{{Zhu et~al.}}{{Zhu, Wong, Mandlekar, Mart\'{i}n-Mart\'{i}n, Joshi, Nasiriany, Zhu, and Lin}}}
+\bibcite{pmlr-v78-dosovitskiy17a}{{40}{2017}{{Dosovitskiy et~al.}}{{Dosovitskiy, Ros, Codevilla, Lopez, and Koltun}}}
+\bibcite{disentang}{{41}{2022}{{Lachapelle et~al.}}{{Lachapelle, López, Sharma, Everett, Priol, Lacoste, and Lacoste-Julien}}}
+\bibcite{buchholz2023linear}{{42}{2023}{{Buchholz et~al.}}{{Buchholz, Rajendran, Rosenfeld, Aragam, Sch{\"o}lkopf, and Ravikumar}}}
+\bibcite{hyvarinen2016unsupervised}{{43}{2016}{{Hyvarinen and Morioka}}{{}}}
+\bibcite{khemakhem2020variational}{{44}{2020}{{Khemakhem et~al.}}{{Khemakhem, Kingma, Monti, and Hyvarinen}}}
+\bibcite{spirtes2000causation}{{45}{2000}{{Spirtes et~al.}}{{Spirtes, Glymour, and Scheines}}}
+\bibcite{zhang2012kernel}{{46}{2011}{{Zhang et~al.}}{{Zhang, Peters, Janzing, and Sch{\"o}lkopf}}}
+\bibcite{zhang2008completeness}{{47}{2008}{{Zhang}}{{}}}
+\bibcite{richardson2013discovery}{{48}{1996}{{Richardson}}{{}}}
+\bibcite{chickering2002optimal}{{49}{2002}{{Chickering}}{{}}}
+\bibcite{buntine1991theory}{{50}{1991}{{Buntine}}{{}}}
+\bibcite{huang2018generalized}{{51}{2018}{{Huang et~al.}}{{Huang, Zhang, Lin, Sch{\"o}lkopf, and Glymour}}}
+\bibcite{pearl2000models}{{52}{2000}{{Pearl et~al.}}{{}}}
+\bibcite{shimizu2011directlingam}{{53}{2011}{{Shimizu et~al.}}{{Shimizu, Inazumi, Sogawa, Hyvarinen, Kawahara, Washio, Hoyer, Bollen, and Hoyer}}}
+\bibcite{hoyer2008nonlinear}{{54}{2008}{{Hoyer et~al.}}{{Hoyer, Janzing, Mooij, Peters, and Sch{\"o}lkopf}}}
+\bibcite{zhang2009causality}{{55}{2009}{{Zhang and Hyv{\"a}rinen}}{{}}}
+\bibcite{zhang2012identifiability}{{56}{2012}{{Zhang and Hyvarinen}}{{}}}
+\bibcite{richardson2002ancestral}{{57}{2002}{{Richardson and Spirtes}}{{}}}
+\bibcite{sullivant2010trek}{{58}{2010}{{Sullivant et~al.}}{{Sullivant, Talaska, and Draisma}}}
+\bibcite{drton2018algebraic}{{59}{2018}{{Drton}}{{}}}
+\bibcite{xie2020generalized}{{60}{2020}{{Xie et~al.}}{{Xie, Cai, Huang, Glymour, Hao, and Zhang}}}
+\bibcite{adams2021identification}{{61}{2021}{{Adams et~al.}}{{Adams, Hansen, and Zhang}}}
+\bibcite{anandkumar2013learning}{{62}{2013}{{Anandkumar et~al.}}{{Anandkumar, Hsu, Javanmard, and Kakade}}}
+\bibcite{cui2018learning}{{63}{2018}{{Cui et~al.}}{{Cui, Groot, Schauer, and Heskes}}}
+\bibcite{kivva2021learning}{{64}{2021}{{Kivva et~al.}}{{Kivva, Rajendran, Ravikumar, and Aragam}}}
+\bibcite{rombach2021highresolution}{{65}{2021}{{Rombach et~al.}}{{Rombach, Blattmann, Lorenz, Esser, and Ommer}}}
+\bibcite{yang2024cogvideox}{{66}{2024}{{Yang et~al.}}{{Yang, Teng, Zheng, Ding, Huang, Xu, Yang, Hong, Zhang, Feng, et~al.}}}
+\citation{spirtes2000causation}
+\citation{spirtes2000causation}
+\citation{zhang2012kernel}
+\citation{spirtes2000causation,zhang2008completeness}
+\citation{richardson2013discovery}
+\citation{chickering2002optimal}
+\citation{buntine1991theory}
+\citation{huang2018generalized}
+\citation{pearl2000models}
+\citation{shimizu2011directlingam}
+\citation{hoyer2008nonlinear,zhang2009causality}
+\citation{zhang2012identifiability}
+\citation{spirtes2000causation}
+\citation{richardson2002ancestral,zhang2008completeness}
+\citation{sullivant2010trek,huang2022latent}
+\citation{spirtes2000causation}
+\citation{drton2018algebraic}
+\citation{xie2020generalized,adams2021identification,chen2024caring}
+\citation{anandkumar2013learning}
+\citation{cui2018learning}
+\citation{kivva2021learning}
+\citation{scholkopf2021toward}
+\citation{comon1994independent,hyvarinen2002independent,zhang2008minimal,zhang2007kernel,huang2022latent}
+\citation{kong2022partial,zhang2011general,chen2024caring,yao2022temporally,yao2021learning}
+\citation{von2021self,reizinger2024cross,brehmer2022weakly}
+\citation{yao2023multi,sun2024causal}
+\citation{zheng2022identifiability,lachapelle2022partial,xu2024sparsity,li2024idol,russo2023shapley}
+\citation{yang2020causalvae}
+\citation{yang2020causalvae}
+\citation{todorov2012mujoco}
+\citation{li2020causal}
+\citation{li2020causal}
+\citation{brehmer2022weakly}
+\citation{todorov2012mujoco}
+\citation{zimmermann2021contrastive}
+\citation{von2021self}
+\citation{liu2025causal3d}
+\citation{Karis2013_UE4Shading}
+\citation{todorov2012mujoco}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Detailed Related Work}{15}{appendix.A}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Causal discovery.}{15}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Latent variables and constraints.}{15}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Causal representation learning.}{15}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Simulation approaches}{15}{section*.25}\protected@file@percent }
+\citation{li2020causal}
+\citation{yao2021learning}
+\citation{yao2022temporally}
+\citation{von2021self}
+\citation{liu2025causal3d}
+\citation{brehmer2022weakly}
+\citation{Karis2013_UE4Shading}
+\citation{kong2022partial}
+\citation{li2023subspace}
+\citation{salaudeen2024domain}
+\citation{chen2024caring,ates2020craft}
+\citation{stein2025causalrivers}
+\citation{yao2023multi,reizinger2024cross}
+\@writefile{toc}{\contentsline {paragraph}{Evaluation by simple synthetics.}{16}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation by downstream tasks.}{16}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Data Structure, Example Showcase, Brief Comparison and Discussions}{16}{appendix.B}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Construction of causal relationships }{16}{subsection.B.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Static image generation}{17}{subsection.B.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {B.1}{\ignorespaces Causal graph, data size, and description for the domain static image generation}}{17}{table.caption.28}\protected@file@percent }
+\newlabel{tab:static-image-cfg}{{B.1}{17}{Causal graph, data size, and description for the domain static image generation}{table.caption.28}{}}
+\newlabel{tab:static-image-cfg@cref}{{[table][1][2]B.1}{[1][17][]17}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Dynamic physical simulations (aggregated image)}{17}{subsection.B.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4}Dynamic physical simulations (video)}{17}{subsection.B.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {B.2}{\ignorespaces Causal graph, data size, and scene description for aggregated images for dynamic physical simulations}}{18}{table.caption.29}\protected@file@percent }
+\newlabel{tab:phy}{{B.2}{18}{Causal graph, data size, and scene description for aggregated images for dynamic physical simulations}{table.caption.29}{}}
+\newlabel{tab:phy@cref}{{[table][2][2]B.2}{[1][17][]18}{}{}{}}
+\citation{von2021self}
+\citation{von2021self}
+\citation{li2020causal}
+\citation{li2020causal}
+\citation{li2020causal}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.5}Robotic manipulations}{19}{subsection.B.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.6}Traffic situation analysis}{19}{subsection.B.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.7}Comparative analysis of dataset realism}{19}{subsection.B.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Image data comparison}{19}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Video data comparison}{19}{section*.31}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {B.3}{\ignorespaces Data size, causal graph, and description for dynamic physical process analysis. }}{20}{table.caption.32}\protected@file@percent }
+\newlabel{tab:physical-process-dyn-part1}{{B.3}{20}{Data size, causal graph, and description for dynamic physical process analysis}{table.caption.32}{}}
+\newlabel{tab:physical-process-dyn-part1@cref}{{[table][3][2]B.3}{[1][19][]20}{}{}{}}
+\newlabel{tab:physical-process-dyn-part2}{{\caption@xref {tab:physical-process-dyn-part2}{ on input line 162}}{21}{Video data comparison}{table.caption.33}{}}
+\newlabel{tab:physical-process-dyn-part2@cref}{{[subsection][7][2]B.7}{[1][19][]21}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.1}{\ignorespaces \textbf  {Example images from the two indoor scene categories: Human in Living Room and Human in Modern Apartment. } The variations across scenes affect only the environmental context, like background and light conditions.}}{21}{figure.caption.36}\protected@file@percent }
+\newlabel{se:static-human-1}{{B.1}{21}{\textbf {Example images from the two indoor scene categories: Human in Living Room and Human in Modern Apartment. } The variations across scenes affect only the environmental context, like background and light conditions}{figure.caption.36}{}}
+\newlabel{se:static-human-1@cref}{{[figure][1][2]B.1}{[1][19][]21}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {B.4}{\ignorespaces Data size, causal graph, and description for robotics analysis. }}{22}{table.caption.34}\protected@file@percent }
+\newlabel{tab:robotics-cfg}{{B.4}{22}{Data size, causal graph, and description for robotics analysis}{table.caption.34}{}}
+\newlabel{tab:robotics-cfg@cref}{{[table][4][2]B.4}{[1][19][]22}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {B.5}{\ignorespaces Data size, causal graph, and description for traffic situation analysis. }}{23}{table.caption.35}\protected@file@percent }
+\newlabel{tab:traffic-cfg}{{B.5}{23}{Data size, causal graph, and description for traffic situation analysis}{table.caption.35}{}}
+\newlabel{tab:traffic-cfg@cref}{{[table][5][2]B.5}{[1][19][]23}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.2}{\ignorespaces \textbf  {Example images from the two indoor scene categories Human in Retail Store and Human against Background Wall}.}}{23}{figure.caption.37}\protected@file@percent }
+\newlabel{se:static-human-2}{{B.2}{23}{\textbf {Example images from the two indoor scene categories Human in Retail Store and Human against Background Wall}}{figure.caption.37}{}}
+\newlabel{se:static-human-2@cref}{{[figure][2][2]B.2}{[1][19][]23}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.3}{\ignorespaces \textbf  {Sample frame from the {Cylinder Spring} scene.} It shows a homogeneous cylinder compressing an ideal spring under gravity until static equilibrium is reached.}}{24}{figure.caption.38}\protected@file@percent }
+\newlabel{se:dynamic_spring}{{B.3}{24}{\textbf {Sample frame from the {Cylinder Spring} scene.} It shows a homogeneous cylinder compressing an ideal spring under gravity until static equilibrium is reached}{figure.caption.38}{}}
+\newlabel{se:dynamic_spring@cref}{{[figure][3][2]B.3}{[1][19][]24}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.4}{\ignorespaces \textbf  {Sample frame from the \textbf  {Light Refraction.}} This scene depicts a collimated light ray refracting at the interface between air and an aqueous ink solution of varied refractive index, following Snell’s law.}}{24}{figure.caption.39}\protected@file@percent }
+\newlabel{se:dynamic_re}{{B.4}{24}{\textbf {Sample frame from the \textbf {Light Refraction.}} This scene depicts a collimated light ray refracting at the interface between air and an aqueous ink solution of varied refractive index, following Snell’s law}{figure.caption.39}{}}
+\newlabel{se:dynamic_re@cref}{{[figure][4][2]B.4}{[1][19][]24}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.5}{\ignorespaces \textbf  {Sample frame from the \textbf  {Ball on the Slope} scene.} It illustrates a sphere decelerating across a flat surface due to friction and then ascending an incline, with travel distance governed by initial speed, incline angle, and surface roughness.}}{25}{figure.caption.40}\protected@file@percent }
+\newlabel{se:dynamic_sl}{{B.5}{25}{\textbf {Sample frame from the \textbf {Ball on the Slope} scene.} It illustrates a sphere decelerating across a flat surface due to friction and then ascending an incline, with travel distance governed by initial speed, incline angle, and surface roughness}{figure.caption.40}{}}
+\newlabel{se:dynamic_sl@cref}{{[figure][5][2]B.5}{[1][19][]25}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.6}{\ignorespaces \textbf  {Sample frame from the \textbf  {Ball Meets Plasticine} scene.} This sense shows a sphere in free fall impacting a viscous clay medium, with penetration depth determined by its mass and the medium’s viscosity.}}{25}{figure.caption.41}\protected@file@percent }
+\newlabel{se:dynamic_fa}{{B.6}{25}{\textbf {Sample frame from the \textbf {Ball Meets Plasticine} scene.} This sense shows a sphere in free fall impacting a viscous clay medium, with penetration depth determined by its mass and the medium’s viscosity}{figure.caption.41}{}}
+\newlabel{se:dynamic_fa@cref}{{[figure][6][2]B.6}{[1][19][]25}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.7}{\ignorespaces \textbf  {Visualization of two samples from the \textbf  {Fall Complex} scene.} The two samples depict free-fall scenarios involving a single object and multiple objects, respectively. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Within each row, we present color frames and depth frames captured by different sensors from the same viewpoint. Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames.}}{26}{figure.caption.42}\protected@file@percent }
+\newlabel{se:sample_fall}{{B.7}{26}{\textbf {Visualization of two samples from the \textbf {Fall Complex} scene.} The two samples depict free-fall scenarios involving a single object and multiple objects, respectively. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Within each row, we present color frames and depth frames captured by different sensors from the same viewpoint. Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames}{figure.caption.42}{}}
+\newlabel{se:sample_fall@cref}{{[figure][7][2]B.7}{[1][19][]26}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.8}{\ignorespaces \textbf  {Visualization of two samples from the \textbf  {Projectile Complex} scene.} Sample 1 illustrates a complex projectile motion of a large object (a table) exhibiting rotational dynamics. Sample 2 showcases projectile motion under varying scenes and lighting conditions. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Each row presents color frames and depth frames captured by different sensors from the same viewpoint. Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames.}}{26}{figure.caption.43}\protected@file@percent }
+\newlabel{se:sample_projectile}{{B.8}{26}{\textbf {Visualization of two samples from the \textbf {Projectile Complex} scene.} Sample 1 illustrates a complex projectile motion of a large object (a table) exhibiting rotational dynamics. Sample 2 showcases projectile motion under varying scenes and lighting conditions. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Each row presents color frames and depth frames captured by different sensors from the same viewpoint. Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames}{figure.caption.43}{}}
+\newlabel{se:sample_projectile@cref}{{[figure][8][2]B.8}{[1][19][]26}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.9}{\ignorespaces \textbf  {Visualization of two samples from the \textbf  {Collision Complex} scene.} The two samples depict free-fall scenarios involving a single object and multiple objects, respectively. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Within each row, we present color frames and depth frames captured by different sensors from the same viewpoint. Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames.}}{27}{figure.caption.44}\protected@file@percent }
+\newlabel{se:sample_collision}{{B.9}{27}{\textbf {Visualization of two samples from the \textbf {Collision Complex} scene.} The two samples depict free-fall scenarios involving a single object and multiple objects, respectively. For each sample, four viewpoints—birdview, frontview, leftview, and rightview—are arranged in rows. Within each row, we present color frames and depth frames captured by different sensors from the same viewpoint. Each sensor-view pair includes 4 frames, sampled at a consistent rate within each sample, with one-to-one correspondence between color and depth frames}{figure.caption.44}{}}
+\newlabel{se:sample_collision@cref}{{[figure][9][2]B.9}{[1][19][]27}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.10}{\ignorespaces \textbf  {Visualization of two samples from the \textbf  {Robotics Kitchen} scene.} Sample 1 shows the robot grasping a small bowl on the table, while Sample 2 illustrates the robot attempting to grasp a kettle on the table — potentially for subsequent actions such as reclassification, placing it near a heating area, or even failure. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions. }}{27}{figure.caption.45}\protected@file@percent }
+\newlabel{se:sample_kitchen}{{B.10}{27}{\textbf {Visualization of two samples from the \textbf {Robotics Kitchen} scene.} Sample 1 shows the robot grasping a small bowl on the table, while Sample 2 illustrates the robot attempting to grasp a kettle on the table — potentially for subsequent actions such as reclassification, placing it near a heating area, or even failure. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions}{figure.caption.45}{}}
+\newlabel{se:sample_kitchen@cref}{{[figure][10][2]B.10}{[1][19][]27}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.11}{\ignorespaces \textbf  {Visualization of two samples from the \textbf  {Robotics Living} scene.} This scene captures various actions performed by a robot in a home living room environment. Sample 1 shows the robot grasping a book on the table, while Sample 2 depicts the robot attempting to grasp a beverage can on the table, potentially for later organization. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions. }}{28}{figure.caption.46}\protected@file@percent }
+\newlabel{se:sample_living}{{B.11}{28}{\textbf {Visualization of two samples from the \textbf {Robotics Living} scene.} This scene captures various actions performed by a robot in a home living room environment. Sample 1 shows the robot grasping a book on the table, while Sample 2 depicts the robot attempting to grasp a beverage can on the table, potentially for later organization. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions}{figure.caption.46}{}}
+\newlabel{se:sample_living@cref}{{[figure][11][2]B.11}{[1][19][]28}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.12}{\ignorespaces \textbf  {Visualization of two samples from the \textbf  {Robotics Study} scene.} This scene showcases various actions performed by a robot in a study room environment, where a wide variety of objects are placed on the table. Sample 1 illustrates the robot grasping a book from the table and attempting to place it on a small bookshelf. Sample 2 shows the robot trying to grasp another book from the table, potentially for later organization. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions. }}{29}{figure.caption.47}\protected@file@percent }
+\newlabel{se:sample_study}{{B.12}{29}{\textbf {Visualization of two samples from the \textbf {Robotics Study} scene.} This scene showcases various actions performed by a robot in a study room environment, where a wide variety of objects are placed on the table. Sample 1 illustrates the robot grasping a book from the table and attempting to place it on a small bookshelf. Sample 2 shows the robot trying to grasp another book from the table, potentially for later organization. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions}{figure.caption.47}{}}
+\newlabel{se:sample_study@cref}{{[figure][12][2]B.12}{[1][19][]29}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.13}{\ignorespaces \textbf  {Visualization of two samples from the \textbf  {Robotics General} scene.} This scenario captures various actions of a robot operating in an open and general environment (i.e., not limited to a specific household setting, hence the name General). Sample 1 shows the robot grasping a small bowl on the table, while Sample 2 illustrates the robot attempting to grasp a container on the table. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions. }}{30}{figure.caption.48}\protected@file@percent }
+\newlabel{se:sample_general}{{B.13}{30}{\textbf {Visualization of two samples from the \textbf {Robotics General} scene.} This scenario captures various actions of a robot operating in an open and general environment (i.e., not limited to a specific household setting, hence the name General). Sample 1 shows the robot grasping a small bowl on the table, while Sample 2 illustrates the robot attempting to grasp a container on the table. For each sample, five viewpoints are arranged in rows. Each sample is temporally sampled at regular intervals starting from t = 0, and different views at the same timestep provide complementary view-specific information about the robotic arm’s actions}{figure.caption.48}{}}
+\newlabel{se:sample_general@cref}{{[figure][13][2]B.13}{[1][19][]30}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.14}{\ignorespaces \textbf  {Visualization of six frames from the \textbf  {Robotics Mobile} scene sampled from one sequence to illustrate temporal continuity.} The scene depicts a robot moving in all directions and waving its robotic arm in a confined environment. For each frame, we concatenate a 512×512 third-person video frame of the main agent with four 128×128 frames captured from two additional agent perspectives (including both color and depth views), forming a complete frame. Users can selectively extract and utilize different parts according to their specific needs.}}{30}{figure.caption.49}\protected@file@percent }
+\newlabel{se:sample_mobile}{{B.14}{30}{\textbf {Visualization of six frames from the \textbf {Robotics Mobile} scene sampled from one sequence to illustrate temporal continuity.} The scene depicts a robot moving in all directions and waving its robotic arm in a confined environment. For each frame, we concatenate a 512×512 third-person video frame of the main agent with four 128×128 frames captured from two additional agent perspectives (including both color and depth views), forming a complete frame. Users can selectively extract and utilize different parts according to their specific needs}{figure.caption.49}{}}
+\newlabel{se:sample_mobile@cref}{{[figure][14][2]B.14}{[1][19][]30}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.15}{\ignorespaces \textbf  {Example traffic scene video captured in \textbf  {Town10}.} Six frames are sampled from one sequence to illustrate temporal continuity. Although global variables such as traffic density differ among cities, the fundamental driving logic of vehicles remains unchanged.}}{31}{figure.caption.50}\protected@file@percent }
+\newlabel{se:traffic-situation-2}{{B.15}{31}{\textbf {Example traffic scene video captured in \textbf {Town10}.} Six frames are sampled from one sequence to illustrate temporal continuity. Although global variables such as traffic density differ among cities, the fundamental driving logic of vehicles remains unchanged}{figure.caption.50}{}}
+\newlabel{se:traffic-situation-2@cref}{{[figure][15][2]B.15}{[1][19][]31}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.16}{\ignorespaces \textbf  {Example traffic scene video captured in \textbf  {Town01}.}}}{31}{figure.caption.51}\protected@file@percent }
+\newlabel{se:traffic-situation-town01}{{B.16}{31}{\textbf {Example traffic scene video captured in \textbf {Town01}.}}{figure.caption.51}{}}
+\newlabel{se:traffic-situation-town01@cref}{{[figure][16][2]B.16}{[1][19][]31}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.17}{\ignorespaces \textbf  {Example traffic scene video captured in \textbf  {Town02}.}}}{31}{figure.caption.52}\protected@file@percent }
+\newlabel{se:traffic-situation-1}{{B.17}{31}{\textbf {Example traffic scene video captured in \textbf {Town02}.}}{figure.caption.52}{}}
+\newlabel{se:traffic-situation-1@cref}{{[figure][17][2]B.17}{[1][19][]31}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.18}{\ignorespaces \textbf  {Example traffic scene video captured in \textbf  {Town04}.}}}{32}{figure.caption.53}\protected@file@percent }
+\newlabel{se:traffic-situation-town04}{{B.18}{32}{\textbf {Example traffic scene video captured in \textbf {Town04}.}}{figure.caption.53}{}}
+\newlabel{se:traffic-situation-town04@cref}{{[figure][18][2]B.18}{[1][19][]32}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.19}{\ignorespaces \textbf  {Example traffic scene video captured in \textbf  {Town05}.}}}{32}{figure.caption.54}\protected@file@percent }
+\newlabel{se:traffic-situation-3}{{B.19}{32}{\textbf {Example traffic scene video captured in \textbf {Town05}.}}{figure.caption.54}{}}
+\newlabel{se:traffic-situation-3@cref}{{[figure][19][2]B.19}{[1][19][]32}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.20}{\ignorespaces \textbf  {Comparison of image realism.} The top row shows static images from our dataset rendered in complex scenes with multiple light sources, while the bottom row shows images from the Causal3DIdent dataset rendered against a uniform background with a single light source.}}{33}{figure.caption.55}\protected@file@percent }
+\newlabel{fig:image-comparison}{{B.20}{33}{\textbf {Comparison of image realism.} The top row shows static images from our dataset rendered in complex scenes with multiple light sources, while the bottom row shows images from the Causal3DIdent dataset rendered against a uniform background with a single light source}{figure.caption.55}{}}
+\newlabel{fig:image-comparison@cref}{{[figure][20][2]B.20}{[1][19][]33}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.21}{\ignorespaces \textbf  {Comparison of video data realism.} The top row shows two video frames from the Traffic Situation domain of our dataset, featuring realistic and complex urban scenes populated by numerous interacting agents. The bottom row presents two frames from the Cloth~\cite  {li2020causal} dataset, which uses synthetic backgrounds and depicts only a single simple object per frame.}}{34}{figure.caption.56}\protected@file@percent }
+\newlabel{fig:video-comparison}{{B.21}{34}{\textbf {Comparison of video data realism.} The top row shows two video frames from the Traffic Situation domain of our dataset, featuring realistic and complex urban scenes populated by numerous interacting agents. The bottom row presents two frames from the Cloth~\cite {li2020causal} dataset, which uses synthetic backgrounds and depicts only a single simple object per frame}{figure.caption.56}{}}
+\newlabel{fig:video-comparison@cref}{{[figure][21][2]B.21}{[1][19][]34}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.8}An scene example detailing causal variables and relations}{35}{subsection.B.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.9}Flexible configurations}{35}{subsection.B.9}\protected@file@percent }
+\citation{kong2022partial}
+\citation{disentang}
+\citation{von2021self}
+\citation{buchholz2023linear}
+\citation{kong2022partial}
+\citation{buchholz2023linear}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Experiments}{36}{appendix.C}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Image-based method implementation details}{36}{subsection.C.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Model design}{36}{section*.58}\protected@file@percent }
+\citation{rombach2021highresolution}
+\citation{yang2024cogvideox}
+\@writefile{toc}{\contentsline {paragraph}{Loss and data arrangement}{37}{section*.59}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Video based method implementation details }{37}{subsection.C.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Model design}{37}{section*.60}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Loss and data arrangement}{38}{section*.61}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {D}Statement}{38}{appendix.D}\protected@file@percent }
+\gdef \@abspage@last{39}

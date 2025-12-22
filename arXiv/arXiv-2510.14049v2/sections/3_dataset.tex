@@ -1,0 +1,132 @@
+\section{The CausalVerse Dataset}
+\label{sec:dataset}
+
+In this section, we present CausalVerse, a high-fidelity simulated visual dataset specifically designed for CRL. While prior datasets often suffer from a trade-off between realism and access to ground-truth causal structures, CausalVerse is designed to bridge this gap by simulations offering both rich visual complexity and explicit, configurable causal ground truth. It supports rigorous evaluation of CRL methods under diverse and realistic conditions. To the best of our knowledge, CausalVerse is the most comprehensive and flexible benchmark for CRL to date. We introduce CausalVerse from the following perspectives: the composition of domains and sub-scenes, detailed dataset statistics, the simulation pipeline used to generate high-quality visual data and causal annotations, and finally, the flexibility it offers for modeling assumptions and real-world use cases.
+
+
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/figure.pdf}
+     \vspace{-0.4cm}
+    \caption{\textbf{Data examples of the dataset across four domains.}
+    The \textcolor{humanColor}{\textbf{Static Image Generation}} domain features the human images in diverse indoor environments.
+    The \textcolor{objectColor}{\textbf{Dynamic Physical Simulations}} domain describes different physical processes like spring compression, light refraction, and projectile motion. The \textcolor{trafficColor}{\textbf{Traffic Situation Analysis}} domain shows the traffic situations under different cities, scenes, and conditions.
+    The \textcolor{robotColor}{
+    \textbf{Robotic Manipulations}} domain offers six scenes in which a robot operates in different indoor settings and performs various tasks.}
+    \label{overall}
+    \vspace{-0.4cm}
+\end{figure}
+
+
+
+\subsection{Dataset composition}
+
+CausalVerse is designed to support a broad spectrum of CRL scenarios by offering diverse visual environments with clearly defined and accessible ground-truth causal structures. One of the core challenges in constructing such benchmarks is the difficulty of identifying or simulating scenarios where the true causal variables and relationships are known. As a result, most existing CRL datasets, even those using synthetic data, tend to focus narrowly on specific domains, such as 3D object generation~\cite{zimmermann2021contrastive} or simple physical systems~\cite{li2020causal,liu2025causal3d}. While these datasets are relatively easy to construct and evaluate, they often suffer from limited scenario diversity and poor scalability, which constrain their usefulness for testing CRL methods across a wide range of real-world conditions.
+
+% key point,  domain-sence-macanism structure 
+% \cgy{add an overall framework figure}
+
+Towards the goal of constructing a large-scale benchmark with high diversity, the CausalVerse dataset is organized in a hierarchical domain–scene–instantiation structure, as illustrated in Figure~\ref{fig:benchmark_overall}. This design enables systematic variation across different levels of abstraction and supports comprehensive evaluation of CRL methods.
+
+%from static to dynamic settings, simple to complex structures, and single- to multi-agent interactions,
+
+\begin{itemize}[leftmargin=14pt]
+\item \textbf{Domain.} For comprehensive evaluation, CausalVerse is organized into four distinct domains: static image generation, dynamic physical simulation, robotic manipulation, and traffic scene analysis, as showed in \cref{overall}. Each domain represents a unique category of visual and causal phenomena, ranging from object-centric generative processes in static settings to complex, multi-agent interactions in dynamic environments. This diversity enables the benchmark to capture a wide spectrum of causal challenges relevant to real-world scenarios.
+
+\item \textbf{Scene.} Within each domain, we construct multiple curated scenes (24 in total), each representing a specific causal setting. Scenes are designed to differ in key factors of the causal structure, such as the number and type of causal variables, the presence of domain-specific labels, and the visual context. This mid-level granularity enables researchers to evaluate CRL models under targeted structural assumptions and constraints. Taking the dynamic physical simulation domain as an example, CausalVerse includes 10 distinct scenes encompassing both aggregated and temporally dynamic cases. The aggregation cases condense physical processes into single images, capturing 4 phenomena such as a cylinder compressing a spring, light refraction, a ball decelerating and ascending a slope, and a ball freely falling onto plasticine. In contrast, the dynamic cases simulate continuous physical processes through videos, depicting falling, projectile motion, and collisions involving both single and interacting objects, with simple and complex motion mechanisms (6 scenes). The detailed data structure can be found in the Appendix. 
+
+
+
+\item \textbf{Instance.} At the finest level, each scene includes a set of instantiations, concrete visual episodes generated by sampling from the underlying causal model. Each instantiation is accompanied by annotations of the relevant causal variables and their structural relationships. For example, in the traffic scene domain, altering the speed of a single vehicle can lead to the emergence of a traffic accident scenario, illustrating how specific changes in causal factors manifest in visually and semantically distinct outcomes. Such fine-grained control enables precise testing of a model’s capacity to capture causal variables and relations across varying conditions.
+
+\end{itemize}
+
+A key strength of CausalVerse lies in its comprehensive coverage of diverse causal scenarios, making it uniquely positioned to evaluate CRL methods under a wide range of conditions. The dataset spans a spectrum of static to dynamic settings, including both image-based scenes with fixed causal factors and temporally evolving environments with sequential dependencies. It also covers structural complexity, from simple systems with a few causal variables to highly complex settings characterized by rich causal relations. Additionally, CausalVerse supports both single-agent and multi-agent interactions, enabling the study of causal reasoning in environments ranging from isolated object manipulation to collaborative or competitive agent behaviors, such as traffic systems or robotic coordination. This diversity ensures that models evaluated on CausalVerse are not only tested for technical soundness but also for their ability to generalize across realistic and varied causal contexts.
+
+
+
+
+\subsection{Dataset statistics}
+
+
+
+
+% \begin{figure}[t]
+%   \centering
+%   \vspace{-12pt} % adjust vertical spacing as needed
+%   \includegraphics[width=0.9\textwidth]{figs/benchmark_variables.pdf}
+%   \vspace{-3pt}
+%   \caption{\textbf{Latent variable numbers across all scenes in CausalVerse.} please zoom in for details, like scene name.}
+%   \label{fig:benchmark_variables}
+%    \vspace{-0.5cm}
+% \end{figure}
+
+\begin{wrapfigure}{r}{0.7\textwidth}
+  \centering
+  \vspace{-12pt} % adjust vertical spacing as needed
+  \includegraphics[width=0.7\textwidth]{figs/benchmark_variables.pdf}
+  \vspace{-13pt}
+  \caption{\textbf{Latent variable numbers across all scenes in CausalVerse.} please zoom in for details, like scene name.}
+  \label{fig:benchmark_variables}
+   \vspace{-0.5cm}
+\end{wrapfigure}
+To illustrate the scale and diversity of the CausalVerse dataset, we present key statistics summarizing its composition. In total, CausalVerse contains around 200k high-resolution images and around 140k videos with more than 300 million frames, distributed across 24 meticulously curated scenes spanning four distinct domains, including static image generation, dynamic physical simulation, robotic manipulation, and traffic scene analysis. As illustrated in Figure~\ref{fig:benchmark_pie}, these domains contain 4, 10, 5, and 5 scenes, respectively. The dynamic physical simulation domain is further subdivided into aggregated and dynamic categories, comprising 4 and 6 scenes, respectively. The detailed sample statistic of all senses is shown in the pie chart in Figure~\ref{fig:benchmark_pie}. 
+
+\begin{wrapfigure}{r}{0.7\textwidth}
+  \centering
+  \vspace{-10pt} % adjust vertical spacing as needed
+  \includegraphics[width=0.7\textwidth]{figs/benchmark_pie21.pdf}
+  \vspace{-5pt}
+  \caption{\textbf{Sample statistics across all scenes in CausalVerse.} The pie chart illustrates the relative data scale for all scenes, where the radius length reflects the number of images/videos (rather than frames), and colors indicate different domains. For example, the scene {Cylinder Compressing Spring} contains 40k images.}
+  \label{fig:benchmark_pie}
+   \vspace{-0.5cm}
+\end{wrapfigure}
+Each scene comprises hundreds to thousands of samples with video durations ranging from 3 to 32 seconds and a diverse set of frame rates. Frame resolutions vary across scenes, typically  $1024 \times 1024$ or $1920 \times 1080$ pixels, thereby accommodating model training across different spatial scales and levels of visual detail.
+Each scene is governed by a set of causal variables, typically ranging from 3 to around 100, encompassing both categorical variables (e.g., object types, material categories) and continuous variables (e.g., velocity, mass, spatial coordinates). Figure~\ref{fig:benchmark_variables} summarizes the distribution of the number of latent variables across all scenes. Here, the number of causal variables in the temporal setting refers to the variables present per frame. In temporal processes, certain variables, such as object type or mass, remain invariant over time and serve as global descriptors of the system. In contrast, dynamic variables, including position, orientation, and momentum, continuously evolve throughout the video sequence, capturing the unfolding physical dynamics and enabling fine-grained causal reasoning over time. More dataset statistics can be found in Appendix B. 
+
+
+
+\subsection{{Data simulation pipeline}}
+
+The data simulation process consists of three steps, including domain and scene definition, latent variable sampling, and image/video rendering. Figure~\ref{fig:data_gen} takes the domain of dynamic physical simulation as an example to illustrate the basic simulation process. 
+
+\paragraph{Defining domains and scenes.} We generate data through a hierarchical progression approach. First, we select four distinct domains for our data generation framework: (1) static image generation, which showcases individuals with varying poses and appearances in different indoor environments; (2) physical simulations, including both complete videos documenting entire trajectories of objects in motion and time-lapse images capturing normalized physical processes where we record object positions at specific timestamps to create aggregated visualizations; (3) robotic manipulations; (4) traffic situation analysis. 
+After determining the domain, we further define specific scenes. It is important to note that once a scene is established, the underlying causal variables and mechanisms become uniquely determined. We use metadata to document these hidden variables and mechanisms. For static image generation, scenes represent different indoor environments with distinct lighting, spatial dimensions, and object arrangements; for dynamic physical simulations, different scenes correspond to various physical processes and governing laws that determine object behaviors, robotic manipulations, and traffic conditions.
+
+\begin{figure}[tb]
+    \centering
+\includegraphics[width=0.95\textwidth]{figs/benchmark_pipe.pdf}
+    \vspace{0cm}
+    \caption{\textbf{Data construction pipeline illustrated using the dynamic physical simulation domain.} Starting from a task type such as dynamic physical simulation, we first identify candidate scenes and collect relevant causal variables and structures using human domain expertise. Instances are then generated using a rendering engine to ensure alignment with the designed causal structures.}
+    \label{fig:data_gen}
+    \vspace{-0.4 cm}
+\end{figure}
+
+ 
+
+
+
+\paragraph{Latent variable sampling.} Guided by the predefined causal graph for each scene, we sample latent variables based on their causal dependencies. For static scenes, we draw human-related factors (e.g., pose, attire, body shape) to form $D$-dimensional representations. For physical and robotic simulations, we sample a subset of physical variables (e.g., mass, position, rotation), with others derived via physical laws to ensure temporal and physical consistency—resulting in $(T \times D)$-dimensional trajectories for dynamic settings. In traffic scenes, agent-level (e.g., vehicle position) and environment-level (e.g., weather) variables are sampled to capture structured interactions. These latent representations are then fed into domain-specific renderer, from neural engines to physics-based simulators, to generate high-fidelity outputs with causal coherence.
+
+
+
+\paragraph{Static rendering.} For static images, we uniformly employ the Blender engine to leverage its photorealistic rendering capabilities. Specifically, for human figures, we construct diverse character models utilizing the open-source assets for humans and clothing provided by the MakeHuman project~\cite{bastioni2008makehuman}. For images depicting physical processes, we employ the Blenderproc~\cite{Denninger2023} library, which automates simultaneous physical simulation and rendering.
+
+\paragraph{Dynamic rendering.} In generating dynamic videos, we select appropriate physics engines according to the characteristics of different domains. For dynamic physical simulations, we utilize the Bullet Physics SDK~\cite{coumans2021} and source assets from the Replica3D dataset~\cite{replica19arxiv}. For robotic simulation scenarios, we primarily build upon Robosuite~\cite{robosuite2020} and Habitat-Lab, enabling embodied agents to navigate and interact within enclosed, highly interactive environments. For complex traffic scenarios, inspired by the Carla~\cite{pmlr-v78-dosovitskiy17a} project, we utilize Unreal Engine 4 to simulate diverse traffic conditions arising from variations in vehicle behaviors and traffic densities across different urban environments.
+
+
+
+\subsection{Flexibility and use cases}
+
+One of the key strengths of {CausalVerse} lies in its flexibility, which enables researchers to tailor the dataset to a wide range of CRL scenarios. By providing access to the full simulation process and underlying generative mechanisms, users can configure the dataset to align with specific theoretical assumptions or empirical needs.
+
+We highlight two representative use cases:
+\begin{itemize}[leftmargin=14pt]
+    \item \textbf{Controlled experiments with satisfied assumptions.} In this setting, researchers can leverage the CausalVerse simulation pipeline to generate data that strictly adheres to key assumptions commonly required in CRL. These include, for example, the independent causal mechanism assumption, the availability of sufficient domain variation for identifiability, and specific functional priors such as sparsity, additivity, or linearity. By explicitly controlling the data-generating process, users can construct datasets that match the theoretical premises of CRL algorithms, allowing for precise and interpretable evaluation. This capability facilitates the empirical validation of identifiability results and learning guarantees, while still using visually rich, high-fidelity data that reflects the complexity of real-world observations.
+
+    \item \textbf{Evaluation under unmet assumptions.} CausalVerse also supports the construction of more challenging and realistic scenarios where the data do not strictly adhere to standard theoretical assumptions, but instead reflect the complexity and ambiguity of real-world environments. Such settings may involve entangled causal factors, limited domain shifts, or ambiguous structural signals. These conditions are particularly valuable for stress-testing the robustness and generalization ability of CRL methods. They also offer practical insights for researchers, especially newcomers, helping them better select or adapt CRL methods for real-world use, even if the precise knowledge of the data assumptions in their target applications is unknown.
+\end{itemize}
+
+This flexibility makes CausalVerse a powerful testbed not only for benchmarking but also for developing CRL methods that are both theoretically grounded and practically robust.
+

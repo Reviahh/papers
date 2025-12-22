@@ -1,0 +1,27 @@
+\section{Discussion}
+
+\subsection{Practical Implications}
+
+Our framework enables:
+
+\begin{enumerate}
+    \item \textbf{Automatic Parameter Tuning}: Replace magic numbers with principled formulas
+    \item \textbf{Context-Aware Adaptation}: Different parameters for different interaction types
+    \item \textbf{Predictive Optimization}: Anticipate user behavior changes
+\end{enumerate}
+
+\subsection{Connection to Control Theory}
+
+Our framework can be extended using \textbf{Model Predictive Control} (MPC):
+\begin{equation}
+\min_{u_0, \ldots, u_{N-1}} \sum_{k=0}^{N-1} \ell(x_k, u_k) + V_f(x_N)
+\end{equation}
+where $x_k$ is system state, $u_k$ is filter parameter, enabling lookahead optimization.
+
+\subsection{Limitations}
+
+\begin{enumerate}
+    \item \textbf{Stationarity Assumption}: Real user behavior may be non-stationary
+    \item \textbf{Single-User Model}: Multi-user scenarios require different analysis
+    \item \textbf{Linear Filter Assumption}: Nonlinear adaptive filters may perform better
+\end{enumerate}

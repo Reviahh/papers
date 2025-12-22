@@ -1,0 +1,176 @@
+% A4纸，小四号
+\documentclass[a4paper,AutoFakeBold={2},12pt]{ctexrep}
+
+\usepackage{style}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{hologo}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{amsmath}  % 加载amsmath包以支持数学公式
+\usepackage{newtxmath}  % 使用 Times New Roman 字体设置数学公式
+\usepackage{times}  % 设置正文字体为 Times New Roman
+\usepackage{ctex}
+\usepackage{fontspec}  % 用于设置字体
+\usepackage{titlesec}  % 用于自定义章节标题格式
+\usepackage{setspace}  % 用于设置行距
+\usepackage{graphicx}  % 用于支持中文字体的加载
+\usepackage{xeCJK}     % 处理中文字体
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage{titletoc}
+\usepackage{listings}
+\usepackage{color}
+
+% 设置页眉
+\pagestyle{fancy}
+
+% 设置论文的页面格式
+\geometry{
+	top=3.3cm,             
+	bottom=2.7cm,          
+	left=2.5cm,           
+	right=2.5cm,            
+	bindingoffset=0.5cm,    
+}
+
+% 设置英文字体为Times New Roman
+\setmainfont{Times New Roman}
+\newfontface\timesnewroman{Times New Roman}
+
+% 设置图标题的格式
+\captionsetup[figure]{ 
+	font={small},         
+	labelfont={bf},          
+	singlelinecheck=false,  
+	justification=centering, 
+	skip=0.5\baselineskip, 
+}
+
+% 设置表格标题的格式
+\captionsetup[table]{
+	font={small},  
+	labelfont={bf},          
+	skip=1ex, 
+	justification=centering,  
+    aboveskip=0.5\baselineskip,  
+    belowskip=0.6\baselineskip,  
+}
+
+% 设置表格和图的编号格式 
+\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
+\renewcommand{\thetable}{\thechapter.\arabic{table}} 
+
+% 设置代码块的格式
+\lstset{
+	basicstyle=\ttfamily\fontspec{Times New Roman}, 
+	keywordstyle=\normalfont,  
+	commentstyle=\normalfont, 
+	stringstyle=\normalfont, 
+	showstringspaces=false, 
+	breaklines=true,  
+	frame=single, 
+	framerule=0.12mm,  
+	framesep=1mm, 
+}
+
+% 设置论文正文的标题格式
+\titleformat{\chapter}  
+{\centering\normalfont\bfseries\heiti\fontsize{18pt}{10pt}\selectfont} 
+{第\thechapter 章}{1em}{} 
+\titlespacing*{\chapter}{0pt}{-1em}{1em}
+
+% 设置论文正文的section标题格式
+\titleformat{\section}[hang]     
+{\normalfont\bfseries\songti\fontsize{15}{17}\selectfont}
+{\thesection}{1em}{}
+
+% 设置论文正文的subsection标题格式
+\titleformat{\subsection}[hang]   
+{\normalfont\bfseries\songti\fontsize{12}{16}\selectfont}
+{\thesubsection}{1em}{}
+
+    
+% 设置目录的格式
+\renewcommand{\contentsname}{\centering \heiti \zihao{-2} \bfseries 目~~ 录}
+
+\titlecontents{chapter}[0em]{\bfseries\songti\zihao{4}}{\thecontentslabel}{\hspace*{0em}}{\titlerule*[0.6pc]{$.$}\contentspage}
+\titlecontents{section}[3em]{\songti\zihao{4}\vspace{6pt}}{\contentslabel{1.6em}}{\hspace*{-4em}}{~\titlerule*[0.6pc]{$.$}~\contentspage}
+\titlecontents{subsection}[5em]{\songti\zihao{4}\vspace{5pt}}{\contentslabel{2.3em}}{\hspace*{-4em}}{~\titlerule*[0.6pc]{$.$}~\contentspage}
+
+
+\begin{document}
+
+\newpage
+% 切换到正文的页面样式
+\pagestyle{mainmatter}
+% 让页码从1开始
+\setcounter{page}{1}
+% 摘要与目录使用罗马数字页码
+\pagenumbering{roman}
+\renewcommand{\thepage}{\Roman{page}}
+
+\input{摘要.tex}
+
+
+\vspace*{-1.5cm}  % 调整“目录”与页眉之间的间距
+\setstretch{1.5}
+\tableofcontents
+
+\setstretch{1.5}
+\chapter*{前~~ 言}  % 章节不编号
+\addcontentsline{toc}{chapter}{前~~ 言}  % 手动将“前言”添加到目录中
+
+
+% 让页码从1开始
+
+% 正文使用阿拉伯数字页码
+\pagenumbering{arabic}
+
+
+\input{前言.tex} 
+
+\chapter{绪~ 论}
+
+\input{绪论.tex}
+
+\chapter{XXXXXXXXXXXXXX}
+
+\input{XXXXXXXXXXXXXX.tex}
+
+\chapter{xxxxxxxxxxxxxxx}
+
+\input{xxxxxxxxxxxxxxx.tex}
+
+\chapter{XXXXX实现与实验结果分析}
+
+\input{XXXXX实现与实验结果分析.tex}
+
+\chapter{总结与展望}
+
+\input{总结与展望.tex}
+
+\addcontentsline{toc}{chapter}{参考文献}
+
+\input{参考文献.tex}
+
+\chapter*{致~~~~ 谢}
+\addcontentsline{toc}{chapter}{致~~~~~~~ 谢}
+
+\input{致谢.tex}
+
+\appendix
+
+\chapter*{附~~~~ 录}
+\setcounter{chapter}{1}
+
+
+\input{附录.tex}
+
+\end{document}

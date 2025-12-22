@@ -1,0 +1,64 @@
+\section{Adaptive Jitter Mitigation Algorithm}
+\label{sec:algorithm}
+
+Based on our theoretical analysis, we propose an \textbf{Adaptive Hybrid Filter} (AHF) that:
+\begin{enumerate}
+    \item Learns user behavior statistics online
+    \item Dynamically adjusts parameters
+    \item Combines debounce and throttle optimally
+\end{enumerate}
+
+\subsection{Online Parameter Estimation}
+
+\begin{algorithm}[H]
+\caption{Online Inter-arrival Time Estimation}
+\label{alg:estimation}
+\begin{algorithmic}[1]
+\STATE \textbf{Initialize:} $\hat{\lambda} \gets \lambda_0$, $\beta \gets 0.1$ (learning rate)
+\FOR{each event at time $t_i$}
+    \STATE $\tau_i \gets t_i - t_{i-1}$
+    \STATE $\hat{\lambda} \gets (1-\beta)\hat{\lambda} + \beta \cdot \frac{1}{\tau_i}$ \COMMENT{Exponential moving average}
+\ENDFOR
+\STATE \textbf{Output:} Estimated rate $\hat{\lambda}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Adaptive Hybrid Filter}
+
+\begin{algorithm}[H]
+\caption{Adaptive Hybrid Filter (AHF)}
+\label{alg:ahf}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} Event stream $\{(t_i, v_i)\}$, priority $\alpha$
+\STATE \textbf{Initialize:} $\hat{\lambda} \gets \lambda_0$, $t_{\text{last}} \gets -\infty$, timer $\gets$ null
+
+\FOR{each event $(t, v)$}
+    \STATE Update $\hat{\lambda}$ using Algorithm~\ref{alg:estimation}
+    \STATE $\Delta^* \gets \frac{1}{\hat{\lambda}}\ln\left(\frac{1-\alpha}{\alpha}\right)$ \COMMENT{Theorem~\ref{thm:optimal-debounce}}
+    \STATE $T^* \gets \frac{1}{2\hat{\lambda}}$ \COMMENT{Nyquist bound}
+    
+    \IF{$t - t_{\text{last}} < T^*$}
+        \STATE \textbf{Throttle:} Reset debounce timer, do not emit
+    \ELSE
+        \STATE \textbf{Debounce:} Set timer for $\Delta^*$
+        \IF{timer expires without new event}
+            \STATE Emit $(t, v)$
+            \STATE $t_{\text{last}} \gets t$
+        \ENDIF
+    \ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Theoretical Guarantees}
+
+\begin{theorem}[Convergence of AHF]
+Under mild regularity conditions, the AHF parameter estimates converge:
+\begin{equation}
+\hat{\lambda}_n \xrightarrow{a.s.} \lambda^* \quad \text{as } n \to \infty
+\end{equation}
+and the resulting filter achieves asymptotically optimal loss:
+\begin{equation}
+\mathcal{L}(\text{AHF}) \leq \mathcal{L}^* + O\left(\frac{1}{\sqrt{n}}\right)
+\end{equation}
+\end{theorem}

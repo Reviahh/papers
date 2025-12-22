@@ -1,0 +1,162 @@
+\documentclass{article}
+
+
+\PassOptionsToPackage{numbers,compress}{natbib}
+
+
+\usepackage[final]{neurips_2025}
+
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+
+\usepackage{amsmath,amssymb,mathtools,amsthm,bm}
+\usepackage[mathscr]{eucal}
+
+
+\usepackage{graphicx}
+\usepackage{wrapfig}      
+\usepackage{subcaption}   
+\usepackage{booktabs,multirow,makecell}
+\usepackage{array,tabularx}
+\usepackage{adjustbox}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{pifont}
+\usepackage[normalem]{ulem}   
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+\usepackage{hyperref}
+\usepackage[capitalize,noabbrev]{cleveref}
+
+
+\usepackage[para]{footmisc}  
+\usepackage{chngcntr}       
+\usepackage{url}
+
+
+\renewcommand\tabularxcolumn[1]{m{#1}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}m{1.2cm}}
+\newcolumntype{Y}{>{\justifying\arraybackslash}X}
+
+
+\definecolor{humanColor}{rgb}{0.929,0.671,0.184}
+\definecolor{objectColor}{rgb}{0.773,0.851,0.447}
+\definecolor{trafficColor}{rgb}{0.204,0.525,0.125}
+\definecolor{robotColor}{rgb}{0.420,0.635,0.110}
+
+
+\newcommand{\tblimg}[1]{\includegraphics[width=\linewidth,keepaspectratio]{#1}}
+\newcommand{\cgy}[1]{\textcolor{blue}{#1}}
+\newcommand{\ly}[1]{\textcolor{red}{#1}}   
+\newcommand{\yun}[1]{\textcolor{olive}{#1}}
+\newcommand{\zpy}[1]{\textcolor{blue}{#1}}
+\newcommand{\hflogo}{\raisebox{-0.15\height}{\includegraphics[height=1em]{figs/icons/hf_logo.png}}}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+
+\input{math_commands}
+
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+
+\makeatletter
+\renewcommand*{\@fnsymbol}[1]{%
+  \ifcase#1\or *\or 1\or 2\else\@arabic{\numexpr#1-1\relax}\fi}
+\makeatother
+
+
+\title{CausalVerse: Benchmarking Causal Representation Learning with Configurable High-Fidelity Simulations}
+
+\author{%
+  Guangyi Chen%
+  \thanks{Equal contribution}%
+  \,\,\thanks{Carnegie Mellon University}%
+  \,\,\,\thanks{Mohamed bin Zayed University of Artificial Intelligence}%
+  \And
+  Yunlong Deng%
+  \footnotemark[1]%
+  \,\,\footnotemark[3]%
+  \And
+  Peiyuan Zhu%
+  \footnotemark[1]%
+  \,\,\footnotemark[3]%
+  \And
+  Yan Li%
+  \footnotemark[1]%
+  \,\,\footnotemark[3]%
+  \AND
+  Yifan Shen%
+  \footnotemark[3]%
+  \And
+  Zijian Li%
+  \footnotemark[2]%
+  \,\,\footnotemark[3]%
+  \And
+  Kun Zhang%
+  \footnotemark[2]%
+  \,\,\footnotemark[3]%
+}
+
+\begin{document}
+
+
+\hypersetup{pdfborder={0 0 0}} 
+\maketitle
+{
+  \renewcommand\thefootnote{}%
+  \footnotetext{Correspondence Email: \texttt{\textless{}guangyichen1994@gmail.com\textgreater{}}.}%
+}
+
+\hypersetup{pdfborder={0 0 1}}
+
+
+
+
+\begin{abstract}
+\input{sections/0_abstract}
+\end{abstract}
+
+\input{sections/1_introduction}
+\input{sections/2_related_work}
+\input{sections/3_dataset}
+\input{sections/4_evaluate}
+\input{sections/5_conclusion}
+\input{sections/ACK}
+
+
+\bibliographystyle{unsrtnat}
+\bibliography{ref}
+
+
+\appendix
+\counterwithin{figure}{section}  
+\counterwithin{table}{section}   
+
+\clearpage
+{\Large
+\textit{Appendix for}\\[2pt]
+\textbf{``CausalVerse: Benchmarking Causal Representation Learning with Configurable High-Fidelity Simulations''}
+}
+
+\input{sections/6_appendix}
+
+\end{document}

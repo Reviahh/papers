@@ -1,0 +1,181 @@
+{
+   "sources" : [
+      {
+         "usage" : "toplevel",
+         "filename" : "arxiv.tex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/1.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/2.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/Comparison.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/benchmark_pie.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/causal_graph/1.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/causal_graph_collision.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/causal_graph_fall.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/causal_graph_projectile.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/causal_graph_robotics.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/compare2.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Dynamic_Physical_Simulation_Video/sample4_collision_complex.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Dynamic_physical_simulations-Image/1.jpg"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Dynamic_physical_simulations-Image/2.jpg"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Dynamic_physical_simulations-Image/3.jpg"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Dynamic_physical_simulations-Image/4.jpg"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Robotics/sample_general.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Robotics/sample_kitchen.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Robotics/sample_living.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Robotics/sample_mobile.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/Robotics/sample_study.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/causal_graph_fall.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/sample_collision_simple.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/sample_fall_simple.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/data/sample_projectile_simple.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/bot-message-square-blue.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/bot-message-square-green.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/bot-message-square-red.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/bot-message-square-yellow.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/bot-message-square.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/circle-user-round.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/git_logo.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/green_tri.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/link.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/icons/red_tri.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/image-comparison.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/overview_causverse.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/static-human-cfg-black.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/static_human.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/traffic_cfg.pdf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "figs/traffic_cfg_new.png"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "ref.bib"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "sections/check_list.tex"
+      }
+   ],
+   "spec_version" : 1,
+   "texlive_version" : "2025",
+   "process" : {
+      "compiler" : "pdflatex"
+   }
+}

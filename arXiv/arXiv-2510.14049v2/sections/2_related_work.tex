@@ -1,0 +1,48 @@
+\section{Related Work}
+
+
+
+\textbf{Causal representation learning.}
+CRL has emerged as a crucial paradigm in machine learning that aims to discover and model the underlying causal mechanisms that generate observable data~\cite{scholkopf2021toward}.
+While achieving identifiability by assuming the generating process is a linear mapping between latent variables and observations~\cite{comon1994independent,hyvarinen2002independent,zhang2008minimal,zhang2007kernel,huang2022latent}, extending the identifiability to nonlinear cases remains a significant challenge.
+Recently, different approaches are used to establish identifiability in nonlinear cases, like relying on sufficient changes in the latent variable distributions \cite{yao2022temporally,yao2021learning,kong2022partial,chen2024caring,zhang2011general}, supervised learning \cite{von2021self,reizinger2024cross,brehmer2022weakly}, multi-view \cite{yao2023multi,sun2024causal}, and introducing structural constraints like sparsity \cite{zheng2022identifiability,lachapelle2022partial,xu2024sparsity,li2024idol,russo2023shapley}.
+% may add some examples in each category. 
+
+\textbf{Evaluation by simple synthetics.}
+Simplified synthetic environments serve as common testbeds for CRL evaluation due to their precise ground-truth causal structures. Physical simulations represent a prominent approach, with works like V-CDN \cite{li2020causal} and LEAP \cite{yao2021learning} utilizing mass-spring systems to assess whether methods can identify object identities and their latent interactions. Similarly, TDRL \cite{yao2022temporally} evaluates temporal disentanglement in physical settings. Causal3DIdent \cite{von2021self}, CAUSAL3D \cite{liu2025causal3d}, and CausalCircuit \cite{brehmer2022weakly} datasets offer images through 3D rendered engines like  Blender~\cite{blender2024} and MuJoCo~\cite{todorov2012mujoco}, with controlled generative factors. But these images are about several simple observed objects and mechanisms, while also being limited to static and low-dimensional latent variables. 
+Compared to existing datasets, CausalVerse presents more complex scenarios for causal representation learning across a wide range of scales—from static images to dynamic video, from single-agent to multi-agent interactions, and from simple low-dimensional variables to high-dimensional data with hundreds of features. It also leverages the more powerful Unreal Engine 4~\cite{Karis2013_UE4Shading} for rendering in some domains.
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Comparison of benchmarks related to Causal Representation Learning.} The number of video frames is used to represent the scale of each video dataset.}
+\vspace{0.2cm}
+\label{tab:causal_benchmarks}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Benchmark} & \makecell{\textbf{Design} \\ \textbf{for CRL}} &\makecell{\textbf{Data} \\ \textbf{Type}}& \textbf{Scale} & \textbf{Domain} & \makecell{\textbf{Latent} \\ \textbf{Variables}} & \makecell{\textbf{Dynamic }\\ \textbf{ Data} }& \makecell{\textbf{Ground} \\ \textbf{Truth}} \\
+\midrule
+
+Pendulum ~\cite{yang2020causalvae} & \xmark &Image& 7k & Physics & <10 & \xmark & \cmark \\
+Flow~\cite{yang2020causalvae} & \xmark &Image& 8k & Physics & <10 & \xmark & \cmark \\
+
+CAUSAL3D~\cite{liu2025causal3d} & \xmark &Image& 190k & Physics & $<$10 & \xmark & \cmark \\
+Causal3DIdent~\cite{von2021self} & \cmark &Image& 277k & 3D scenes & 10 & \xmark & \cmark \\
+3DIdent ~\cite{zimmermann2021contrastive} & \cmark&Image & 275k & 3D scenes & 10 & \xmark & \cmark \\
+CausalCircuit ~\cite{brehmer2022weakly} & \cmark &Image& 120k & Electronics & 4 & \xmark & \cmark \\
+Ball~\cite{li2020causal} & \cmark &Video& 2500k & Ball & <10 & \cmark & \cmark \\
+
+Cloth~\cite{li2020causal} & \cmark &Video& 600k & Cloth & <10 & \cmark & \cmark \\
+
+Light Tunnel ~\cite{gamella2025sanity}& \cmark &Image& 60k & Physical & 3-5 & \cmark & \cmark \\
+ISTAnt~\cite{cadei2024smoke} & \xmark &Video& 792k  & Biology & - & \cmark & \xmark \\
+
+\cmidrule(lr){1-8}
+CausalVerse & \makecell{ \cmark} & \makecell{Image  \\Video} & \makecell{198.66k \\300m } & \makecell{Multi \\Domains} & \makecell{3-129} & \makecell{\cmark} & \makecell{\cmark}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Evaluation by downstream tasks.}
+Given the limitations of simplified simulations, researchers also evaluate CRL methods through performance on downstream tasks with real-world datasets, prioritizing practical utility while sacrificing precise causal verification. Transfer learning serves as a common task, with Sufficient Change~\cite{kong2022partial} and SIG \cite{li2023subspace} assessing adaptation performance across domains to prove the usage of latent causal mechanisms, while Salaudeen et al.~\cite{salaudeen2024domain} analyze domain generalization datasets as proxy benchmarks for CRL. Reasoning~\cite{chen2024caring,ates2020craft} and discovery task~\cite {stein2025causalrivers} provide another evaluation avenue for CRL. Image classification is also a widely used task for CRL methods~\cite{reizinger2024cross,yao2023multi}. However, without ground-truth causal annotations, it remains unclear whether performance improvements stem from capturing genuine causal factors and mechanisms or merely task-relevant correlations. CausalVerse integrates high‐fidelity images and videos with comprehensive metadata, thereby supporting a broad spectrum of downstream tasks while enabling precise benchmarking against ground-truth latent variables and causal structures. In particular, its four static image generation scenarios can serve as distinct domains for domain adaptation experiments, and its robotics and physical simulation modules, each captured from multiple camera viewpoints, provide an exacting testbed for multi-view validation of causal models. More related work can be found in Appendix A.

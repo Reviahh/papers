@@ -1,0 +1,246 @@
+
+\section{Detailed Related Work}
+
+\paragraph{Causal discovery.} Understanding complex systems lies in causal discovery, the identification of causal relations from observational data~\cite{spirtes2000causation}. Causal discovery methods generally fall into three classes: constraint-based approaches use conditional-independence tests to recover the causal skeleton and orient edges up to a Markov equivalence class (e.g., PC~\cite{spirtes2000causation} and its kernel-based KCI extension~\cite{zhang2012kernel}, FCI for latent confounding and selection bias~\cite{spirtes2000causation, zhang2008completeness}, and CCD for feedback loops~\cite{richardson2013discovery}); score-based techniques frame structure learning as model selection over DAGs—most notably Greedy Equivalence Search (GES)~\cite{chickering2002optimal}, which maximizes a penalized likelihood (such as BIC~\cite{buntine1991theory}) and admits extensions for nonlinear relationships~\cite{huang2018generalized}; and functional causal model (FCM) methods impose specific assumptions on the data-generating process~\cite{pearl2000models} (e.g., LiNGAM for linear non-Gaussian systems~\cite{shimizu2011directlingam}, nonlinear additive noise models~\cite{hoyer2008nonlinear,zhang2009causality}, and post-nonlinear models~\cite{zhang2012identifiability}) to secure identifiability of the underlying causal graph.
+
+\paragraph{Latent variables and constraints.}Although the causal framework is well established, in many real-world scenarios the variables of interest are latent constructs that cannot be directly observed or quantified.
+ A first try to handle latent variables for causal discovery is FCI~\cite{spirtes2000causation}, however, it is already maximally informative under nonparametric CI constraints~\cite{richardson2002ancestral, zhang2008completeness}. Therefore, many new tools beyond CI constraints have thus been developed, typically by imposing additional parametric assumptions. These include rank constraints~\cite{sullivant2010trek, huang2022latent}, which generalize the Tetrad representation theorem from~\cite{spirtes2000causation} and provide algebraic conditions on covariance matrices; equality constraints derived from Gaussian structural equation models that even have rank constraints as a subclass~\cite{drton2018algebraic}, high-order moment constraints~(beyond the second-order moments in statistics, e.g., skewness, kurtosis, etc.)~\cite{xie2020generalized, adams2021identification, chen2024caring}, which exploit non-Gaussianity for identifiability. Additionally, constraints based on matrix decomposition~\cite{anandkumar2013learning}, copula models~\cite{cui2018learning}, and mixture oracles~\cite{kivva2021learning} have also been developed.
+
+
+
+
+
+
+
+
+
+
+
+\paragraph{Causal representation learning.}
+Causal Representation Learning (CRL) has emerged as a crucial paradigm in machine learning that aims to discover and model the underlying causal mechanisms that generate observable data~\cite{scholkopf2021toward}. While achieving identifiability by assuming the generating process is a linear mapping between latent variables and observations~\cite{comon1994independent,hyvarinen2002independent,zhang2008minimal,zhang2007kernel,huang2022latent}, extending identifiability to nonlinear cases remains a significant challenge. Recently, different approaches have been used to establish identifiability in nonlinear settings. One major direction relies on sufficient changes in latent variable distributions, where nonstationary or environmental shifts enable recovery of nonlinear independent components and causal structures~\cite{kong2022partial,zhang2011general,chen2024caring,yao2022temporally,yao2021learning}. Supervised learning approaches incorporate auxiliary information, self-supervised learning, or weak supervision to constrain the representation learning problem~\cite{von2021self,reizinger2024cross,brehmer2022weakly}. Multi-view learning exploits simultaneously observed data modalities to identify shared causal factors through contrastive learning frameworks~\cite{yao2023multi,sun2024causal}. Additionally, structural constraints like sparsity regularize either the causal graph structure or the mixing mechanisms to achieve identifiability~\cite{zheng2022identifiability,lachapelle2022partial,xu2024sparsity,li2024idol,russo2023shapley}. These diverse methodological directions reflect the inherent complexity of nonlinear identifiability and highlight the necessity of systematic benchmarking to evaluate and compare different approaches for recovering meaningful causal representations from high-dimensional observational data.
+
+
+
+
+\paragraph{Simulation approaches} Contemporary CRL datasets emerge from four distinct simulation approaches that trace a realism--controllability spectrum.
+(i) At the low-fidelity extreme, Pendulum~\cite{yang2020causalvae} and Flow~\cite{yang2020causalvae} exemplify analytic toy-physics worlds whose closed-form ODEs and minimalist ray tracing enable millisecond image generation and pixel-perfect ground truth.
+(ii) Stepping up in complexity, mass--spring and rigid-body engines such as MuJoCo~\cite{todorov2012mujoco}, PhysX and Box2D drive datasets like Ball~\cite{li2020causal} and Cloth~\cite{li2020causal}, enriching dynamics with contact, friction, and deformable bodies.
+(iii) A different flavor appears in task-oriented robotics and circuit simulators: CausalCircuit~\cite{brehmer2022weakly} couples MuJoCo~\cite{todorov2012mujoco} robot arms with digital-logic models so that perception, action, and outcome are co-simulated within a single loop.
+(iv) Pushing for visual realism, high-fidelity 3D renderers such as Blender Cycles, underpin 3DIdent~\cite{zimmermann2021contrastive}, Causal3DIdent~\cite{von2021self}, and CAUSAL3D~\cite{liu2025causal3d}, where photorealistic materials, lighting, and multi-view cameras expand latent spaces from a handful of factors to dozens.
+Beyond Blender, CausalVerse employs simulation engines such as Unreal Engine~4~\cite{Karis2013_UE4Shading} to generate high-quality images and videos.
+For robotic interactions, the Habitat-Sim and RoboSuite platforms are used for simulation; these platforms are based on the Bullet and MuJoCo~\cite{todorov2012mujoco} physics engines, respectively.
+
+\paragraph{Evaluation by simple synthetics.} Simplified synthetic environments serve as common testbeds for CRL evaluation due to their precise ground-truth causal structures. Physical simulations represent a prominent approach, with works like V-CDN~\cite{li2020causal} and LEAP~\cite {yao2021learning} utilizing mass-spring systems to assess whether methods can identify object identities and their latent interactions. Similarly, TDRL~\cite{yao2022temporally} evaluates temporal disentanglement in physical settings. The Causal3DIdent~\cite{von2021self}, CAUSAL3D~\cite{liu2025causal3d}, and CausalCircuit~\cite{brehmer2022weakly} datasets offer images through 3D rendering engines like Blender and MuJoCo, with controlled generative factors. However, these images depict only simple observed objects and mechanisms and are limited to static, low-dimensional latent variables. Compared to existing datasets, CausalVerse presents more complex scenarios for causal representation learning across a wide range of scales—from static images to dynamic video, from single-agent to multi-agent interactions, and from simple low-dimensional variables to high-dimensional data with hundreds of features. It also leverages the more powerful Unreal Engine 4~\cite{Karis2013_UE4Shading} for rendering in some domains.
+
+
+
+
+
+
+
+
+
+\paragraph{Evaluation by downstream tasks.} Given the limitations of simplified simulations, researchers also evaluate CRL methods through performance on downstream tasks with real-world datasets, prioritizing practical utility while sacrificing precise causal verification. Transfer learning serves as a common task, with iMSDA~\cite{kong2022partial} and SIG~\cite{li2023subspace} assessing adaptation performance across domains to demonstrate the usage of latent causal mechanisms, while Salaudeen et al.~\cite{salaudeen2024domain} analyze domain generalization datasets as proxy benchmarks for CRL. Reasoning~\cite{chen2024caring,ates2020craft} and discovery tasks~\cite{stein2025causalrivers} provide another evaluation avenue for CRL. Image classification is also a widely used task for CRL methods~\cite{yao2023multi,reizinger2024cross}. However, without ground-truth causal annotations, it remains unclear whether performance improvements stem from capturing genuine causal factors and mechanisms or merely task-relevant correlations. CausalVerse integrates high-fidelity images and videos with comprehensive metadata, thereby supporting a broad spectrum of downstream tasks while enabling precise benchmarking against ground-truth latent variables and causal structures. In particular, its four static image generation scenarios can serve as distinct domains for domain-adaptation experiments, and its robotics and physical-simulation modules—each captured from multiple camera viewpoints—provide an exacting testbed for multi-view validation of causal models.
+
+
+
+
+
+
+\section{Data Structure, Example Showcase, Brief Comparison and Discussions}
+
+In this section, we present an overview of the dataset’s structural design, summarized in a comprehensive table. We then showcase detailed examples from various scenes to illustrate the dataset’s diversity. Finally, we provide a brief comparison of the realism between our dataset and other existing synthetic datasets. As shown in \cref{overall}, our CausalVerse dataset is organized into 4 domains comprising 24 distinct scenes. In the sections that follow, we will introduce each scene’s data scale, its causal graph, an accompanying description of the corresponding scenario, and an example showcase.
+
+\subsection{Construction of causal relationships }
+In our dataset, these relationships arise from three sources: \textbf{(1) physical constraints, (2) basic social rules, and (3) arbitrary human constructs.} For physics-based processes and robotic domains, the edge set and functional dependencies are chosen to align with established physical laws, so that cause and effect follow well-known principles rather than ad hoc assumptions. For example, state updates and interactions are specified in a way that is consistent with standard mechanics, using conventional variables and units, and with directions of influence that reflect accepted domain knowledge. In the traffic domain, the causal influences encode social conventions such as maintaining safe following distances, avoiding collisions, and stopping at red lights. Here the intent is to represent plausible driver and agent behavior as shaped by widely understood rules, without claiming to capture every nuance of real world decision making. In the static image generation domain, the causal structures are deliberately constructed as human designs. They are intentionally built to support flexible data manipulation and to make relations more complex, so that users can create controlled dependencies and diverse appearance variations for the purpose of studying causal representation learning. These graphs are not intended to represent realistic causality; rather, they serve as structured tools that organize factors and expose interpretable levers for generating images under different controlled settings. We explicitly acknowledge that these arbitrarily designed graphs apply only to the static image generation domain and do not reflect real world causal structures.  For all graphs that are derived from physical laws or social rules, we take care to ensure plausibility and internal consistency during design. In practice, this means we define variables with clear meanings and admissible ranges, specify directions of influence that are consistent with accepted understanding, keep parameters within reasonable magnitudes, and avoid cycles or contradictions at the level of the stated mechanisms. We also check that the qualitative implications of the specified relationships are sensible under simple variations of conditions, so that the resulting graphs remain stable and coherent. 
+
+
+\input{sections/appendix/data_detail}
+
+
+\subsection{An scene example detailing causal variables and relations}
+
+We walk through one concrete dataset example to provide visual and conceptual intuition about the elements we expose—namely, the causal variables and their relationships. We illustrate this using the \emph{Fall Simple} scene. In this scene, global variables specify time–invariant properties of the setup, while dynamic variables evolve across simulation steps, and observation variables record what a sensor would see. The global layer includes the scene identifier (which selects assets and camera placement), the object’s category (e.g., cube, sphere), and the acceleration of gravity. The dynamic layer contains the object’s 3D position and rotation at each exported time step \(t\in\{0,\dots,T-1\}\). Under a constant gravitational field, the vertical component of velocity increases approximately linearly with time—formally, \(v^{(t+1)}=v^{(t)}+g\,\Delta t\) and \(y^{(t+1)}=y^{(t)}+v^{(t)}\Delta t+\tfrac{1}{2}g(\Delta t)^2\)—so the vertical displacement between successive frames grows as the object accelerates downward. The observation layer then renders these states to RGB (and, where applicable, depth) frames using the selected scene context. Causally, gravity influences vertical acceleration, which in turn updates velocity and position over time; initial conditions propagate forward through these update equations; the object category selects a rendering asset that affects appearance but does not modify the physical law; and the scene context (background geometry and lighting) affects only the rendering of pixels and not the underlying state transitions. This separation lets us vary context and appearance without confounding the physical mechanism, while still producing rich visual diversity.
+
+\begin{table}[ht]
+\centering
+\setlength{\tabcolsep}{3pt}      
+\renewcommand{\arraystretch}{1.15} 
+\footnotesize
+\begin{tabular}{
+  p{1.35cm}  % Category
+  p{1.95cm}  % Sub-category
+  p{2.1cm}   % Variable
+  p{1.05cm}  % Dim.
+  p{0.9cm}   % Type
+  p{1.4cm}   % Range
+  p{3.2cm}   % Description
+}
+\hline
+\textbf{Category} & \textbf{Sub-category} & \textbf{Variable} & \textbf{Dim.} & \textbf{Type} & \textbf{Range} & \textbf{Description} \\
+\hline
+Global  & Scene  & scene         & (1,)  & D & 6 types  & Scene identifier (assets, camera layout) \\
+Global  & Scene  & gravity       & (1,)  & C & --       & Acceleration of gravity (m\,s$^{-2}$) \\
+Global  & Object & render\_asset & (1,)  & D & 90 types & Visual appearance of the falling object \\
+Dynamic & Object & position      & (T,3) & C & --       & 3D coordinates across exported time steps \\
+Dynamic & Object & rotation      & (T,3) & C & --       & Euler angles across exported time steps \\
+Dynamic (derived) & Object & velocity & (T,3) & C & --   & Finite-difference estimate using $\Delta t$ \\
+Dynamic (derived) & Object & accel\_y & (T,1) & C & --   & Vertical acceleration; equals $g$ under no drag \\
+\hline
+\end{tabular}
+
+\vspace{0.35em}
+\raggedright\footnotesize
+\textbf{Notes.} $T$ denotes the number of exported frames; \emph{Type:} D = discrete, C = continuous.
+Derived variables are computed from the primary dynamic states and the export step $\Delta t$; they may
+be provided directly or recomputed from the released states.
+\end{table}
+
+Details regarding the data size, causal graph, and description for dynamic physical process analysis can be found in \cref{tab:physical-process-dyn-part1}. We also include a video showcase for this and other scenes in the documentation and on our webpage.
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Flexible configurations}
+This subsection details how the dataset exposes flexible configurations of the underlying causal generative process while preserving a clear separation between structure, parameters, and observation protocol. The controls cover visually grounded domain labels, temporal dependencies that govern how present states evolve from the past, and explicit intervention histories that can be logged and replayed. Together, these levers allow researchers to create targeted conditions that either satisfy common assumptions in causal representation learning or deliberately violate them in a controlled manner.
+
+First, in the static image domain, changing the domain identifier switches the background geometry and high dynamic range lighting without altering the semantic latent factors that generate the human subject. Practically, the same identity, pose, clothing, and body attributes are rendered in visually distinct environments with different illumination patterns, color temperatures, occlusions, and clutter statistics. This isolates contextual variation as a pure domain shift while the latent causal graph for the subject remains unchanged. Such a setting is particularly useful when evaluating sensitivity to context or when treating scenes as separate domains in adaptation protocols, because the supervision available to the learner is the same set of factors even though the pixel distribution differs substantially.
+
+Second, in the free–fall video scene, varying the gravitational constant across a small, interpretable grid, for example \(g \in \{4.9, 9.8, 14.7\}\,\mathrm{m\,s^{-2}}\), yields domains that differ only in the strength of the mapping from height to velocity. The transition is governed by standard kinematics with time step \(\Delta t\), namely \(v^{(t+1)} = v^{(t)} + g\,\Delta t\) and \(y^{(t+1)} = y^{(t)} + v^{(t)}\Delta t + \tfrac{1}{2} g (\Delta t)^2\), while the horizontal velocity remains constant in the absence of drag. Changing \(g\) therefore adjusts the temporal rate at which potential energy converts to kinetic energy without modifying the graph structure or introducing additional confounders. Because the modification is parametric and physically interpretable, it supports crisp counterfactual statements such as “under the same initial conditions, the object would reach the ground earlier or later solely due to a different gravitational field.”
+
+Third, in the traffic videos, behavioral rules translate directly into temporal dependencies by altering the stochastic mapping from the previous traffic state to the current action profile. A canonical example is the minimum headway rule (the desired spacing between successive vehicles). Tightening this rule increases the likelihood of braking and lane–keeping behaviors when relative distance shrinks, which can be described as a shift in the conditional distribution \(P(A^{(t)} \mid S^{(t-1)})\). Crucially, the high–level causal structure that links environment, agent states, and actions is retained, but the policy governing interactions changes in a measurable, semantically meaningful way. By sweeping the headway target across several levels, one can move smoothly from dense, stop–and–go traffic to free–flow conditions and examine whether a learned representation tracks the underlying decision mechanisms rather than surface statistics.
+
+Fourth, temporal dependencies can also be manipulated through the observation protocol by adjusting the recording time step while keeping the simulator’s internal dynamics fixed. Increasing the export cadence from \(0.02\,\mathrm{s}\) to \(0.10\,\mathrm{s}\) reduces temporal resolution and makes the visible sequence less Markova at the frame level: information that was previously captured by immediate neighbors is now spread across longer lags, so the effective transition kernel in the observed space becomes higher order even though the latent physical process is unchanged. This configuration probes whether temporal representation learners identify causal factors that are stable to sampling changes, a property that matters in practice whenever sensors operate at heterogeneous frame rates or logs are down-sampled for storage.
+
+Fifth, intervention histories are supported both in robotics and in physics scenes, enabling precise do–style manipulations and deterministic replay. In robotics, a scripted, deterministic motion such as a full–arc sweep imposes a hard intervention on the action channel; each call is timestamped so that the same initial state and random seed reproduce the identical trajectory for counterfactual comparison against an alternative script. In physical environments, mechanism parameters like the gravitational constant, the spring stiffness, or the restitution coefficient can be overwritten at designated frames to realism either soft interventions that momentarily perturb the mechanism or hard interventions that reset and hold it thereafter. Because these edits are localized in time and recorded alongside the sequence, one can align pre– and post–intervention segments, quantify the causal effect on latent variables and observables, and evaluate whether the learned representation follows the intervened mechanism rather than spurious correlations.
+
+Each control is designed to be minimal with respect to the causal graph (structure held fixed whenever possible) while still inducing a detectable and interpretable change in the data–generating process, thereby supporting fine–grained diagnosis of model behavior. We just show some examples of flexible configurations and research can use the ground truth of causal graphs to do further configurations. Besides, we have released all the source codes and documents of data generation so researchers can create their own data to further corroborate their experiments.
+
+
+
+
+
+
+
+
+
+\section{Experiments}
+
+
+\subsection{Image-based method implementation details}
+
+\paragraph{Model design}
+To fairly compare the performance of different CRL methods on our dataset, we select four representative unsupervised approaches and one supervised upper bound: \textbf{Sufficient Change}~\cite{kong2022partial} (domain-shift based identifiability), \textbf{Sparsity}~\cite{disentang}, \textbf{Multiview}~\cite{von2021self}, \textbf{Contrastive Learning}~\cite{buchholz2023linear}, and \textbf{Supervised}. All methods share a ResNet-18 backbone pretrained on ImageNet: we drop its final fully connected layer, apply adaptive average pooling followed by flattening to produce a 512-dimensional feature vector, and then attach a lightweight head. \textbf{Sparsity} adopts a variational autoencoder design: the pooled feature passes through two linear–ReLU stages and then splits into parallel linear heads that output the mean $\mu$ and log-variance $\log \sigma^{2}$ of a latent vector $z$; during training we sample $z \sim \mathcal{N}(\mu,\sigma^{2})$ via the reparameterization trick and reconstruct back to 512 dimensions with a symmetric decoder, optimizing an $\ell_{2}$ reconstruction loss plus $\mathrm{KL}\!\bigl[\mathcal{N}(\mu,\sigma^{2}) \,\|\, \mathcal{N}(0,I)\bigr]$.
+\textbf{Multiview} attaches a three-stage MLP projection head (linear–ReLU–linear–ReLU–linear) that maps the 512-dimensional feature into a compact embedding whose dimensionality is set by the dataset metadata; it is trained with a contrastive objective that pulls together samples sharing the same causal attribute and pushes apart the others. \textbf{Sufficient Change} instantiates the sufficient-changes principle~\cite{kong2022partial}. We split the latent space of dimension $d$ into a content subspace $z^{\mathrm{cont}}\in\mathbb{R}^{c}$ and a style subspace $z^{\mathrm{sty}}\in\mathbb{R}^{s}$. The style branch is passed through a conditional normalizing flow whose parameters are generated by an auxiliary MLP from a learned domain embedding $u$. The flow output is concatenated with $z^{\mathrm{cont}}$ to form a deconfounded latent $\tilde z$, which is used both for reconstruction via a symmetric decoder and for classification via a downstream MLP head. The total loss jointly optimizes the evidence lower bound, the flow log-determinant, and a classification cross-entropy term.
+\textbf{Contrastive Learning} follows a SimCLR-style instance discrimination realization~\cite{buchholz2023linear}: a projection MLP (linear–ReLU–linear) maps the 512-dimensional feature to an embedding of dimension $d^{\mathrm{proj}}$ used by an InfoNCE loss with two stochastic augmentations per image. Positives are two views of the same image; all other in-batch views serve as negatives. At evaluation, the projection head is discarded and the pre-projection representation is used as the learned latent.
+\textbf{Supervised} is a purely supervised variant: after pooling to 512 dimensions it applies a simple MLP (linear–ReLU–linear–ReLU–linear) to produce a $d$-dimensional embedding trained with a supervised regression objective, without any reconstruction or latent regularization.
+
+\paragraph{Loss and data arrangement}
+All models train on the same metadata-annotated image collection, which is split once into training and test subsets with a fixed ratio. Mini-batch formation differs by method: \textbf{Sparsity} and \textbf{Supervised} use standard random sampling of individual images; \textbf{Multiview} samples images at random and applies two stochastic augmentations per image to form positives according to the shared causal attribute; \textbf{Contrastive Learning} also uses two augmentations per image but defines positives as two views of the same image and uses all other in-batch views as negatives; \textbf{Sufficient Change} replaces random batching with a \texttt{BalancedBatchSampler} so that each batch contains an equal number of examples from each of the four view domains. In optimization, \textbf{Sparsity} minimizes a VAE reconstruction plus KL divergence loss (weighted by $\lambda^{\mathrm{VAE}}$), a Jacobian sparsity penalty (weighted by $\lambda^{\mathrm{sparsity}}$), and a mean squared error on the latent codes; \textbf{Multiview} optimizes a contrastive objective over pairwise augmented views defined by shared causal attributes; \textbf{Contrastive Learning} minimizes an InfoNCE loss with temperature $\tau$ over instance-discrimination pairs; \textbf{Sufficient Change} jointly minimizes a per-domain VAE loss (reconstruction plus a clamped KL term) and a Gaussian-prior log-likelihood penalty on the flow-transformed style subspace (weighted by $\lambda^{\mathrm{gauss}}$); and \textbf{Supervised} uses a regression loss on its final embeddings. All methods employ identical Adam settings (same learning-rate schedule and weight decay) and report per-epoch global Pearson MCC and uniform-average $R^2$ on both training and test splits.
+
+
+
+\subsection{Video based method implementation details }
+
+\paragraph{Model design}
+Due to the high resolution of videos in our datasets—even the smallest scenes reach 512$\times$512—we employ pretrained high-quality VAE encoders to convert videos into compact superpixel-level representations. This design enables stable baseline training while allowing subsequent temporal causal representation learning (CRL) methods to operate directly on the superpixels with minimal influence.
+
+We explore two pretrained VAEs: a frame-based VAE from Stable Diffusion \cite{rombach2021highresolution} and a video-based VAE from CogVideoX~\cite{yang2024cogvideox}. Their downsampling factors are $(8, 8, 1)$ and $(8, 8, 4)$ along the $(H, W, T)$ dimensions, respectively. The Stable Diffusion VAE provides temporally independent latents that better preserve per-frame spatial fidelity, while the CogVideoX VAE exhibits stronger long-term temporal reconstruction capability. Under our experimental setup—randomly sampling 16 consecutive frames per video—the Stable Diffusion VAE produces more stable and length-consistent latent representations, making it our default choice for generating superpixels.
+
+For the inner VAE architecture, we adopt a lightweight convolutional VAE operating on per-frame superpixels. Each superpixel clip is encoded independently and reconstructed frame by frame. The encoder consists of two stride-2 convolutions with bias compensation, generating spatial feature maps for both the mean and log-variance branches. Latent variables are obtained via a standard reparameterization step, and the decoder mirrors the encoder to reconstruct each frame from an explicit spatial latent. We further introduce Bias-Compensated Convolution, where a learned per-channel bias term is adaptively adjusted whenever pre-bias activations exhibit excessive negativity. All nonlinearities employ Adaptive LeakyReLU, whose slopes can be dynamically tuned based on layer-wise activation statistics collected by an ActivationAnalyzer. This analysis–adjustment process is optional and does not alter the forward computation during training. These two mechanisms improve numerical stability without changing the overall architecture. The model processes frames independently over time; temporal dynamics and causal dependencies are entirely modeled by CRL methods built atop this baseline representation.
+
+The rationale for using this inner VAE configuration is to maximize the recovery of latent variables. In searching for the optimal model, we aim to achieve observational equivalence—that is, to make the reconstructed video as close as possible to the ground-truth video. When we increase the network depth (e.g., using more than three strided convolutional layers) to achieve stronger compression, the model inevitably loses temporal details and background information, leading to reconstructions that fail to preserve human-perceptible motion dynamics. The situation worsens when employing pooling or high-compression MLP-based designs, where the reconstructed video may retain overall structure but appears static, lacking any meaningful temporal variation. Alternative architectures such as U-Net offer skip connections that pass high-resolution features from the encoder to the decoder, helping preserve fine spatial details and enabling highly accurate reconstructions. However, these skip pathways also leak excessive information to the decoder without proper selection, making the estimated latent variables entangled and semantically ambiguous. Consequently, the encoder’s representations lose their exclusive explanatory power—a crucial property for causal modeling.
+
+Therefore, our chosen architecture strikes a balance between preserving dynamic temporal information and maintaining static spatial detail. It serves as an effective and interpretable framework for video-based causal representation learning, providing both reconstruction fidelity and a semantically plausible latent space.
+
+\paragraph{Loss and data arrangement} 
+All models are trained on the same metadata-annotated video collection,
+which is split once into training and test subsets with a fixed ratio.
+For iVAE, the model performs reconstruction while keeping the latent variables close to the domain-conditioned Gaussian prior $p(z \mid u)$. It penalizes dependencies between latent dimensions using mutual information and total correlation terms, with their weights aligned with those of the KL divergence and reconstruction losses. For TCL, latent features from consecutive time steps are treated as positive pairs, while another frame sampled from a different time step forms a negative pair. Both pairs are concatenated and passed through a lightweight temporal discriminator. The contrastive loss weight is set to 0.1. For TDRL and CaRiNG , we set the latent space is eight-dimensional (z\_dim = 8), all of which are treated as time-dependent (z\_dim\_fix = 8, z\_dim\_change = 0). The transition prior looks back two steps (lag = 2) and uses temporal embeddings of size 8 for 16 discrete time indices (nclass = 16, embedding\_dim = 8) to capture dynamics. The networks inside the encoder and priors have a hidden width of 128 (hidden\_dim = 128). The training loss is weighted key hyperparameters: gamma = 0.0075 enforces consistency with the Laplacian transition prior for future states. For IDOL, an additional sparsity weight with 0.2 encourages sparsity in the Jacobian of instantaneous and historical influences, promoting interpretable temporal structure. For other hyperparameters, the pretrained VAE yields 4 channels. The inner VAE uses a convolutional kernel size of 4 and a stride of 2. The learning rate is set to 1e-4 for iVAE and TCL, and 1e-5 for the remaining methods.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Statement}
+
+CausalVerse provides a high‐fidelity, open‐source benchmark for causal representation learning that combines realistic visual complexity with fully known, configurable causal generating processes. By enabling reproducible evaluation across diverse domains—static images, dynamic physics simulations, robotic control, and traffic scenarios—our dataset accelerates methodological progress, fosters transparent comparison, and lowers the barrier to entry for both researchers and newcomers in CRL.  
+
+Because CausalVerse is built on controlled, simulated data and is intended solely as a research tool rather than for direct deployment, we do not identify any immediate negative societal impacts. We anticipate that broad adoption of this benchmark will strengthen the reliability and real world applicability of future CRL methods without introducing adverse consequences.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

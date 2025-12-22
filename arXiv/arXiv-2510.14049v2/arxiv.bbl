@@ -1,0 +1,345 @@
+\begin{thebibliography}{66}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Yao et~al.(2022)Yao, Chen, and Zhang]{yao2022temporally}
+Weiran Yao, Guangyi Chen, and Kun Zhang.
+\newblock Temporally disentangled representation learning.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2022.
+\newblock URL \url{https://openreview.net/forum?id=Vi-sZWNA_Ue}.
+
+\bibitem[Yao et~al.(2021)Yao, Sun, Ho, Sun, and Zhang]{yao2021learning}
+Weiran Yao, Yuewen Sun, Alex Ho, Changyin Sun, and Kun Zhang.
+\newblock Learning temporally causal latent processes from general temporal data.
+\newblock \emph{arXiv preprint arXiv:2110.05428}, 2021.
+
+\bibitem[Li et~al.(2020)Li, Torralba, Anandkumar, Fox, and Garg]{li2020causal}
+Yunzhu Li, Antonio Torralba, Anima Anandkumar, Dieter Fox, and Animesh Garg.
+\newblock Causal discovery in physical systems from videos.
+\newblock \emph{Advances in Neural Information Processing Systems}, 33:\penalty0 9180--9192, 2020.
+
+\bibitem[Liu et~al.(2025)Liu, Qiao, Liu, Lu, Zhou, Liang, Yin, and Ma]{liu2025causal3d}
+Disheng Liu, Yiran Qiao, Wuche Liu, Yiren Lu, Yunlai Zhou, Tuo Liang, Yu~Yin, and Jing Ma.
+\newblock Causal3d: A comprehensive benchmark for causal learning from visual data.
+\newblock \emph{arXiv preprint arXiv:2503.04852}, 2025.
+
+\bibitem[Zimmermann et~al.(2021)Zimmermann, Sharma, Schneider, Bethge, and Brendel]{zimmermann2021contrastive}
+Roland~S Zimmermann, Yash Sharma, Steffen Schneider, Matthias Bethge, and Wieland Brendel.
+\newblock Contrastive learning inverts the data generating process.
+\newblock In \emph{International conference on machine learning}, pages 12979--12990. PMLR, 2021.
+
+\bibitem[Kong et~al.(2022)Kong, Xie, Yao, Zheng, Chen, Stojanov, Akinwande, and Zhang]{kong2022partial}
+Lingjing Kong, Shaoan Xie, Weiran Yao, Yujia Zheng, Guangyi Chen, Petar Stojanov, Victor Akinwande, and Kun Zhang.
+\newblock Partial disentanglement for domain adaptation.
+\newblock In \emph{International conference on machine learning}, pages 11455--11472. PMLR, 2022.
+
+\bibitem[Salaudeen et~al.()Salaudeen, Chiou, and Koyejo]{salaudeen2024domain}
+Olawale~Elijah Salaudeen, Nicole Chiou, and Sanmi Koyejo.
+\newblock On domain generalization datasets as proxy benchmarks for causal representation learning.
+\newblock In \emph{NeurIPS 2024 Causal Representation Learning Workshop}.
+
+\bibitem[Chen et~al.(2024)Chen, Shen, Chen, Song, Sun, Yao, Liu, and Zhang]{chen2024caring}
+Guangyi Chen, Yifan Shen, Zhenhao Chen, Xiangchen Song, Yuewen Sun, Weiran Yao, Xiao Liu, and Kun Zhang.
+\newblock Caring: Learning temporal causal representation under non-invertible generation process.
+\newblock \emph{arXiv preprint arXiv:2401.14535}, 2024.
+
+\bibitem[Sch{\"o}lkopf et~al.(2021)Sch{\"o}lkopf, Locatello, Bauer, Ke, Kalchbrenner, Goyal, and Bengio]{scholkopf2021toward}
+Bernhard Sch{\"o}lkopf, Francesco Locatello, Stefan Bauer, Nan~Rosemary Ke, Nal Kalchbrenner, Anirudh Goyal, and Yoshua Bengio.
+\newblock Toward causal representation learning.
+\newblock \emph{Proceedings of the IEEE}, 109\penalty0 (5):\penalty0 612--634, 2021.
+
+\bibitem[Comon(1994)]{comon1994independent}
+P.~Comon.
+\newblock Independent component analysis -- a new concept?
+\newblock \emph{Signal Processing}, 36:\penalty0 287--314, 1994.
+
+\bibitem[Hyvarinen et~al.(2002)Hyvarinen, Karhunen, and Oja]{hyvarinen2002independent}
+Aapo Hyvarinen, Juha Karhunen, and Erkki Oja.
+\newblock Independent component analysis.
+\newblock \emph{Studies in informatics and control}, 11\penalty0 (2):\penalty0 205--207, 2002.
+
+\bibitem[Zhang and Chan(2008)]{zhang2008minimal}
+Kun Zhang and Laiwan Chan.
+\newblock Minimal nonlinear distortion principle for nonlinear independent component analysis.
+\newblock \emph{Journal of Machine Learning Research}, 9\penalty0 (Nov):\penalty0 2455--2487, 2008.
+
+\bibitem[Zhang and Chan(2007)]{zhang2007kernel}
+Kun Zhang and Laiwan Chan.
+\newblock Kernel-based nonlinear independent component analysis.
+\newblock In \emph{International Conference on Independent Component Analysis and Signal Separation}, pages 301--308. Springer, 2007.
+
+\bibitem[Huang et~al.(2022)Huang, Low, Xie, Glymour, and Zhang]{huang2022latent}
+Biwei Huang, Charles Jia~Han Low, Feng Xie, Clark Glymour, and Kun Zhang.
+\newblock Latent hierarchical causal structure discovery with rank constraints.
+\newblock \emph{arXiv preprint arXiv:2210.01798}, 2022.
+
+\bibitem[Zhang and Hyv{\"a}rinen(2011)]{zhang2011general}
+Kun Zhang and Aapo Hyv{\"a}rinen.
+\newblock A general linear non-gaussian state-space model: Identifiability, identification, and applications.
+\newblock In \emph{Asian Conference on Machine Learning}, pages 113--128. PMLR, 2011.
+
+\bibitem[Von~K{\"u}gelgen et~al.(2021)Von~K{\"u}gelgen, Sharma, Gresele, Brendel, Sch{\"o}lkopf, Besserve, and Locatello]{von2021self}
+Julius Von~K{\"u}gelgen, Yash Sharma, Luigi Gresele, Wieland Brendel, Bernhard Sch{\"o}lkopf, Michel Besserve, and Francesco Locatello.
+\newblock Self-supervised learning with data augmentations provably isolates content from style.
+\newblock \emph{Advances in neural information processing systems}, 34:\penalty0 16451--16467, 2021.
+
+\bibitem[Reizinger et~al.(2024)Reizinger, Bizeul, Juhos, Vogt, Balestriero, Brendel, and Klindt]{reizinger2024cross}
+Patrik Reizinger, Alice Bizeul, Attila Juhos, Julia~E Vogt, Randall Balestriero, Wieland Brendel, and David Klindt.
+\newblock Cross-entropy is all you need to invert the data generating process.
+\newblock \emph{arXiv preprint arXiv:2410.21869}, 2024.
+
+\bibitem[Brehmer et~al.(2022)Brehmer, De~Haan, Lippe, and Cohen]{brehmer2022weakly}
+Johann Brehmer, Pim De~Haan, Phillip Lippe, and Taco~S Cohen.
+\newblock Weakly supervised causal representation learning.
+\newblock \emph{Advances in Neural Information Processing Systems}, 35:\penalty0 38319--38331, 2022.
+
+\bibitem[Yao et~al.(2023)Yao, Xu, Lachapelle, Magliacane, Taslakian, Martius, von K{\"u}gelgen, and Locatello]{yao2023multi}
+Dingling Yao, Danru Xu, S{\'e}bastien Lachapelle, Sara Magliacane, Perouz Taslakian, Georg Martius, Julius von K{\"u}gelgen, and Francesco Locatello.
+\newblock Multi-view causal representation learning with partial observability.
+\newblock \emph{arXiv preprint arXiv:2311.04056}, 2023.
+
+\bibitem[Sun et~al.(2024)Sun, Kong, Chen, Li, Luo, Li, Zhang, Zheng, Yang, Stojanov, et~al.]{sun2024causal}
+Yuewen Sun, Lingjing Kong, Guangyi Chen, Loka Li, Gongxu Luo, Zijian Li, Yixuan Zhang, Yujia Zheng, Mengyue Yang, Petar Stojanov, et~al.
+\newblock Causal representation learning from multimodal biological observations.
+\newblock \emph{arXiv preprint arXiv:2411.06518}, 2024.
+
+\bibitem[Zheng et~al.(2022)Zheng, Ng, and Zhang]{zheng2022identifiability}
+Yujia Zheng, Ignavier Ng, and Kun Zhang.
+\newblock On the identifiability of nonlinear ica: Sparsity and beyond.
+\newblock \emph{Advances in neural information processing systems}, 35:\penalty0 16411--16422, 2022.
+
+\bibitem[Lachapelle and Lacoste-Julien(2022)]{lachapelle2022partial}
+S{\'e}bastien Lachapelle and Simon Lacoste-Julien.
+\newblock Partial disentanglement via mechanism sparsity.
+\newblock \emph{arXiv preprint arXiv:2207.07732}, 2022.
+
+\bibitem[Xu et~al.(2024)Xu, Yao, Lachapelle, Taslakian, Von~K{\"u}gelgen, Locatello, and Magliacane]{xu2024sparsity}
+Danru Xu, Dingling Yao, S{\'e}bastien Lachapelle, Perouz Taslakian, Julius Von~K{\"u}gelgen, Francesco Locatello, and Sara Magliacane.
+\newblock A sparsity principle for partially observable causal representation learning.
+\newblock \emph{arXiv preprint arXiv:2403.08335}, 2024.
+
+\bibitem[Li et~al.(2024)Li, Shen, Zheng, Cai, Song, Gong, Zhu, Chen, and Zhang]{li2024idol}
+Zijian Li, Yifan Shen, Kaitao Zheng, Ruichu Cai, Xiangchen Song, Mingming Gong, Zhengmao Zhu, Guangyi Chen, and Kun Zhang.
+\newblock On the identification of temporally causal representation with instantaneous dependence, 2024.
+\newblock URL \url{https://arxiv.org/abs/2405.15325}.
+
+\bibitem[Russo and Toni(2023)]{russo2023shapley}
+Fabrizio Russo and Francesca Toni.
+\newblock Shapley-pc: Constraint-based causal structure learning with shapley values.
+\newblock \emph{arXiv preprint arXiv:2312.11582}, 2023.
+
+\bibitem[{Blender Online Community}(2024)]{blender2024}
+{Blender Online Community}.
+\newblock \emph{{Blender} – a 3D modelling and rendering package}.
+\newblock Blender Foundation, Amsterdam, The Netherlands, 2024.
+\newblock URL \url{https://www.blender.org}.
+
+\bibitem[Todorov et~al.(2012)Todorov, Erez, and Tassa]{todorov2012mujoco}
+Emanuel Todorov, Tom Erez, and Yuval Tassa.
+\newblock Mujoco: A physics engine for model-based control.
+\newblock In \emph{2012 IEEE/RSJ International Conference on Intelligent Robots and Systems}, pages 5026--5033. IEEE, 2012.
+\newblock \doi{10.1109/IROS.2012.6386109}.
+
+\bibitem[Karis(2013)]{Karis2013_UE4Shading}
+Brian Karis.
+\newblock Real shading in {Unreal Engine 4}.
+\newblock In \emph{SIGGRAPH 2013 Course Notes: Physically Based Shading in Theory and Practice}. Epic Games, 2013.
+\newblock URL \url{https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf}.
+
+\bibitem[Yang et~al.(2020)Yang, Liu, Chen, Shen, Hao, and Wang]{yang2020causalvae}
+Mengyue Yang, Furui Liu, Zhitang Chen, Xinwei Shen, Jianye Hao, and Jun Wang.
+\newblock Causalvae: Structured causal disentanglement in variational autoencoder.
+\newblock \emph{arXiv preprint arXiv:2004.08697}, 2020.
+
+\bibitem[Gamella et~al.(2025)Gamella, Bing, and Runge]{gamella2025sanity}
+Juan~L Gamella, Simon Bing, and Jakob Runge.
+\newblock Sanity checking causal representation learning on a simple real-world system.
+\newblock \emph{arXiv preprint arXiv:2502.20099}, 2025.
+
+\bibitem[Cadei et~al.(2024)Cadei, Lindorfer, Cremer, Schmid, and Locatello]{cadei2024smoke}
+Riccardo Cadei, Lukas Lindorfer, Sylvia Cremer, Cordelia Schmid, and Francesco Locatello.
+\newblock Smoke and mirrors in causal downstream tasks.
+\newblock \emph{Advances in Neural Information Processing Systems}, 37:\penalty0 26082--26112, 2024.
+
+\bibitem[Li et~al.(2023)Li, Cai, Chen, Sun, Hao, and Zhang]{li2023subspace}
+Zijian Li, Ruichu Cai, Guangyi Chen, Boyang Sun, Zhifeng Hao, and Kun Zhang.
+\newblock Subspace identification for multi-source domain adaptation.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36:\penalty0 34504--34518, 2023.
+
+\bibitem[Ates et~al.(2020)Ates, Atesoglu, Yigit, Kesen, Kobas, Erdem, Erdem, Goksun, and Yuret]{ates2020craft}
+Tayfun Ates, M~Samil Atesoglu, Cagatay Yigit, Ilker Kesen, Mert Kobas, Erkut Erdem, Aykut Erdem, Tilbe Goksun, and Deniz Yuret.
+\newblock Craft: A benchmark for causal reasoning about forces and interactions.
+\newblock \emph{arXiv preprint arXiv:2012.04293}, 2020.
+
+\bibitem[Stein et~al.(2025)Stein, Shadaydeh, Blunk, Penzel, and Denzler]{stein2025causalrivers}
+Gideon Stein, Maha Shadaydeh, Jan Blunk, Niklas Penzel, and Joachim Denzler.
+\newblock Causalrivers--scaling up benchmarking of causal discovery for real-world time-series.
+\newblock \emph{arXiv preprint arXiv:2503.17452}, 2025.
+
+\bibitem[Bastioni et~al.(2008)Bastioni, Re, and Misra]{bastioni2008makehuman}
+Manuel Bastioni, Simone Re, and Shakti Misra.
+\newblock Ideas and methods for modeling 3d human figures: The principal algorithms used by makehuman and their implementation in a new approach to parametric modeling.
+\newblock In \emph{Proceedings of the 1st ACM Bangalore Annual Compute Conference (COMPUTE '08)}, pages 1--6, 2008.
+\newblock \doi{10.1145/1341771.1341782}.
+
+\bibitem[Denninger et~al.(2023)Denninger, Winkelbauer, Sundermeyer, Boerdijk, Knauer, Strobl, Humt, and Triebel]{Denninger2023}
+Maximilian Denninger, Dominik Winkelbauer, Martin Sundermeyer, Wout Boerdijk, Markus Knauer, Klaus~H. Strobl, Matthias Humt, and Rudolph Triebel.
+\newblock Blenderproc2: A procedural pipeline for photorealistic rendering.
+\newblock \emph{Journal of Open Source Software}, 8\penalty0 (82):\penalty0 4901, 2023.
+\newblock \doi{10.21105/joss.04901}.
+\newblock URL \url{https://doi.org/10.21105/joss.04901}.
+
+\bibitem[Coumans and Bai(2016--2021)]{coumans2021}
+Erwin Coumans and Yunfei Bai.
+\newblock Pybullet, a python module for physics simulation for games, robotics and machine learning.
+\newblock \url{http://pybullet.org}, 2016--2021.
+
+\bibitem[Straub et~al.(2019)Straub, Whelan, Ma, Chen, Wijmans, Green, Engel, Mur-Artal, Ren, Verma, Clarkson, Yan, Budge, Yan, Pan, Yon, Zou, Leon, Carter, Briales, Gillingham, Mueggler, Pesqueira, Savva, Batra, Strasdat, Nardi, Goesele, Lovegrove, and Newcombe]{replica19arxiv}
+Julian Straub, Thomas Whelan, Lingni Ma, Yufan Chen, Erik Wijmans, Simon Green, Jakob~J. Engel, Raul Mur-Artal, Carl Ren, Shobhit Verma, Anton Clarkson, Mingfei Yan, Brian Budge, Yajie Yan, Xiaqing Pan, June Yon, Yuyang Zou, Kimberly Leon, Nigel Carter, Jesus Briales, Tyler Gillingham, Elias Mueggler, Luis Pesqueira, Manolis Savva, Dhruv Batra, Hauke~M. Strasdat, Renzo~De Nardi, Michael Goesele, Steven Lovegrove, and Richard Newcombe.
+\newblock The {R}eplica dataset: A digital replica of indoor spaces.
+\newblock \emph{arXiv preprint arXiv:1906.05797}, 2019.
+
+\bibitem[Zhu et~al.(2020)Zhu, Wong, Mandlekar, Mart\'{i}n-Mart\'{i}n, Joshi, Nasiriany, Zhu, and Lin]{robosuite2020}
+Yuke Zhu, Josiah Wong, Ajay Mandlekar, Roberto Mart\'{i}n-Mart\'{i}n, Abhishek Joshi, Soroush Nasiriany, Yifeng Zhu, and Kevin Lin.
+\newblock robosuite: A modular simulation framework and benchmark for robot learning.
+\newblock In \emph{arXiv preprint arXiv:2009.12293}, 2020.
+
+\bibitem[Dosovitskiy et~al.(2017)Dosovitskiy, Ros, Codevilla, Lopez, and Koltun]{pmlr-v78-dosovitskiy17a}
+Alexey Dosovitskiy, German Ros, Felipe Codevilla, Antonio Lopez, and Vladlen Koltun.
+\newblock {CARLA}: An open urban driving simulator.
+\newblock In \emph{Proceedings of the 1st Annual Conference on Robot Learning}, volume~78 of \emph{Proceedings of Machine Learning Research}, pages 1--16, Nov 2017.
+\newblock URL \url{https://proceedings.mlr.press/v78/dosovitskiy17a.html}.
+
+\bibitem[Lachapelle et~al.(2022)Lachapelle, López, Sharma, Everett, Priol, Lacoste, and Lacoste-Julien]{disentang}
+Sébastien Lachapelle, Pau~Rodríguez López, Yash Sharma, Katie Everett, Rémi~Le Priol, Alexandre Lacoste, and Simon Lacoste-Julien.
+\newblock Disentanglement via mechanism sparsity regularization: A new principle for nonlinear ica, 2022.
+\newblock URL \url{https://arxiv.org/abs/2107.10098}.
+
+\bibitem[Buchholz et~al.(2023)Buchholz, Rajendran, Rosenfeld, Aragam, Sch{\"o}lkopf, and Ravikumar]{buchholz2023linear}
+Simon Buchholz, Goutham Rajendran, Elan Rosenfeld, Bryon Aragam, Bernhard Sch{\"o}lkopf, and Pradeep Ravikumar.
+\newblock Learning linear causal representations from interventions under general nonlinear mixing.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36:\penalty0 45419--45462, 2023.
+
+\bibitem[Hyvarinen and Morioka(2016)]{hyvarinen2016unsupervised}
+Aapo Hyvarinen and Hiroshi Morioka.
+\newblock Unsupervised feature extraction by time-contrastive learning and nonlinear ica.
+\newblock \emph{Advances in Neural Information Processing Systems}, 29:\penalty0 3765--3773, 2016.
+
+\bibitem[Khemakhem et~al.(2020)Khemakhem, Kingma, Monti, and Hyvarinen]{khemakhem2020variational}
+Ilyes Khemakhem, Diederik Kingma, Ricardo Monti, and Aapo Hyvarinen.
+\newblock Variational autoencoders and nonlinear ica: A unifying framework.
+\newblock In \emph{International Conference on Artificial Intelligence and Statistics}, pages 2207--2217. PMLR, 2020.
+
+\bibitem[Spirtes et~al.(2000)Spirtes, Glymour, and Scheines]{spirtes2000causation}
+Peter Spirtes, Clark~N Glymour, and Richard Scheines.
+\newblock \emph{Causation, prediction, and search}.
+\newblock MIT press, 2000.
+
+\bibitem[Zhang et~al.(2011)Zhang, Peters, Janzing, and Sch{\"o}lkopf]{zhang2012kernel}
+Kun Zhang, Jonas Peters, Dominik Janzing, and Bernhard Sch{\"o}lkopf.
+\newblock Kernel-based conditional independence test and application in causal discovery.
+\newblock \emph{UAI}, 2011.
+
+\bibitem[Zhang(2008)]{zhang2008completeness}
+Jiji Zhang.
+\newblock On the completeness of orientation rules for causal discovery in the presence of latent confounders and selection bias.
+\newblock \emph{Artificial Intelligence}, 172\penalty0 (16-17):\penalty0 1873--1896, 2008.
+
+\bibitem[Richardson(1996)]{richardson2013discovery}
+Thomas~S Richardson.
+\newblock A discovery algorithm for directed cyclic graphs.
+\newblock \emph{UAI}, 1996.
+
+\bibitem[Chickering(2002)]{chickering2002optimal}
+David~Maxwell Chickering.
+\newblock Optimal structure identification with greedy search.
+\newblock \emph{Journal of machine learning research}, 3\penalty0 (Nov):\penalty0 507--554, 2002.
+
+\bibitem[Buntine(1991)]{buntine1991theory}
+Wray Buntine.
+\newblock Theory refinement on bayesian networks.
+\newblock In \emph{Uncertainty in artificial intelligence}, pages 52--60. Elsevier, 1991.
+
+\bibitem[Huang et~al.(2018)Huang, Zhang, Lin, Sch{\"o}lkopf, and Glymour]{huang2018generalized}
+Biwei Huang, Kun Zhang, Yizhu Lin, Bernhard Sch{\"o}lkopf, and Clark Glymour.
+\newblock Generalized score functions for causal discovery.
+\newblock In \emph{Proceedings of the 24th ACM SIGKDD international conference on knowledge discovery \& data mining}, pages 1551--1560, 2018.
+
+\bibitem[Pearl et~al.(2000)]{pearl2000models}
+Judea Pearl et~al.
+\newblock Models, reasoning and inference.
+\newblock \emph{Cambridge, UK: CambridgeUniversityPress}, 19, 2000.
+
+\bibitem[Shimizu et~al.(2011)Shimizu, Inazumi, Sogawa, Hyvarinen, Kawahara, Washio, Hoyer, Bollen, and Hoyer]{shimizu2011directlingam}
+Shohei Shimizu, Takanori Inazumi, Yasuhiro Sogawa, Aapo Hyvarinen, Yoshinobu Kawahara, Takashi Washio, Patrik~O Hoyer, Kenneth Bollen, and Patrik Hoyer.
+\newblock Directlingam: A direct method for learning a linear non-gaussian structural equation model.
+\newblock \emph{Journal of Machine Learning Research-JMLR}, 12\penalty0 (Apr):\penalty0 1225--1248, 2011.
+
+\bibitem[Hoyer et~al.(2008)Hoyer, Janzing, Mooij, Peters, and Sch{\"o}lkopf]{hoyer2008nonlinear}
+Patrik Hoyer, Dominik Janzing, Joris~M Mooij, Jonas Peters, and Bernhard Sch{\"o}lkopf.
+\newblock Nonlinear causal discovery with additive noise models.
+\newblock \emph{Advances in neural information processing systems}, 21, 2008.
+
+\bibitem[Zhang and Hyv{\"a}rinen(2009)]{zhang2009causality}
+Kun Zhang and Aapo Hyv{\"a}rinen.
+\newblock Causality discovery with additive disturbances: An information-theoretical perspective.
+\newblock In \emph{Joint European conference on machine learning and knowledge discovery in databases}, pages 570--585. Springer, 2009.
+
+\bibitem[Zhang and Hyvarinen(2012)]{zhang2012identifiability}
+Kun Zhang and Aapo Hyvarinen.
+\newblock On the identifiability of the post-nonlinear causal model.
+\newblock \emph{arXiv preprint arXiv:1205.2599}, 2012.
+
+\bibitem[Richardson and Spirtes(2002)]{richardson2002ancestral}
+Thomas Richardson and Peter Spirtes.
+\newblock Ancestral graph markov models.
+\newblock \emph{The Annals of Statistics}, 30\penalty0 (4):\penalty0 962--1030, 2002.
+
+\bibitem[Sullivant et~al.(2010)Sullivant, Talaska, and Draisma]{sullivant2010trek}
+Seth Sullivant, Kelli Talaska, and Jan Draisma.
+\newblock Trek separation for gaussian graphical models.
+\newblock 2010.
+
+\bibitem[Drton(2018)]{drton2018algebraic}
+Mathias Drton.
+\newblock Algebraic problems in structural equation modeling.
+\newblock In \emph{The 50th anniversary of Gr{\"o}bner bases}, volume~77, pages 35--87. Mathematical Society of Japan, 2018.
+
+\bibitem[Xie et~al.(2020)Xie, Cai, Huang, Glymour, Hao, and Zhang]{xie2020generalized}
+Feng Xie, Ruichu Cai, Biwei Huang, Clark Glymour, Zhifeng Hao, and Kun Zhang.
+\newblock Generalized independent noise condition for estimating latent variable causal graphs.
+\newblock \emph{arXiv preprint arXiv:2010.04917}, 2020.
+
+\bibitem[Adams et~al.(2021)Adams, Hansen, and Zhang]{adams2021identification}
+Jeffrey Adams, Niels Hansen, and Kun Zhang.
+\newblock Identification of partially observed linear causal models: Graphical conditions for the non-gaussian and heterogeneous cases.
+\newblock \emph{Advances in Neural Information Processing Systems}, 34:\penalty0 22822--22833, 2021.
+
+\bibitem[Anandkumar et~al.(2013)Anandkumar, Hsu, Javanmard, and Kakade]{anandkumar2013learning}
+Animashree Anandkumar, Daniel Hsu, Adel Javanmard, and Sham Kakade.
+\newblock Learning linear bayesian networks with latent variables.
+\newblock In \emph{International Conference on Machine Learning}, pages 249--257. PMLR, 2013.
+
+\bibitem[Cui et~al.(2018)Cui, Groot, Schauer, and Heskes]{cui2018learning}
+Ruifei Cui, Perry Groot, Moritz Schauer, and Tom Heskes.
+\newblock Learning the causal structure of copula models with latent variables.
+\newblock 2018.
+
+\bibitem[Kivva et~al.(2021)Kivva, Rajendran, Ravikumar, and Aragam]{kivva2021learning}
+Bohdan Kivva, Goutham Rajendran, Pradeep Ravikumar, and Bryon Aragam.
+\newblock Learning latent causal graphs via mixture oracles.
+\newblock \emph{Advances in Neural Information Processing Systems}, 34:\penalty0 18087--18101, 2021.
+
+\bibitem[Rombach et~al.(2021)Rombach, Blattmann, Lorenz, Esser, and Ommer]{rombach2021highresolution}
+Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn Ommer.
+\newblock High-resolution image synthesis with latent diffusion models, 2021.
+
+\bibitem[Yang et~al.(2024)Yang, Teng, Zheng, Ding, Huang, Xu, Yang, Hong, Zhang, Feng, et~al.]{yang2024cogvideox}
+Zhuoyi Yang, Jiayan Teng, Wendi Zheng, Ming Ding, Shiyu Huang, Jiazheng Xu, Yuanming Yang, Wenyi Hong, Xiaohan Zhang, Guanyu Feng, et~al.
+\newblock Cogvideox: Text-to-video diffusion models with an expert transformer.
+\newblock \emph{arXiv preprint arXiv:2408.06072}, 2024.
+
+\end{thebibliography}
