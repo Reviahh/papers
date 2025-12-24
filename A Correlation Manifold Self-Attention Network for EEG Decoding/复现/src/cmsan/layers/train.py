@@ -54,7 +54,7 @@ from functools import partial
 import pickle
 import argparse
 
-from pipe import build
+from .pipe import build
 from optim import cosine_lr
 
 

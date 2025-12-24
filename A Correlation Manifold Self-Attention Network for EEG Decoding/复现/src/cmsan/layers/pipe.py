@@ -51,13 +51,13 @@ import jax.numpy as jnp
 from jax import random, vmap
 from functools import partial
 
-from fem import FEM
-from mmm import MMM
-from hom import HOM
-from att import ATT
-from prj import PRJ, output_dim
-from cls import CLS
-from loss import LOSS
+from .fem import FEM
+from .mmm import MMM
+from .hom import HOM
+from .att import ATT
+from .prj import PRJ, output_dim
+from .cls import CLS
+from .loss import LOSS
 
 
 # ═══════════════════════════════════════

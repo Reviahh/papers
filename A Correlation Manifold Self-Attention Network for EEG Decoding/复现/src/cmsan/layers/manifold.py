@@ -55,9 +55,26 @@ $$
 
 import jax
 import jax.numpy as jnp
-from jax.scipy.linalg import expm, logm
+from jax.scipy.linalg import expm
 
-from ops import off, sym
+from .ops import off, sym
+
+
+# ═══════════════════════════════════════
+#           矩阵对数 (JAX 无内置 logm)
+# ═══════════════════════════════════════
+
+def logm(A):
+    r"""
+    矩阵对数: $\log(A) = V \cdot \text{diag}(\log(\lambda)) \cdot V^{-1}$
+    
+    通过特征值分解实现，适用于正定矩阵。
+    """
+    eigvals, eigvecs = jnp.linalg.eigh(A)
+    # 确保特征值为正
+    eigvals = jnp.maximum(eigvals, 1e-8)
+    log_eigvals = jnp.log(eigvals)
+    return eigvecs @ jnp.diag(log_eigvals) @ eigvecs.T
 
 
 # ═══════════════════════════════════════
@@ -70,7 +87,7 @@ def logo(C, eps=1e-5):
     
     C ↦ Off(log(C))
     """
-    return off(logm(C + eps * jnp.eye(C.shape[0])).real)
+    return off(logm(C + eps * jnp.eye(C.shape[0])))
 
 
 def expo(S, iters=12):

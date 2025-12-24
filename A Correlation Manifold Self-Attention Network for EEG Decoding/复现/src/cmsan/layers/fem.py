@@ -73,17 +73,25 @@ def conv(x, θ):
     h = θ['Ws'] @ x + θ['bs'][:, None]
     h = jax.nn.elu(h)
     
-    # 时间: 逐通道 1D 卷积
+    # 时间: 使用 jax.lax.conv_general_dilated 实现 1D 卷积
+    # h: (D, T) → 需要 (N, C, T) 格式
     D, T = h.shape
     K = θ['Wt'].shape[1]
-    pad = K // 2
-    h_pad = jnp.pad(h, ((0, 0), (pad, pad)), mode='edge')
     
-    def conv1d_at(t):
-        window = h_pad[:, t:t+K]
-        return jnp.sum(θ['Wt'] * window, axis=1)
+    # 使用 lax.conv_general_dilated 实现逐通道卷积
+    # h: (D, T) → (1, D, T), Wt: (D, K) → (D, 1, K)
+    h_expanded = h[None, :, :]  # (1, D, T)
+    Wt_expanded = θ['Wt'][:, None, :]  # (D, 1, K)
     
-    h = vmap(conv1d_at)(jnp.arange(T)).T + θ['bt'][:, None]
+    # 逐通道卷积 (分组卷积，每个通道独立)
+    h = jax.lax.conv_general_dilated(
+        h_expanded,           # lhs: (N, C, T)
+        Wt_expanded,          # rhs: (O, I, K) where I=1 for grouped
+        window_strides=(1,),
+        padding=((K // 2, K // 2),),  # same padding
+        feature_group_count=D,  # 分组卷积
+    )[0] + θ['bt'][:, None]  # 取出 batch 维度，加偏置
+    
     h = jax.nn.elu(h)
     
     return h

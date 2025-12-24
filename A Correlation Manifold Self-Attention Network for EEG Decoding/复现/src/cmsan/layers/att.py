@@ -62,7 +62,7 @@ import jax
 import jax.numpy as jnp
 from jax import vmap
 
-from manifold import logo, dist, wfm
+from .manifold import logo, dist, wfm
 
 
 # ═══════════════════════════════════════

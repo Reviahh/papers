@@ -48,8 +48,8 @@ import jax
 import jax.numpy as jnp
 from jax import vmap
 
-from ops import tril, tril_dim
-from manifold import logo
+from .ops import tril, tril_dim
+from .manifold import logo
 
 
 # ═══════════════════════════════════════

@@ -60,8 +60,8 @@ import jax
 import jax.numpy as jnp
 from jax import vmap
 
-from ops import off
-from manifold import logo, expo, cayley
+from .ops import off
+from .manifold import logo, expo, cayley
 
 
 # ═══════════════════════════════════════

@@ -50,7 +50,7 @@ import jax
 import jax.numpy as jnp
 from jax import vmap
 
-from ops import sym
+from .ops import sym
 
 
 # ═══════════════════════════════════════
