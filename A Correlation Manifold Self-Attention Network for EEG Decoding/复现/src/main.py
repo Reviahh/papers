@@ -60,31 +60,49 @@ def main():
     print("CMSAN - Correlation Manifold Self-Attention Network")
     print("═" * 60)
     
-    # 创建模型 (Equinox Module，参数内嵌)
     key = random.key(42)
-    key, subkey = random.split(key)
-    model = create_from_preset(subkey, args.preset)
     
-    print(f"配置: {args.preset}")
-    print(f"  C={model.C}, T={model.T}, D={model.D}, S={model.S}, K={model.K}")
-    print(f"设备: {jax.devices()[0]}")
-    print()
-    
-    # 统计参数量 (Equinox 方式)
-    n_params = sum(x.size for x in jax.tree.leaves(eqx.filter(model, eqx.is_array)))
-    print(f"参数量: {n_params:,}")
-    
-    # 数据
+    # 先加载数据，获取维度
     if args.data:
         import numpy as np
         data = np.load(args.data)
         train_data = (jnp.array(data['x_train']), jnp.array(data['y_train']))
         val_data = (jnp.array(data['x_val']), jnp.array(data['y_val']))
         print(f"加载数据: {args.data}")
+        
+        # 从数据推断维度
+        C = train_data[0].shape[1]  # 通道数
+        T = train_data[0].shape[2]  # 时间点
+        K = int(train_data[1].max()) + 1  # 类别数
+        
+        # 根据数据维度创建模型
+        key, subkey = random.split(key)
+        from cmsan import CMSAN
+        preset_cfg = PRESETS.get(args.preset, PRESETS['light'])
+        model = CMSAN(
+            subkey, 
+            C=C, 
+            T=T, 
+            D=preset_cfg.get('D', 20),
+            S=preset_cfg.get('S', 3),
+            K=K,
+        )
+        print(f"根据数据自动配置模型")
     else:
+        # 使用预设创建模型和假数据
+        key, subkey = random.split(key)
+        model = create_from_preset(subkey, args.preset)
         key, subkey = random.split(key)
         train_data, val_data = make_fake_data(subkey, model.C, model.T, model.K)
-        print("使用假数据 (测试模式)")
+        print(f"使用假数据 (测试模式，preset={args.preset})")
+    
+    print(f"配置: C={model.C}, T={model.T}, D={model.D}, S={model.S}, K={model.K}")
+    print(f"设备: {jax.devices()[0]}")
+    print()
+    
+    # 统计参数量 (Equinox 方式)
+    n_params = sum(x.size for x in jax.tree.leaves(eqx.filter(model, eqx.is_array)))
+    print(f"参数量: {n_params:,}")
     
     print(f"训练集: {train_data[0].shape}")
     print(f"验证集: {val_data[0].shape}")
