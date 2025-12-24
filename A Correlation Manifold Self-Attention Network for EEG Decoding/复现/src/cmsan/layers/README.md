@@ -1,4 +1,4 @@
-## CorAtt: Correlation Manifold Self-Attention Network
+## CMSAN: Correlation Manifold Self-Attention Network
 
 ### 0. 数学符号表 (Mathematical Notation)
 
@@ -14,9 +14,13 @@
 
 ---
 
-### 1. CorAtt 数学工作流 (Mathematical Workflow)
+### 1. CMSAN 数学工作流 (Mathematical Workflow)
 
-#### 完整前向传播公式
+#### 完整前向传播公式 (Composition)
+
+$$
+f_\theta = \text{Cls} \circ \text{Prj} \circ \text{Att} \circ \text{Hom} \circ \text{MMM} \circ \text{FEM}
+$$
 
 **Step 1: 特征提取 (FEM)**
 

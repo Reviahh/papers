@@ -1,10 +1,10 @@
 r"""
-CorAtt Pipeline 组装器
+CorAtt Composition 组装器
 ═══════════════════════════════════════════════════════════════════════════════
 
 ## 数学描述
 
-### 完整 Pipeline
+### 完整 Composition
 
 $$
 f_\theta: \mathbb{R}^{C \times T} \to \Delta^{K-1}
@@ -42,11 +42,13 @@ pipe = build(cfg)
 θ = pipe.init(key, C, T, D, S, K)
 logits = pipe.forward(θ, x)
 ```
+
+Note: 优化器由外层 coratt 包使用 optax 提供，pipeline 只负责模型结构。
 """
 
 import jax
 import jax.numpy as jnp
-from jax import random, grad, jit, vmap
+from jax import random, vmap
 from functools import partial
 
 from fem import FEM
@@ -56,7 +58,6 @@ from att import ATT
 from prj import PRJ, output_dim
 from cls import CLS
 from loss import LOSS
-from optim import OPTIM
 
 
 # ═══════════════════════════════════════
@@ -64,7 +65,12 @@ from optim import OPTIM
 # ═══════════════════════════════════════
 
 class Pipeline:
-    """可配置的 CorAtt Pipeline"""
+    """
+    可配置的 CorAtt Pipeline
+    
+    这是一个纯粹的模型结构定义，不包含优化器。
+    优化器由外层 coratt.Trainer 使用 optax 提供。
+    """
     
     def __init__(self, cfg):
         """
@@ -76,12 +82,11 @@ class Pipeline:
             prj:   'tangent' | 'flatten'
             cls:   'linear' | 'mlp'
             loss:  'ce' | 'focal' | 'smooth_ce'
-            optim: 'sgd' | 'adam'
         """
         self.cfg = {
             'fem': 'conv', 'mmm': 'corr', 'hom': 'olm',
             'att': 'manifold', 'prj': 'tangent', 'cls': 'linear',
-            'loss': 'ce', 'optim': 'adam',
+            'loss': 'ce',
             **cfg
         }
         
@@ -93,7 +98,6 @@ class Pipeline:
         self.prj_fn = PRJ[self.cfg['prj']]
         self.cls_init, self.cls_fn = CLS[self.cfg['cls']]
         self.loss_fn = LOSS[self.cfg['loss']]
-        self.opt_init, self.opt_fn = OPTIM[self.cfg['optim']]
     
     def init(self, key, C, T, D, S, K, **kw):
         """初始化所有参数"""

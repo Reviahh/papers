@@ -1,0 +1,22 @@
+# CorAtt 依赖 (Equinox + Optax)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# JAX (根据设备选择)
+jax>=0.4.20
+jaxlib>=0.4.20
+
+# Equinox - 函数式神经网络库
+equinox>=0.11.0
+
+# Optax - 优化器库
+optax>=0.1.7
+
+# 可选：GPU 支持 (取消注释以安装)
+# jax[cuda12_pip]>=0.4.20 -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+
+# 数据处理
+numpy>=1.24.0
+
+# 可选：可视化
+# matplotlib>=3.7.0
+# seaborn>=0.12.0
