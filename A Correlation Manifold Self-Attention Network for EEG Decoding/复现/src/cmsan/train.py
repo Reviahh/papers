@@ -333,27 +333,30 @@ def fit(
     
     # 使用 reduce 风格（虽然这里为了日志还是用 for）
     def train_epoch(state, epoch):
+        # 1. 纯计算部分：交给已经 JIT 的 epoch_fn，这是 CPU 跑得快的关键
         new_state, loss = epoch_fn(state, xs_train, ys_train)
         
-        # 日志输出（副作用）
-        should_log = verbose and (epoch % log_every == 0)
-        jax.lax.cond(
-            should_log,
-            lambda: print(f"Epoch {epoch:3d} | Loss {float(loss):.4f}"),
-            lambda: None,
-        ) if False else None  # JAX cond 不支持 print，这里用 Python
-        
-        if verbose and epoch % log_every == 0:
-            train_acc = evaluate(new_state.model, xs_train, ys_train)
-            log = f"Epoch {epoch:3d} | Loss {float(loss):.4f} | Train {float(train_acc):.2%}"
+        # 2. 交互与副作用部分：回归原生 Python if
+        # 这里不在 JIT 内部，所以可以自由使用 print, float(), if 等
+        if verbose and (epoch % log_every == 0):
+            # 将 JAX 数组转为 Python 标量以供格式化打印
+            current_loss = float(loss) 
+            
+            # 计算准确率 (evaluate 本身也是带 jit 的)
+            train_acc = float(evaluate(new_state.model, xs_train, ys_train))
+            
+            log = f"Epoch {epoch:3d} | Loss {current_loss:.4f} | Train {train_acc:.2%}"
+            
             if val_data is not None:
-                val_acc = evaluate(new_state.model, val_data[0], val_data[1])
-                log += f" | Val {float(val_acc):.2%}"
+                val_acc = float(evaluate(new_state.model, val_data[0], val_data[1]))
+                log += f" | Val {val_acc:.2%}"
+            
             print(log)
         
         return new_state
-    
-    for epoch in epoch_range:
+
+    # 外层循环：保持 Python for，方便随时中断和观察
+    for epoch in range(epochs):
         state = train_epoch(state, epoch)
     
     return state.model
