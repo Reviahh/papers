@@ -1,8 +1,19 @@
-# run_experiment.py
 """
+维度二: 我自己的复现 (My Validation)
+═══════════════════════════════════════════════════════════════════════════════
+
 完整实验: 所有被试 × 10-fold CV
-复现论文 Table 1 结果
+使用自己下载的数据复现论文 Table 1 结果
+
+使用:
+    python scripts/my_reproduction.py --data data/my_custom --dataset bcic
 """
+
+import sys
+from pathlib import Path
+
+# 添加父目录到路径以导入 cmsan
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import jax
 import jax.numpy as jnp
@@ -11,7 +22,7 @@ import numpy as np
 from tqdm import tqdm
 
 from cmsan import CMSAN, fit, evaluate
-from load_data import load_dataset, make_kfold, get_config, DATASET_CONFIG
+from scripts.data_utils.load_data import load_dataset, make_kfold, get_config, DATASET_CONFIG
 
 
 def run_subject(data_root, dataset, subject, n_folds=10, epochs=100, lr=5e-4):

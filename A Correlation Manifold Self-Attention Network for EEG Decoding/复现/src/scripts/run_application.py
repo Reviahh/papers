@@ -1,8 +1,19 @@
-# run_fast.py
 """
+维度三: 框架的其他应用 (Extension)
+═══════════════════════════════════════════════════════════════════════════════
+
 CPU 优化版实验脚本
-目标: 1小时内跑完所有数据集
+目标: 1小时内跑完所有数据集，展示框架的通用性和扩展性
+
+使用:
+    python scripts/run_application.py --data data/my_custom --dataset all
 """
+
+import sys
+from pathlib import Path
+
+# 添加父目录到路径以导入 cmsan
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import os
 os.environ['XLA_FLAGS'] = '--xla_cpu_multi_thread_eigen=true'

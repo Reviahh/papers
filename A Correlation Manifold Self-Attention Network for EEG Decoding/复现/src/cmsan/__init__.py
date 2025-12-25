@@ -33,7 +33,7 @@ from .model import (
     create_from_preset,
     PRESETS,
 )
-from .train import (
+from .train_engine import (
     TrainState,
     train,
     fit,
