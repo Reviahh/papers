@@ -41,7 +41,9 @@ src/
 │   ├── author_original/       #    作者提供的数据
 │   ├── my_custom/             #    自己下载的数据
 │   └── raw/                   #    原始未处理数据
-│
+|
+├── logs/                      #    日志区
+|
 ├── scripts/                   # 📝 脚本区 (三维度实验)
 │   ├── reproduce_paper.py     #    【维度一】作者原文实验
 │   ├── my_reproduction.py     #    【维度二】我的复现
