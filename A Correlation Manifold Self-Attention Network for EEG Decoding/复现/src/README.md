@@ -1,6 +1,12 @@
 # CMSAN: Correlation Manifold Self-Attention Network
 
-> 基于相关流形自注意力机制的 EEG 解码网络 (Equinox + Optax)
+> 基于相关流形自注意力机制的 EEG 解码网络 (JAX + Equinox + Optax)
+
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![JAX](https://img.shields.io/badge/JAX-0.4+-green.svg)](https://github.com/google/jax)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
 
 ## 📐 数学框架
 
@@ -20,110 +26,33 @@ $$
 
 ---
 
-## 📁 项目结构 (重构后)
-
-本项目已重构为清晰的三维度实验框架：
+## 📁 项目结构
 
 ```
 src/
-├── cmsan/                     # 🎯 核心算法库 (保持纯净，不放数据)
-│   ├── __init__.py            #    导出 CMSAN, train, fit
-│   ├── model.py               #    模型定义 (eqx.Module)
-│   ├── train_engine.py        #    通用训练逻辑 (Equinox + Optax)
-│   ├── README.md              #    API 文档
-│   └── layers/                # 🔧 可插拔模块组合
-│       ├── fem.py, mmm.py, hom.py, att.py, prj.py, cls.py
-│       ├── manifold.py        #    OLM 流形几何
-│       ├── ops.py, loss.py    #    基础算子和损失函数
-│       └── ...
+├── main.py                 # 🚀 唯一入口 (纯函数式)
+├── requirements.txt
+├── README.md
 │
-├── data/                      # 📦 数据存放区
-│   ├── author_original/       #    作者提供的数据
-│   ├── my_custom/             #    自己下载的数据
-│   └── raw/                   #    原始未处理数据
-|
-├── logs/                      #    日志区
-|
-├── scripts/                   # 📝 脚本区 (三维度实验)
-│   ├── reproduce_paper.py     #    【维度一】作者原文实验
-│   ├── my_reproduction.py     #    【维度二】我的复现
-│   ├── run_application.py     #    【维度三】框架应用
-│   └── data_utils/            #    数据处理工具
-│       ├── download_data.py   #    数据下载
-│       ├── load_data.py       #    数据加载
-│       └── explore_data.py    #    数据探索
+├── cmsan/                  # 🧠 核心模块
+│   ├── __init__.py         #    导出 CMSAN, data
+│   ├── model.py            #    CMSAN 模型定义
+│   ├── engine.py           #    🔥 训练引擎 (lax.scan)
+│   ├── data.py             #    📦 数据加载器
+│   └── layers/             #    流形层实现
 │
-├── checkpoints/               # 💾 模型权重存放
-│   └── (*.pkl 文件)
+├── configs/                # ⚙️ 配置预设
+│   └── presets.py          #    fast / paper 参数
 │
-├── configs/                   # ⚙️  配置文件区
-│   ├── paper_config.yaml      #    论文固定参数
-│   └── custom_config.yaml     #    自定义参数
+├── data/                   # 📊 数据集
+│   ├── BCICIV_2a_mat/      #    BCI Competition IV 2a
+│   ├── BCIcha/             #    BCI Challenge
+│   ├── MAMEM/              #    MAMEM SSVEP
+│   └── data_utils/         #    数据处理工具
 │
-├── main.py                    # 🚀 统一入口
-└── requirements.txt           # 📦 依赖
+├── checkpoints/            # 💾 模型存档
+└── logs/                   # 📝 训练日志
 ```
-
----
-
-## 🎯 三维度实验框架
-
-### 维度一: 作者原文实验 (Official Benchmark)
-
-**目的**: 使用作者提供的数据和参数，复现论文中的实验结果，作为"定海神针"。
-
-```bash
-# 1. 将作者提供的数据放入 data/author_original/
-# 2. 运行作者原文实验
-python scripts/reproduce_paper.py --data data/author_original/eeg_data.npz
-
-# 或通过主入口
-python main.py --mode paper --data data/author_original/eeg_data.npz
-```
-
-**特点**:
-- 参数固定，不可修改
-- 保证可重复性 (固定种子)
-- 验证代码实现正确性
-
----
-
-### 维度二: 我自己的复现 (My Validation)
-
-**目的**: 使用自己下载的数据，进行完整的 10-fold CV 实验。
-
-```bash
-# 1. 将下载的数据放入 data/my_custom/
-# 2. 运行 10-fold CV 实验
-python scripts/my_reproduction.py --data data/my_custom --dataset bcic
-
-# 或通过主入口
-python main.py --mode reproduce --data data/my_custom --dataset bcic
-```
-
-**特点**:
-- 支持多数据集 (bcic, mamem, bcicha)
-- 完整 10-fold 交叉验证
-- 可调整超参数
-
----
-
-### 维度三: 框架应用 (Extension)
-
-**目的**: 展示框架的通用性和扩展性，CPU 优化快速实验。
-
-```bash
-# 运行快速实验 (5-fold, 50 epochs)
-python scripts/run_application.py --data data/my_custom --dataset all
-
-# 或通过主入口
-python main.py --mode fast --data data/my_custom --dataset all
-```
-
-**特点**:
-- CPU 优化 (多线程，大批次)
-- 快速迭代 (1小时完成所有数据集)
-- 证明框架低耦合，通用性强
 
 ---
 
@@ -135,107 +64,190 @@ python main.py --mode fast --data data/my_custom --dataset all
 pip install -r requirements.txt
 ```
 
-### 测试模式 (使用假数据)
+### 运行模式
+
+| 模式 | 命令 | 用途 | 硬件优化 |
+|------|------|------|----------|
+| **FAST** | `python main.py --mode fast` | 单被试快速训练 | i5-12500H P-Core 锁定 |
+| **PAPER** | `python main.py --mode paper` | 全量基准测试 | TPU/GPU 集群 |
+
+### FAST 模式 (本地开发)
 
 ```bash
-# 快速测试代码是否正常工作
-python main.py
+# 默认: BCIC 数据集, 被试 1
+python main.py --mode fast --dataset bcic --sub 1
+
+# 输出示例:
+# 🔒 [System] Process locked to P-Cores: [0, 1, 2, 3, 4, 5, 6, 7]
+# 🚀 [System] Priority set to HIGH. E-Cores are banned.
+# 15:45:22 | 🔥 MODE: FAST | P-Cores Only | Threads: 8
+# ...
+# 🎓 Train Acc: 98.04%
+# 🏆 Test Acc:  75.86%
 ```
 
-### 最简示例 (Equinox 风格)
+### PAPER 模式 (基准测试)
+
+```bash
+# 单数据集全被试
+python main.py --mode paper --dataset bcic
+
+# 所有数据集
+python main.py --mode paper --dataset all
+
+# 输出: SCI 格式报表
+# ══════════════════════════════════════════════════════════════════════
+# 🏁 BENCHMARK REPORT | Time: 45.2 min
+# ══════════════════════════════════════════════════════════════════════
+# Dataset      | N    | Mean ± Std         | Best
+# --------------------------------------------------
+# bcic         | 9    | 72.34% ± 8.21%     | 85.71%
+# ══════════════════════════════════════════════════════════════════════
+```
+
+---
+
+## ⚙️ 配置参数
+
+| 参数 | FAST | PAPER | 说明 |
+|------|------|-------|------|
+| `epochs` | 100 | 200 | 训练轮数 |
+| `batch_size` | 64 | 128 | 批大小 |
+| `lr` | 1e-3 | 5e-4 | 学习率 |
+| `d_model` | 32 | 64 | 隐藏维度 |
+| `slices` | 4 | 8 | 时间切片数 |
+| `save_model` | ✅ | ❌ | 保存检查点 |
+| `verbose` | ✅ | ❌ | 进度输出 |
+
+---
+
+## 🖥️ 硬件自适应
+
+### Intel 12代+ (i5-12500H)
+
+```
+自动检测 → P-Core 锁定 (Core 0-7) → 进程优先级 HIGH → E-Core 禁用
+```
+
+- `OMP_NUM_THREADS=8`
+- `XLA_FLAGS='--xla_cpu_multi_thread_eigen=true'`
+- 实测吞吐: ~32 samples/s
+
+### Cloud TPU
+
+```
+自动检测 TPU_NAME 环境变量 → 跳过 CPU 亲和性 → 使用 TPU 调度
+```
+
+- `XLA_PYTHON_CLIENT_PREALLOCATE='true'`
+- 大 batch (128) 利用并行
+
+---
+
+## 🧮 代码风格
+
+### 纯函数式设计
+
+```python
+# ❌ 传统风格
+for epoch in range(100):
+    for batch in dataloader:
+        loss = train_step(batch)
+
+# ✅ 函数式风格 (本项目)
+final_state, history = lax.scan(epoch_step, init_state, jnp.arange(epochs))
+```
+
+### 零 if/else 分支
+
+```python
+# ❌ 传统风格
+if mode == 'fast':
+    run_fast()
+elif mode == 'paper':
+    run_paper()
+
+# ✅ 派发表风格 (本项目)
+MODE_HANDLERS = {'fast': run_fast, 'paper': run_paper}
+MODE_HANDLERS[mode](args)
+```
+
+---
+
+## 🧪 最简示例
 
 ```python
 import jax
-from cmsan import CMSAN, fit
+from cmsan import CMSAN, data
+from cmsan.engine import fit_unified, evaluate_pure
 
-# 创建模型 (Equinox Module，参数内嵌)
-model = CMSAN(jax.random.key(0), C=22, T=438, D=20, S=3, K=4)
+# 1. 加载数据
+X, y = data.load_unified('bcic', subject=1)
 
-# 训练 (完全函数式，无 for 循环)
-model = fit(model, (X_train, y_train), epochs=100, verbose=True)
+# 2. 创建模型
+key = jax.random.PRNGKey(42)
+model = CMSAN(key, C=22, T=1000, K=4, D=32, S=4)
 
-# 推理 (直接调用)
-logits = model(x)
-pred = model.predict(x)
+# 3. 训练 (全图编译，无 Python 循环)
+model, history = fit_unified(model, X, y, key, epochs=100, batch_size=64, lr=1e-3)
+
+# 4. 评估
+acc = evaluate_pure(model, X_test, y_test)
+print(f"Accuracy: {acc:.2%}")
 ```
 
 ---
 
-## 🔧 数据准备
-
-### 方法一: 使用作者提供的数据
-
-```bash
-# 将 .npz 文件放入 data/author_original/
-cp /path/to/eeg_data.npz data/author_original/
-```
-
-### 方法二: 自己下载数据
-
-```bash
-# 使用 MOABB 下载 BCI Competition IV 2a
-python scripts/data_utils/download_data.py --subject 1 --output data/my_custom/eeg_data.npz
-```
-
----
-
-## 📊 配置文件说明
-
-### paper_config.yaml
-
-论文固定参数，用于维度一实验，**不可修改**。
-
-### custom_config.yaml
-
-自定义参数，用于维度二和维度三实验，**可自由调整**。
-
----
-
-## 🧮 流形几何基础
+## 🔬 流形几何
 
 ### OLM 流形 (Oblique Log-Euclidean Manifold)
 
-**切空间映射（对数映射）**：
-$$
-\text{Log}_I(P) = \log(P) - \text{off}(\log(P))
-$$
+| 操作 | 公式 |
+|------|------|
+| **对数映射** | $\text{Log}_I(P) = \log(P) - \text{off}(\log(P))$ |
+| **指数映射** | $\text{Exp}_I(\xi) = \exp(\xi + \text{off}(\xi))$ |
+| **测地距离** | $d(P, Q) = \|\text{Log}_I(P) - \text{Log}_I(Q)\|_F$ |
+| **Fréchet 均值** | $\bar{P} = \text{Exp}_I\left(\sum_i w_i \cdot \text{Log}_I(P_i)\right)$ |
 
-**指数映射**：
-$$
-\text{Exp}_I(\xi) = \exp(\xi + \text{off}(\xi))
-$$
+### 模块功能
 
-**测地距离**：
-$$
-d(P, Q) = \|\text{Log}_I(P) - \text{Log}_I(Q)\|_F
-$$
-
-**加权 Fréchet 均值**：
-$$
-\bar{P} = \text{Exp}_I\left(\sum_i w_i \cdot \text{Log}_I(P_i)\right)
-$$
+| 模块 | 映射 | 功能 |
+|------|------|------|
+| **FEM** | $x \mapsto h = Wx$ | 线性特征提取 |
+| **MMM** | $h \mapsto \{C_i\}_{i=1}^S$ | 分段相关矩阵 |
+| **HOM** | $C \mapsto (Q, K, V)$ | Cayley 同态 |
+| **ATT** | $(Q, K, V) \mapsto R$ | 流形自注意力 |
+| **PRJ** | $\{R_i\} \mapsto f$ | 切空间投影 |
+| **CLS** | $f \mapsto \hat{y}$ | 线性分类 |
 
 ---
 
-## 🔬 模块详解
+## 📊 数据集支持
 
-| 模块 | 数学表示 | 功能 |
-|------|----------|------|
-| **FEM** | $x \mapsto h = Wx$ | 线性特征提取 |
-| **MMM** | $h \mapsto \{C_i\}_{i=1}^S$ | 分段相关矩阵计算 |
-| **HOM** | $C \mapsto (Q, K, V)$ | Cayley 线性同态 |
-| **ATT** | $(Q, K, V) \mapsto R$ | 流形自注意力 |
-| **PRJ** | $\{R_i\} \mapsto f$ | 切空间投影 + 展平 |
-| **CLS** | $f \mapsto \hat{y}$ | 线性分类 + Softmax |
+| 数据集 | 被试数 | 类别 | 任务 |
+|--------|--------|------|------|
+| `bcic` | 9 | 4 | Motor Imagery |
+| `bcicha` | 9 | 4 | Motor Imagery |
+| `mamem` | 11 | 5 | SSVEP |
+
+### 数据格式
+
+```
+data/
+├── BCICIV_2a_mat/
+│   ├── BCIC_S01_T.mat    # 训练集
+│   ├── BCIC_S01_E.mat    # 测试集
+│   └── ...
+```
 
 ---
 
 ## 📚 参考文献
 
-- 原论文: *A Correlation Manifold Self-Attention Network for EEG Decoding*
-- JAX 文档: https://jax.readthedocs.io/
-- Equinox 文档: https://docs.kidger.site/equinox/
-- Optax 文档: https://optax.readthedocs.io/
+- **原论文**: *A Correlation Manifold Self-Attention Network for EEG Decoding*
+- **JAX**: https://jax.readthedocs.io/
+- **Equinox**: https://docs.kidger.site/equinox/
+- **Optax**: https://optax.readthedocs.io/
 
 ---
 

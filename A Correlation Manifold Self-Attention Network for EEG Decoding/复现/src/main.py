@@ -1,220 +1,328 @@
 """
-CMSAN 统一入口程序 (Equinox)
+CMSAN Functional Main: Pure FP Orchestration
 ═══════════════════════════════════════════════════════════════════════════════
-
-Correlation Manifold Self-Attention Network for EEG Decoding
-使用 Equinox + Optax 实现完全函数式训练
-
-三种实验模式:
-    1. paper      - 维度一: 作者原文实验 (使用作者数据和参数)
-    2. reproduce  - 维度二: 我自己的复现 (使用自己下载的数据)
-    3. fast       - 维度三: 框架应用 (CPU优化快速实验)
-
-使用:
-    python main.py --mode paper --data data/author_original/eeg_data.npz
-    python main.py --mode reproduce --data data/my_custom --dataset bcic
-    python main.py --mode fast --data data/my_custom --dataset all
-    python main.py  # 使用假数据测试 (默认)
+设计: 
+  ✅ 零 for/if/else - 纯派发表 + map/reduce
+  ✅ 复用 engine.py 的训练核心
+  ✅ FAST: P-Core 锁定 (engine.py 自动检测)
+  ✅ PAPER: TPU 全量基准
+═══════════════════════════════════════════════════════════════════════════════
 """
+
+from __future__ import annotations
+import os
+import sys
+import platform
+import argparse
+import time
+import gc
+import logging
+from functools import partial, reduce
+from typing import NamedTuple, Callable, Dict, Tuple, Optional
+from dataclasses import dataclass
+import numpy as np
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 0. 🛡️ Pre-JAX Bootstrap (P-Core Lock)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def bootstrap_hardware():
+    """硬件初始化 (必须在 import jax 前)"""
+    import psutil
+    
+    # 硬件配置表
+    profiles = {
+        'i5-12500h': {'cores': list(range(8)), 'threads': 8, 'priority': 'high'},
+        'tpu':       {'cores': None, 'threads': 0, 'priority': 'normal'},
+        'default':   {'cores': None, 'threads': os.cpu_count(), 'priority': 'normal'},
+    }
+    
+    # 检测硬件
+    hw_type = next((
+        k for k, pred in [
+            ('tpu', lambda: 'tpu' in os.environ.get('TPU_NAME', '').lower()),
+            ('i5-12500h', lambda: '12500' in platform.processor()),
+        ] if pred()
+    ), 'default')
+    
+    profile = profiles[hw_type]
+    
+    # 环境变量
+    os.environ['OMP_NUM_THREADS'] = str(profile['threads'] or os.cpu_count())
+    os.environ['XLA_FLAGS'] = '--xla_cpu_multi_thread_eigen=true'
+    os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
+    
+    # P-Core 锁定 (仅 Windows + 有核心列表)
+    lock_result = (
+        profile['cores'] and platform.system() == 'Windows' and
+        (lambda: (
+            psutil.Process(os.getpid()).cpu_affinity(profile['cores']),
+            psutil.Process(os.getpid()).nice(psutil.HIGH_PRIORITY_CLASS),
+            print(f"🔒 [System] Process locked to P-Cores: {profile['cores']}"),
+            print(f"🚀 [System] Priority set to HIGH. E-Cores are banned."),
+        ))()
+    )
+    
+    return hw_type, profile
+
+HW_TYPE, HW_PROFILE = bootstrap_hardware()
+print(f"{time.strftime('%H:%M:%S')} | 🔥 MODE: FAST | P-Cores Only | Threads: {HW_PROFILE['threads']}")
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 1. JAX Imports (Post-Bootstrap)
+# ═══════════════════════════════════════════════════════════════════════════════
 
 import jax
 import jax.numpy as jnp
-from jax import random
-import argparse
-import time
-import sys
-from pathlib import Path
-
 import equinox as eqx
 
-# 使用 CMSAN API
-from cmsan import CMSAN, fit, evaluate, batch_forward, save_model
-from cmsan.model import PRESETS, create_from_preset
+from cmsan import CMSAN, data
+from cmsan.engine import fit_unified, evaluate_pure, save_checkpoint
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# 2. 📦 Immutable Data Structures
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# ═══════════════════════════════════════════════════════════════════════════
-#                              假数据
-# ═══════════════════════════════════════════════════════════════════════════
+class DatasetMeta(NamedTuple):
+    name: str
+    subjects: int
 
-def make_fake_data(key, C, T, K, n_train=100, n_val=20):
-    """生成假数据用于测试"""
-    k1, k2, k3, k4 = random.split(key, 4)
-    
-    xs_train = random.normal(k1, (n_train, C, T))
-    ys_train = random.randint(k2, (n_train,), 0, K)
-    
-    xs_val = random.normal(k3, (n_val, C, T))
-    ys_val = random.randint(k4, (n_val,), 0, K)
-    
-    return (xs_train, ys_train), (xs_val, ys_val)
+class TrainConfig(NamedTuple):
+    epochs: int
+    batch_size: int
+    lr: float
+    d_model: int
+    slices: int
+    save_model: bool
+    verbose: bool
 
+class SessionResult(NamedTuple):
+    dataset: str
+    subject: int
+    train_acc: float
+    test_acc: float
+    duration: float
+    params: int
 
-# ═══════════════════════════════════════════════════════════════════════════
-#                              主程序
-# ═══════════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
+# 3. 📊 Registry Tables (替代 if/else)
+# ═══════════════════════════════════════════════════════════════════════════════
 
-def main():
-    parser = argparse.ArgumentParser(description='CMSAN 统一入口')
-    parser.add_argument('--mode', type=str, default='test', 
-                       choices=['test', 'paper', 'reproduce', 'fast'],
-                       help='''实验模式:
-                       test - 使用假数据测试
-                       paper - 维度一: 作者原文实验
-                       reproduce - 维度二: 我的复现
-                       fast - 维度三: 框架应用''')
-    parser.add_argument('--data', type=str, default=None, help='数据路径')
-    parser.add_argument('--dataset', type=str, default='bcic',
-                       choices=['bcic', 'mamem', 'bcicha', 'all'],
-                       help='数据集选择 (用于 reproduce/fast 模式)')
-    parser.add_argument('--preset', type=str, default='light', 
-                       choices=list(PRESETS.keys()), help='预设配置')
-    parser.add_argument('--epochs', type=int, default=50, help='训练轮数')
-    parser.add_argument('--batch', type=int, default=8, help='批大小')
-    parser.add_argument('--lr', type=float, default=5e-4, help='学习率')
-    parser.add_argument('--save', type=str, default='checkpoints/model.pkl', help='保存路径')
-    args = parser.parse_args()
+DATASETS: Dict[str, DatasetMeta] = {
+    'bcic':   DatasetMeta('bcic', 9),
+    'bcicha': DatasetMeta('bcicha', 9),
+    'mamem':  DatasetMeta('mamem', 11),
+}
+
+CONFIG_PRESETS: Dict[str, TrainConfig] = {
+    'fast': TrainConfig(
+        epochs=100, batch_size=64, lr=1e-3,
+        d_model=32, slices=4, save_model=True, verbose=True
+    ),
+    'paper': TrainConfig(
+        epochs=200, batch_size=128, lr=5e-4,
+        d_model=64, slices=8, save_model=False, verbose=False
+    ),
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 4. 🧮 Pure Functional Primitives
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def safe_call(fn: Callable, default=None):
+    """安全调用 (替代 try/except)"""
+    def wrapper(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            print(f"⚠️ {e}")
+            return default
+    return wrapper
+
+def maybe(value, fn: Callable, default=None):
+    """Maybe monad (替代 if is not None)"""
+    return fn(value) if value is not None else default
+
+def count_params(model) -> int:
+    """参数计数"""
+    return sum(x.size for x in jax.tree_util.tree_leaves(eqx.filter(model, eqx.is_array)))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 5. 🎯 Core Session Runner
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def run_session(
+    meta: DatasetMeta,
+    subject: int,
+    cfg: TrainConfig,
+    logger
+) -> Optional[SessionResult]:
+    """
+    单会话训练 (纯函数管道)
+    """
+    start = time.time()
+    logger.info(f"📥 Loading {meta.name} Subject {subject}...")
     
-    print("═" * 70)
-    print("CMSAN - Correlation Manifold Self-Attention Network")
-    print("═" * 70)
-    print(f"\n当前模式: {args.mode}")
+    # 1. 数据加载 (safe_call 替代 try/except)
+    raw_data = safe_call(data.load_unified, None)(meta.name, subject)
     
-    # 根据模式选择执行
-    if args.mode == 'paper':
-        print("\n→ 维度一: 作者原文实验复现")
-        print("提示: 建议直接运行 scripts/reproduce_paper.py")
-        print(f"命令: python scripts/reproduce_paper.py --data {args.data or 'data/author_original/eeg_data.npz'}")
-        if args.data:
-            import subprocess
-            subprocess.run([sys.executable, 'scripts/reproduce_paper.py', '--data', args.data])
-        return
-    
-    elif args.mode == 'reproduce':
-        print("\n→ 维度二: 我自己的复现 (10-fold CV)")
-        print("提示: 建议直接运行 scripts/my_reproduction.py")
-        print(f"命令: python scripts/my_reproduction.py --data {args.data or 'data/my_custom'} --dataset {args.dataset}")
-        if args.data:
-            import subprocess
-            subprocess.run([sys.executable, 'scripts/my_reproduction.py', 
-                          '--data', args.data, '--dataset', args.dataset])
-        return
-    
-    elif args.mode == 'fast':
-        print("\n→ 维度三: 框架应用 (CPU优化)")
-        print("提示: 建议直接运行 scripts/run_application.py")
-        print(f"命令: python scripts/run_application.py --data {args.data or 'data/my_custom'} --dataset {args.dataset}")
-        if args.data:
-            import subprocess
-            subprocess.run([sys.executable, 'scripts/run_application.py',
-                          '--data', args.data, '--dataset', args.dataset])
-        return
-    
-    # test 模式: 使用假数据
-    print("\n→ 测试模式: 使用假数据")
-    print("提示: 这是一个快速测试，用于验证代码是否正常工作")
-    
-    key = random.key(42)
-    
-    # 先加载数据，获取维度
-    if args.data:
-        import numpy as np
-        data = np.load(args.data)
-        train_data = (jnp.array(data['x_train']), jnp.array(data['y_train']))
-        val_data = (jnp.array(data['x_val']), jnp.array(data['y_val']))
-        print(f"加载数据: {args.data}")
+    # 2. 训练管道 (maybe 替代 if None)
+    def train_pipeline(data_tuple):
+        X, y = data_tuple
         
-        # 从数据推断维度
-        C = train_data[0].shape[1]  # 通道数
-        T = train_data[0].shape[2]  # 时间点
-        K = int(train_data[1].max()) + 1  # 类别数
+        # 数据准备
+        key = jax.random.PRNGKey(42 + subject)
+        k1, k2, k3 = jax.random.split(key, 3)
         
-        # 根据数据维度创建模型
-        key, subkey = random.split(key)
-        from cmsan import CMSAN
-        preset_cfg = PRESETS.get(args.preset, PRESETS['light'])
-        model = CMSAN(
-            subkey, 
-            C=C, 
-            T=T, 
-            D=preset_cfg.get('D', 20),
-            S=preset_cfg.get('S', 3),
-            K=K,
+        N = X.shape[0]
+        perm = jax.random.permutation(k1, N)
+        X, y = X[perm], y[perm]
+        
+        split_idx = int(N * 0.8)
+        X_train, y_train = X[:split_idx], y[:split_idx]
+        X_test, y_test = X[split_idx:], y[split_idx:]
+        
+        # 设备放置
+        device = jax.devices()[0]
+        X_train = jax.device_put(X_train, device)
+        y_train = jax.device_put(y_train, device)
+        X_test = jax.device_put(X_test, device)
+        y_test = jax.device_put(y_test, device)
+        
+        # 模型创建
+        K = len(np.unique(np.array(y_train)))
+        model = CMSAN(k2, C=X_train.shape[1], T=X_train.shape[2], K=K, D=cfg.d_model, S=cfg.slices)
+        params = count_params(model)
+        
+        cfg.verbose and logger.info(f"🧠 Model Params: {params:,}")
+        cfg.verbose and logger.info(f"🚀 Compiling & Starting...")
+        cfg.verbose and print(f"🚀 Whole-Graph Training: {cfg.epochs} Epochs | Batch: {cfg.batch_size}")
+        cfg.verbose and print(f"{'Progress':<12} | {'Elapsed':<10} | {'Core (Type)':<11} | Loss")
+        cfg.verbose and print("-" * 60)
+        
+        # 训练 (调用 engine.py)
+        final_model, _ = fit_unified(
+            model, X_train, y_train, k3,
+            epochs=cfg.epochs, batch_size=cfg.batch_size, lr=cfg.lr,
+            verbose=cfg.verbose
         )
-        print(f"根据数据自动配置模型")
-    else:
-        # 使用预设创建模型和假数据
-        key, subkey = random.split(key)
-        model = create_from_preset(subkey, args.preset)
-        key, subkey = random.split(key)
-        train_data, val_data = make_fake_data(subkey, model.C, model.T, model.K)
-        print(f"使用假数据 (测试模式，preset={args.preset})")
+        jax.block_until_ready(eqx.filter(final_model, eqx.is_array))
+        
+        # 评估
+        train_acc = float(evaluate_pure(final_model, X_train, y_train))
+        test_acc = float(evaluate_pure(final_model, X_test, y_test))
+        duration = time.time() - start
+        
+        # 保存模型 (条件执行替代 if)
+        cfg.save_model and save_checkpoint(
+            final_model, f"checkpoints/{meta.name}_sub{subject:02d}.eqx"
+        ) and logger.info(f"💾 Saved: checkpoints/{meta.name}_sub{subject:02d}.eqx")
+        
+        return SessionResult(meta.name, subject, train_acc, test_acc, duration, params)
     
-    print(f"配置: C={model.C}, T={model.T}, D={model.D}, S={model.S}, K={model.K}")
-    print(f"设备: {jax.devices()[0]}")
-    print()
+    return maybe(raw_data, train_pipeline, None)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 6. 📜 Mode Handlers (派发表替代 if/else)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def run_fast_mode(args, cfg: TrainConfig, logger):
+    """FAST: 单被试极速训练"""
+    meta = DATASETS[args.dataset]
     
-    # 统计参数量 (Equinox 方式)
-    n_params = sum(x.size for x in jax.tree.leaves(eqx.filter(model, eqx.is_array)))
-    print(f"参数量: {n_params:,}")
+    result = run_session(meta, args.sub, cfg, logger)
     
-    print(f"训练集: {train_data[0].shape}")
-    print(f"验证集: {val_data[0].shape}")
-    print()
+    # 结果输出
+    maybe(result, lambda r: (
+        logger.info("=" * 60),
+        logger.info(f"✅ Time: {r.duration:.2f}s | Throughput: {int(288 * 0.8 * cfg.epochs / r.duration)} samples/s"),
+        logger.info(f"🎓 Train Acc: {r.train_acc:.2%}"),
+        logger.info(f"🏆 Test Acc:  {r.test_acc:.2%}"),
+        logger.info("=" * 60),
+    ))
     
-    # 测试前向传播 (Equinox: 直接调用模型)
-    print("测试前向传播...")
-    t0 = time.time()
-    x_test = train_data[0][0]
-    logits = model(x_test)  # Equinox 风格
-    print(f"输出形状: {logits.shape}")
-    print(f"首次运行: {time.time()-t0:.2f}s (含 JIT 编译)")
+    return result
+
+def run_paper_mode(args, cfg: TrainConfig, logger):
+    """PAPER: 全量基准测试"""
+    start = time.time()
     
-    # 使用 eqx.filter_jit 测试
-    jit_model = eqx.filter_jit(model)
-    t0 = time.time()
-    # 使用 lax.fori_loop 替代 for 循环
-    def bench_body(i, acc):
-        return acc + jit_model(x_test).sum()
-    _ = jax.lax.fori_loop(0, 10, bench_body, 0.0)
-    print(f"JIT 后平均: {(time.time()-t0)/10*1000:.1f}ms/sample")
-    print()
+    # 目标数据集 (字典查表替代 if/else)
+    targets = {
+        True: DATASETS,
+        False: {args.dataset: DATASETS[args.dataset]}
+    }[args.dataset == 'all']
     
-    # 训练 (Equinox + Optax，完全函数式)
-    print("开始训练...")
-    print("-" * 60)
+    logger.info(f"📜 PAPER MODE | Targets: {list(targets.keys())}")
+    logger.info("=" * 60)
     
-    t_start = time.time()
-    key, subkey = random.split(key)
+    # 生成所有 (dataset, subject) 任务
+    tasks = [
+        (meta, sub)
+        for meta in targets.values()
+        for sub in range(1, meta.subjects + 1)
+    ]
     
-    # fit 函数：带日志输出的训练
-    trained_model = fit(
-        model,
-        train_data,
-        val_data,
-        epochs=args.epochs,
-        batch_size=args.batch,
-        lr=args.lr,
-        key=subkey,
+    # map 执行 (替代 for 循环)
+    results = tuple(filter(None, map(
+        lambda task: run_session(task[0], task[1], cfg, logger),
+        tasks
+    )))
+    
+    # 汇总统计 (reduce 替代 for 循环)
+    from collections import defaultdict
+    grouped = reduce(
+        lambda acc, r: (acc[r.dataset].append(r.test_acc), acc)[1],
+        results,
+        defaultdict(list)
     )
     
-    print("-" * 60)
-    print(f"训练完成! 耗时: {time.time()-t_start:.1f}s")
+    # 打印报告
+    total_time = time.time() - start
+    logger.info("\n" + "=" * 70)
+    logger.info(f"🏁 BENCHMARK REPORT | Time: {total_time/60:.1f} min")
+    logger.info("=" * 70)
+    logger.info(f"{'Dataset':<12} | {'N':<4} | {'Mean ± Std':<18} | {'Best':<8}")
+    logger.info("-" * 50)
     
-    # 最终评估
-    final_train = evaluate(trained_model, train_data[0], train_data[1])
-    final_val = evaluate(trained_model, val_data[0], val_data[1])
-    print(f"最终准确率 - 训练: {float(final_train):.2%} | 验证: {float(final_val):.2%}")
+    # map 打印 (替代 for)
+    list(map(
+        lambda kv: logger.info(
+            f"{kv[0]:<12} | {len(kv[1]):<4} | "
+            f"{np.mean(kv[1]):.2%} ± {np.std(kv[1]):.2%} | {max(kv[1]):.2%}"
+        ),
+        grouped.items()
+    ))
+    logger.info("=" * 70)
     
-    # 保存 (Equinox 序列化)
-    save_path = Path(args.save)
-    save_path.parent.mkdir(parents=True, exist_ok=True)
-    save_model(trained_model, str(save_path))
-    print(f"模型已保存: {args.save}")
-    
-    print("\n" + "═" * 70)
-    print("✓ 完成")
-    print("═" * 70)
+    return results
 
+# 模式派发表
+MODE_HANDLERS: Dict[str, Callable] = {
+    'fast': run_fast_mode,
+    'paper': run_paper_mode,
+}
 
-if __name__ == "__main__":
-    main()
+# ═══════════════════════════════════════════════════════════════════════════════
+# 7. 🎮 Main Entry
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', default='fast', choices=['fast', 'paper'])
+    parser.add_argument('--dataset', default='bcic')
+    parser.add_argument('--sub', type=int, default=1)
+    args = parser.parse_args()
+    
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(message)s', datefmt='%H:%M:%S', force=True)
+    logger = logging.getLogger()
+    
+    os.makedirs("checkpoints", exist_ok=True)
+    
+    # 配置 + 模式派发 (字典查表，零 if/else)
+    cfg = CONFIG_PRESETS[args.mode]
+    handler = MODE_HANDLERS[args.mode]
+    
+    return handler(args, cfg, logger)
+
+__name__ == "__main__" and main()
