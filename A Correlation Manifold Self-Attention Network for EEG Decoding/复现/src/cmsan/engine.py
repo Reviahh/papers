@@ -1,165 +1,411 @@
 """
-CMSAN Engine: Functional Core
-文件位置: src/cmsan/engine.py
-职责: 全权负责模型生命周期（构建 -> 编译 -> 训练 -> 评估）。
+CMSAN Engine: Unified Training Core
+═══════════════════════════════════════════════════════════════════════════════
 """
+
+import os
+import time
+import platform
+import ctypes
+from functools import partial, reduce
+from typing import Dict, Any, Tuple, Optional, Callable, NamedTuple
+
 import jax
 import jax.numpy as jnp
 from jax import random, lax
 import equinox as eqx
 import optax
-import time
-import ctypes
-import platform
-from functools import partial, reduce
 
-# 内部引用模型定义
+# 内部导入
 from .model import CMSAN, batch_forward, batch_predict
 
+
 # ═══════════════════════════════════════════════════════════════════════════════
-# 0. 纯函数式工具 (No For Loops)
+# 0. 类型定义
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def get_core_info():
-    """Windows 核心 ID 获取 (Lambda版)"""
-    return (lambda: f"#{ctypes.windll.kernel32.GetCurrentProcessorNumber()}" 
-            if platform.system() == "Windows" else "?")()
+class TrainState(NamedTuple):
+    """不可变训练状态"""
+    model: CMSAN
+    opt_state: optax.OptState
+    key: jax.Array
+    step: int
 
-def host_logger(args):
-    """JAX 运行时回调打印"""
-    epoch, loss, start_ts = args
-    elapsed = time.time() - float(start_ts)
-    print(f"Ep {int(epoch)+1:<4} | {elapsed:>6.1f}s | Core {get_core_info():<5} | Loss: {loss:.4f}")
 
-def compute_loss(model, xs, ys):
+class TrainResult(NamedTuple):
+    """训练结果"""
+    model: CMSAN
+    train_acc: float
+    test_acc: float
+    loss_history: jax.Array
+    duration: float
+    params_count: int
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 1. 工具函数
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_core_info() -> str:
+    """获取当前 CPU 核心 ID (Windows)"""
+    if platform.system() == 'Windows':
+        try:
+            return f"#{ctypes.windll.kernel32.GetCurrentProcessorNumber()}"
+        except:
+            pass
+    return "?"
+
+
+def count_params(model: CMSAN) -> int:
+    """统计模型参数量"""
+    return sum(x.size for x in jax.tree_util.tree_leaves(eqx.filter(model, eqx.is_array)))
+
+
+def create_optimizer(
+    lr: float,
+    total_steps: int,
+    weight_decay: float = 0.01,
+    grad_clip: float = 1.0,
+    warmup_ratio: float = 0.1,
+) -> optax.GradientTransformation:
+    """
+    创建优化器 (AdamW + Cosine Decay + Warmup)
+    """
+    warmup_steps = int(total_steps * warmup_ratio)
+    
+    schedule = optax.warmup_cosine_decay_schedule(
+        init_value=0.0,
+        peak_value=lr,
+        warmup_steps=warmup_steps,
+        decay_steps=total_steps,
+        end_value=lr * 0.01,
+    )
+    
+    return optax.chain(
+        optax.clip_by_global_norm(grad_clip),
+        optax.adamw(schedule, weight_decay=weight_decay),
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 2. 核心计算函数 (纯函数)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def compute_loss(model: CMSAN, xs: jax.Array, ys: jax.Array) -> jax.Array:
+    """计算批量交叉熵损失"""
     logits = batch_forward(model, xs)
     return jnp.mean(optax.softmax_cross_entropy_with_integer_labels(logits, ys))
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# 1. 核心算子 (TPU/Whole-Graph Mode)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 @eqx.filter_jit
-def _train_scan(carrier, data, optimizer, batch_size, total_epochs, start_ts, log_int):
-    """全图编译模式：使用 lax.scan 在 XLA 内部循环"""
-    model, opt_state, key = carrier
-    X, y = data
-    n_batches = X.shape[0] // batch_size
+def evaluate(model: CMSAN, xs: jax.Array, ys: jax.Array) -> jax.Array:
+    """计算准确率"""
+    preds = batch_predict(model, xs)
+    return jnp.mean(preds == ys)
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 3. SCAN 模式 (TPU/GPU 全图编译)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _make_scan_trainer(
+    optimizer: optax.GradientTransformation,
+    batch_size: int,
+    n_epochs: int,
+    log_interval: int = 10,
+) -> Callable:
     
-    # 数据规整
-    X, y = X[:n_batches*batch_size], y[:n_batches*batch_size]
-    X_b = X.reshape(n_batches, batch_size, *X.shape[1:])
-    y_b = y.reshape(n_batches, batch_size)
-
-    def epoch_step(state, epoch_idx):
-        m, o, k = state
-        k, subk = random.split(k)
-        perm = random.permutation(subk, n_batches)
-        
-        def batch_step(s, batch_data):
-            (curr_m, curr_o), (bx, by) = s, batch_data
-            loss, grads = eqx.filter_value_and_grad(compute_loss)(curr_m, bx, by)
-            updates, curr_o = optimizer.update(grads, curr_o, eqx.filter(curr_m, eqx.is_array))
-            return (eqx.apply_updates(curr_m, updates), curr_o), loss
-
-        # 乱序读取
-        X_s, y_s = jnp.take(X_b, perm, axis=0), jnp.take(y_b, perm, axis=0)
-        (m, o), losses = lax.scan(batch_step, (m, o), (X_s, y_s))
-        
-        # 仅在特定间隔回调打印 (副作用)
-        avg_loss = jnp.mean(losses)
-        lax.cond(
-            (epoch_idx + 1) % log_int == 0,
-            lambda _: jax.debug.callback(host_logger, (epoch_idx, avg_loss, start_ts)),
-            lambda _: None,
-            operand=None
-        )
-        return (m, o, k), avg_loss
-
-    return lax.scan(epoch_step, (model, opt_state, key), jnp.arange(total_epochs))
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# 2. 混合算子 (Windows/Hybrid Mode)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-def _train_reduce(model, X, y, key, epochs, batch_size, optimizer, opt_state, verbose):
-    """混合模式：使用 functools.reduce 在 Python 端循环 (防卡死)"""
-    n_batches = X.shape[0] // batch_size
-    X_b = X[:n_batches*batch_size].reshape(n_batches, batch_size, *X.shape[1:])
-    y_b = y[:n_batches*batch_size].reshape(n_batches, batch_size)
-    start_global = time.time()
-
-    # 单步 JIT 函数
     @eqx.filter_jit
-    def step_jit(carrier, perm):
-        def body(s, idx):
-            (m, o), (bx, by) = s, (jnp.take(X_b, idx, axis=0), jnp.take(y_b, idx, axis=0))
-            loss, grads = eqx.filter_value_and_grad(compute_loss)(m, bx, by)
-            updates, o = optimizer.update(grads, o, eqx.filter(m, eqx.is_array))
-            return (eqx.apply_updates(m, updates), o), loss
-        return lax.scan(body, carrier, perm)
-
-    # Reduce 调度器 (替代 for 循环)
-    def reduce_step(accum, epoch_idx):
-        curr_m, curr_o, curr_k, _ = accum
-        new_k, subkey = random.split(curr_k)
+    def train_scan(
+        model: CMSAN,
+        opt_state: optax.OptState,
+        key: jax.Array,
+        X: jax.Array,
+        y: jax.Array,
+        start_ts: float,
+    ) -> Tuple[CMSAN, optax.OptState, jax.Array]:
+        """全图编译训练"""
         
-        # 执行计算
-        (new_m, new_o), batch_losses = step_jit((curr_m, curr_o), random.permutation(subkey, n_batches))
-        loss_val = float(jnp.mean(batch_losses))
+        N = X.shape[0]
+        n_batches = N // batch_size
         
-        # 打印日志 (利用短路逻辑)
-        verbose and ((epoch_idx + 1) % 10 == 0) and print(
-            f"Ep {epoch_idx+1:<4}/{epochs} | {time.time()-start_global:>6.1f}s | {get_core_info():<8} | {loss_val:.4f}"
+        # 数据规整
+        X_trimmed = X[:n_batches * batch_size]
+        y_trimmed = y[:n_batches * batch_size]
+        X_batched = X_trimmed.reshape(n_batches, batch_size, *X.shape[1:])
+        y_batched = y_trimmed.reshape(n_batches, batch_size)
+        
+        def epoch_step(state, epoch_idx):
+            m, o, k = state
+            k, subk = random.split(k)
+            perm = random.permutation(subk, n_batches)
+            
+            def batch_step(carry, batch_data):
+                curr_m, curr_o = carry
+                bx, by = batch_data
+                
+                loss, grads = eqx.filter_value_and_grad(compute_loss)(curr_m, bx, by)
+                updates, new_o = optimizer.update(
+                    grads, curr_o, eqx.filter(curr_m, eqx.is_array)
+                )
+                new_m = eqx.apply_updates(curr_m, updates)
+                
+                return (new_m, new_o), loss
+            
+            # 打乱批次顺序
+            X_shuffled = jnp.take(X_batched, perm, axis=0)
+            y_shuffled = jnp.take(y_batched, perm, axis=0)
+            
+            (m, o), losses = lax.scan(batch_step, (m, o), (X_shuffled, y_shuffled))
+            avg_loss = jnp.mean(losses)
+            
+            # 条件日志回调
+            def log_callback(args):
+                ep, loss, ts = args
+                elapsed = time.time() - float(ts)
+                print(f"Ep {int(ep)+1:<4} | {elapsed:>6.1f}s | Loss: {loss:.4f}")
+            
+            lax.cond(
+                (epoch_idx + 1) % log_interval == 0,
+                lambda _: jax.debug.callback(log_callback, (epoch_idx, avg_loss, start_ts)),
+                lambda _: None,
+                operand=None,
+            )
+            
+            return (m, o, k), avg_loss
+        
+        (final_m, final_o, _), loss_history = lax.scan(
+            epoch_step,
+            (model, opt_state, key),
+            jnp.arange(n_epochs),
         )
-        return (new_m, new_o, new_k, loss_val)
+        
+        return final_m, final_o, loss_history
+    
+    return train_scan
 
-    # 启动 Reduce
-    final_m, final_o, _, _ = reduce(reduce_step, range(epochs), (model, opt_state, key, 0.0))
-    return final_m
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 3. 统一入口 (Public API)
+# 4. REDUCE 模式 (Windows 混合模式)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def train_session(X_tr, y_tr, cfg, key_seed):
-    """
-    一站式服务：初始化 -> 训练 -> 返回模型
-    """
-    k_model, k_train = random.split(key_seed)
+def _make_reduce_trainer(
+    optimizer: optax.GradientTransformation,
+    batch_size: int,
+    n_epochs: int,
+    log_interval: int = 10,
+    verbose: bool = True,
+) -> Callable:
     
-    # 1. 初始化模型
-    n_class = len(jnp.unique(y_tr))
-    model = CMSAN(
-        key=k_model, C=X_tr.shape[1], T=X_tr.shape[2], K=n_class, 
-        D=cfg['d_model'], S=cfg['slices']
-    )
+    def train_reduce(
+        model: CMSAN,
+        opt_state: optax.OptState,
+        key: jax.Array,
+        X: jax.Array,
+        y: jax.Array,
+    ) -> Tuple[CMSAN, optax.OptState, jax.Array]:
+        """混合模式训练"""
+        
+        N = X.shape[0]
+        n_batches = N // batch_size
+        X_batched = X[:n_batches * batch_size].reshape(n_batches, batch_size, *X.shape[1:])
+        y_batched = y[:n_batches * batch_size].reshape(n_batches, batch_size)
+        
+        start_time = time.time()
+        loss_history = []
+        
+        # JIT 编译的单 epoch 函数
+        @eqx.filter_jit
+        def run_epoch(carry, perm):
+            m, o = carry
+            
+            def batch_step(s, idx):
+                curr_m, curr_o = s
+                bx = jnp.take(X_batched, idx, axis=0)
+                by = jnp.take(y_batched, idx, axis=0)
+                
+                loss, grads = eqx.filter_value_and_grad(compute_loss)(curr_m, bx, by)
+                updates, new_o = optimizer.update(
+                    grads, curr_o, eqx.filter(curr_m, eqx.is_array)
+                )
+                return (eqx.apply_updates(curr_m, updates), new_o), loss
+            
+            return lax.scan(batch_step, (m, o), perm)
+        
+        # Reduce 调度
+        def epoch_step(accum, epoch_idx):
+            curr_m, curr_o, curr_k = accum
+            new_k, subkey = random.split(curr_k)
+            perm = random.permutation(subkey, n_batches)
+            
+            (new_m, new_o), batch_losses = run_epoch((curr_m, curr_o), perm)
+            loss_val = float(jnp.mean(batch_losses))
+            loss_history.append(loss_val)
+            
+            # 日志
+            if verbose and (epoch_idx + 1) % log_interval == 0:
+                elapsed = time.time() - start_time
+                print(f"Ep {epoch_idx+1:<4}/{n_epochs} | {elapsed:>6.1f}s | "
+                      f"Core {get_core_info():<5} | Loss: {loss_val:.4f}")
+            
+            return (new_m, new_o, new_k)
+        
+        final_m, final_o, _ = reduce(
+            epoch_step,
+            range(n_epochs),
+            (model, opt_state, key),
+        )
+        
+        return final_m, final_o, jnp.array(loss_history)
     
-    # 2. 初始化优化器
-    optimizer = optax.chain(
-        optax.clip_by_global_norm(1.0),
-        optax.adamw(optax.cosine_decay_schedule(cfg['lr'], cfg['epochs'] * (len(X_tr)//cfg['batch_size'])))
+    return train_reduce
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 5. 统一训练接口
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def train_session(
+    X_train: jax.Array,
+    y_train: jax.Array,
+    config: Dict[str, Any],
+    key: jax.Array,
+    X_test: Optional[jax.Array] = None,
+    y_test: Optional[jax.Array] = None,
+) -> TrainResult:
+    """
+    统一训练入口
+    """
+    start_time = time.time()
+    
+    # 解包配置
+    # 注意: config 可能已经是扁平化的，或者包含子字典
+    # 我们的 configs/__init__.py 现在返回的是嵌套结构:
+    # { 'train': {...}, 'model': { 'D':20, 'C':22... } }
+    
+    # 提取训练参数 (优先从 train 字段取，如果没有就从根目录取)
+    train_cfg = config.get('train', config)
+    # 提取模型参数
+    model_cfg = config.get('model', {})
+    
+    # 训练超参
+    epochs = train_cfg.get('epochs', 100)
+    batch_size = train_cfg.get('batch_size', 64)
+    lr = train_cfg.get('lr', 1e-3)
+    verbose = train_cfg.get('verbose', True)
+    log_interval = train_cfg.get('log_interval', 10)
+    engine_mode = train_cfg.get('engine', 'auto')
+    weight_decay = train_cfg.get('weight_decay', 0.01)
+    grad_clip = train_cfg.get('grad_clip', 1.0)
+    
+    # 数据信息
+    N = X_train.shape[0]
+    
+    # 分割密钥
+    k_model, k_train = random.split(key)
+    
+    # -------------------------------------------------------------------------
+    # 1. 创建模型 (Fixed)
+    # -------------------------------------------------------------------------
+    # 直接使用 model_cfg 里的参数，它现在应该包含 C, T, K, D, S 等所有必要信息
+    try:
+        model = CMSAN(
+            key=k_model,
+            **model_cfg 
+        )
+    except TypeError as e:
+        print("\n❌ Model Init Error: Maybe config is missing 'C', 'T', or 'K'?")
+        print(f"Current model_cfg keys: {list(model_cfg.keys())}")
+        raise e
+    
+    params_count = count_params(model)
+    
+    if verbose:
+        print(f"🧠 Model: {params_count:,} params")
+        print(f"📊 Data: N={N}, C={model.C}, T={model.T}")
+    
+    # 2. 创建优化器
+    steps_per_epoch = N // batch_size
+    total_steps = epochs * steps_per_epoch
+    
+    optimizer = create_optimizer(
+        lr=lr,
+        total_steps=total_steps,
+        weight_decay=weight_decay,
+        grad_clip=grad_clip,
     )
     opt_state = optimizer.init(eqx.filter(model, eqx.is_array))
-
-    # 3. 引擎路由 (Windows 强制 Hybrid)
-    use_hybrid = (platform.system() == "Windows") or cfg['verbose']
     
-    cfg['verbose'] and print(f"🔧 Engine: {'Hybrid (Reduce)' if use_hybrid else 'Whole-Graph (Scan)'}")
+    # 3. 选择引擎
+    use_scan = (
+        engine_mode == 'scan' or
+        (engine_mode == 'auto' and platform.system() != 'Windows' and not verbose)
+    )
     
-    if use_hybrid:
-        return _train_reduce(model, X_tr, y_tr, k_train, cfg['epochs'], cfg['batch_size'], optimizer, opt_state, cfg['verbose'])
-    else:
-        log_int = 10 if cfg['verbose'] else 999999
-        (final_m, _, _), _ = _train_scan(
-            (model, opt_state, k_train), (X_tr, y_tr), optimizer, 
-            cfg['batch_size'], cfg['epochs'], time.time(), log_int
+    if verbose:
+        engine_name = 'SCAN (Whole-Graph)' if use_scan else 'REDUCE (Hybrid)'
+        print(f"🔧 Engine: {engine_name}")
+        print(f"🚀 Training: {epochs} epochs, batch={batch_size}, lr={lr}")
+        print("-" * 60)
+    
+    # 4. 训练
+    if use_scan:
+        trainer = _make_scan_trainer(optimizer, batch_size, epochs, log_interval)
+        model, _, loss_history = trainer(
+            model, opt_state, k_train, X_train, y_train, time.time()
         )
-        return final_m
+    else:
+        trainer = _make_reduce_trainer(optimizer, batch_size, epochs, log_interval, verbose)
+        model, _, loss_history = trainer(model, opt_state, k_train, X_train, y_train)
+    
+    # 确保计算完成
+    jax.block_until_ready(eqx.filter(model, eqx.is_array))
+    
+    # 5. 评估
+    train_acc = float(evaluate(model, X_train, y_train))
+    
+    if X_test is not None and y_test is not None:
+        test_acc = float(evaluate(model, X_test, y_test))
+    else:
+        test_acc = 0.0
+    
+    duration = time.time() - start_time
+    
+    if verbose:
+        print("-" * 60)
+        print(f"✅ Done in {duration:.1f}s")
+        print(f"🎓 Train Acc: {train_acc:.2%}")
+        if X_test is not None:
+            print(f"🏆 Test Acc:  {test_acc:.2%}")
+    
+    return TrainResult(
+        model=model,
+        train_acc=train_acc,
+        test_acc=test_acc,
+        loss_history=loss_history,
+        duration=duration,
+        params_count=params_count,
+    )
 
-@eqx.filter_jit
-def evaluate(model, xs, ys):
-    return jnp.mean(batch_predict(model, xs) == ys)
 
-def save_ckpt(model, path):
-    with open(path, "wb") as f: eqx.tree_serialise_leaves(f, model)
+# ═══════════════════════════════════════════════════════════════════════════════
+# 6. 检查点管理
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def save_checkpoint(model: CMSAN, path: str) -> None:
+    """保存模型检查点"""
+    os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
+    with open(path, 'wb') as f:
+        eqx.tree_serialise_leaves(f, model)
+    print(f"💾 Saved: {path}")
+
+
+def load_checkpoint(path: str, model_template: CMSAN) -> CMSAN:
+    """加载模型检查点 (需要模型模板)"""
+    with open(path, 'rb') as f:
+        return eqx.tree_deserialise_leaves(f, model_template)
+
+
+# 兼容旧接口
+fit_unified = train_session
+evaluate_pure = evaluate

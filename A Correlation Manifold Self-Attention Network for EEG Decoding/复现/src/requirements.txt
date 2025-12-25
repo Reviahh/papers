@@ -1,27 +1,19 @@
-# CorAtt 依赖 (Equinox + Optax)
+# CMSAN Dependencies
 # ═══════════════════════════════════════════════════════════════════════════
 
-# JAX (根据设备选择)
+# Core
 jax>=0.4.20
 jaxlib>=0.4.20
-
-# Equinox - 函数式神经网络库
 equinox>=0.11.0
-
-# Optax - 优化器库
 optax>=0.1.7
 
-# 可选：GPU 支持 (取消注释以安装)
-# jax[cuda12_pip]>=0.4.20 -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-
-# 数据处理
+# Data
 numpy>=1.24.0
+scipy>=1.10.0
 
-# EEG 数据集下载 (可选，用于真实数据)
-moabb>=0.5.0
-mne>=1.5.0
-scikit-learn>=1.3.0
+# Platform (optional)
+psutil>=5.9.0  # Windows P-Core locking
 
-# 可选：可视化
-# matplotlib>=3.7.0
-# seaborn>=0.12.0
+# GPU/TPU (uncomment as needed)
+# jax[cuda12_pip]>=0.4.20
+# jax[tpu]>=0.4.20

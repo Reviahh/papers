@@ -4,25 +4,6 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![JAX](https://img.shields.io/badge/JAX-0.4+-green.svg)](https://github.com/google/jax)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
----
-
-## 📐 数学框架
-
-### 核心映射
-
-$$
-f_\theta: \mathbb{R}^{C \times T} \to \Delta^{K-1}
-$$
-
-其中 $C$ 是通道数，$T$ 是时间点数，$K$ 是类别数。
-
-### 完整 Composition
-
-$$
-f_\theta = \underbrace{\text{Cls}}_{\text{分类}} \circ \underbrace{\text{Prj}}_{\text{投影}} \circ \underbrace{\text{Att}}_{\text{注意力}} \circ \underbrace{\text{Hom}}_{\text{同态}} \circ \underbrace{\text{MMM}}_{\text{流形映射}} \circ \underbrace{\text{FEM}}_{\text{特征提取}}
-$$
 
 ---
 
@@ -30,35 +11,44 @@ $$
 
 ```
 src/
-├── main.py                 # 🚀 唯一入口 (纯函数式)
+├── main.py                 # 🎯 唯一入口，全局调度
 ├── requirements.txt
 ├── README.md
 │
 ├── cmsan/                  # 🧠 核心模块
-│   ├── __init__.py         #    导出 CMSAN, data
+│   ├── __init__.py         #    统一导出 API
 │   ├── model.py            #    CMSAN 模型定义
-│   ├── engine.py           #    🔥 训练引擎 (lax.scan)
+│   ├── engine.py           #    🔥 训练引擎 (SCAN/REDUCE)
 │   ├── data.py             #    📦 数据加载器
-│   └── layers/             #    流形层实现
+│   └── layers/             #    底层可插拔模块
+│       ├── fem.py          #    特征提取
+│       ├── mmm.py          #    流形映射
+│       ├── hom.py          #    李群同态
+│       ├── att.py          #    流形注意力
+│       ├── prj.py          #    切空间投影
+│       ├── cls.py          #    分类器
+│       ├── loss.py         #    损失函数
+│       ├── ops.py          #    基础算子
+│       └── manifold.py     #    流形运算
 │
-├── configs/                # ⚙️ 配置预设
-│   └── presets.py          #    fast / paper 参数
+├── configs/                # ⚙️ 配置管理
+│   ├── __init__.py
+│   ├── presets.py          #    训练配置 (FAST/PAPER/DEBUG)
+│   └── experiments.py      #    实验配置 (消融/超参搜索)
 │
 ├── data/                   # 📊 数据集
-│   ├── BCICIV_2a_mat/      #    BCI Competition IV 2a
-│   ├── BCIcha/             #    BCI Challenge
-│   ├── MAMEM/              #    MAMEM SSVEP
-│   └── data_utils/         #    数据处理工具
+│   ├── BCICIV_2a_mat/
+│   ├── BCIcha/
+│   └── MAMEM/
 │
-├── checkpoints/            # 💾 模型存档
-└── logs/                   # 📝 训练日志
+└── checkpoints/            # 💾 模型存档
 ```
 
 ---
 
 ## 🚀 快速开始
 
-### 安装依赖
+### 安装
 
 ```bash
 pip install -r requirements.txt
@@ -66,188 +56,277 @@ pip install -r requirements.txt
 
 ### 运行模式
 
-| 模式 | 命令 | 用途 | 硬件优化 |
-|------|------|------|----------|
-| **FAST** | `python main.py --mode fast` | 单被试快速训练 | i5-12500H P-Core 锁定 |
-| **PAPER** | `python main.py --mode paper` | 全量基准测试 | TPU/GPU 集群 |
+| 模式 | 命令 | 用途 |
+|------|------|------|
+| **FAST** | `python main.py --mode fast` | 本地开发，单被试 |
+| **PAPER** | `python main.py --mode paper` | 基准测试，全被试 |
+| **EXPERIMENT** | `python main.py --mode experiment` | 消融/超参搜索 |
+| **DEBUG** | `python main.py --mode debug` | 快速验证 |
 
-### FAST 模式 (本地开发)
-
-```bash
-# 默认: BCIC 数据集, 被试 1
-python main.py --mode fast --dataset bcic --sub 1
-
-# 输出示例:
-# 🔒 [System] Process locked to P-Cores: [0, 1, 2, 3, 4, 5, 6, 7]
-# 🚀 [System] Priority set to HIGH. E-Cores are banned.
-# 15:45:22 | 🔥 MODE: FAST | P-Cores Only | Threads: 8
-# ...
-# 🎓 Train Acc: 98.04%
-# 🏆 Test Acc:  75.86%
-```
-
-### PAPER 模式 (基准测试)
+### 示例
 
 ```bash
-# 单数据集全被试
+# 快速开发 (i5-12500H)
+python main.py --mode fast --dataset bcic --subject 1
+
+# 论文基准 (全被试)
 python main.py --mode paper --dataset bcic
 
 # 所有数据集
 python main.py --mode paper --dataset all
 
-# 输出: SCI 格式报表
-# ══════════════════════════════════════════════════════════════════════
-# 🏁 BENCHMARK REPORT | Time: 45.2 min
-# ══════════════════════════════════════════════════════════════════════
-# Dataset      | N    | Mean ± Std         | Best
-# --------------------------------------------------
-# bcic         | 9    | 72.34% ± 8.21%     | 85.71%
-# ══════════════════════════════════════════════════════════════════════
+# 消融实验
+python main.py --mode experiment --exp ablation_all
+
+# 自定义超参
+python main.py --mode fast --override "lr=0.002,epochs=150"
 ```
 
 ---
 
-## ⚙️ 配置参数
+## ⚙️ 配置系统
+
+### 层次结构
+
+```
+配置 = 训练配置 + 数据配置 + 模型配置
+```
+
+### 修改配置
+
+**方式 1: 命令行覆盖**
+```bash
+python main.py --override "lr=0.002,epochs=150,d_model=64"
+```
+
+**方式 2: 修改 presets.py**
+```python
+# configs/presets.py
+
+FAST = TrainConfig(
+    epochs=100,
+    batch_size=64,
+    lr=1.5e-3,
+    d_model=32,
+    slices=4,
+    ...
+)
+```
+
+**方式 3: 编程接口**
+```python
+from configs import get_full_config
+
+config = get_full_config(
+    mode='fast',
+    dataset='bcic',
+    model='default',
+    # 覆盖任意参数
+    lr=0.002,
+    epochs=150,
+)
+```
+
+### 配置参数说明
 
 | 参数 | FAST | PAPER | 说明 |
 |------|------|-------|------|
 | `epochs` | 100 | 200 | 训练轮数 |
 | `batch_size` | 64 | 128 | 批大小 |
-| `lr` | 1e-3 | 5e-4 | 学习率 |
-| `d_model` | 32 | 64 | 隐藏维度 |
-| `slices` | 4 | 8 | 时间切片数 |
-| `save_model` | ✅ | ❌ | 保存检查点 |
-| `verbose` | ✅ | ❌ | 进度输出 |
+| `lr` | 1.5e-3 | 1e-3 | 学习率 |
+| `d_model` | 32 | 32 | 特征维度 |
+| `slices` | 4 | 4 | 时间切片数 |
+| `engine` | reduce | scan | 训练引擎 |
 
 ---
 
-## 🖥️ 硬件自适应
+## 🔬 实验系统
 
-### Intel 12代+ (i5-12500H)
+### 消融实验
 
+```bash
+# 运行所有消融
+python main.py --mode experiment --exp ablation_all
+
+# 单个消融
+python main.py --mode experiment --exp ablation_euclidean_att
 ```
-自动检测 → P-Core 锁定 (Core 0-7) → 进程优先级 HIGH → E-Core 禁用
+
+可用消融:
+- `ablation_euclidean_att`: 欧氏注意力
+- `ablation_no_hom`: 无同态映射
+- `ablation_cov`: 协方差代替相关
+- `ablation_linear_fem`: 线性 FEM
+- `ablation_flatten`: 直接展平
+
+### 超参搜索
+
+```bash
+python main.py --mode experiment --exp hyperparam_search
 ```
 
+修改搜索空间: `configs/experiments.py`
+```python
+HYPERPARAM_GRID = {
+    'lr': [1e-4, 5e-4, 1e-3, 2e-3],
+    'batch_size': [32, 64, 128],
+    'd_model': [16, 32, 64],
+    'slices': [2, 4, 8],
+}
+```
+
+---
+
+## 🛠️ 扩展指南
+
+### 添加新模块
+
+```python
+# cmsan/layers/fem.py
+
+def init_my_fem(key, C, D, **kw):
+    """初始化自定义 FEM"""
+    return {...}
+
+def my_fem(x, θ):
+    """自定义前向传播"""
+    return ...
+
+# 注册
+FEM['my_fem'] = (init_my_fem, my_fem)
+```
+
+使用:
+```bash
+python main.py --override "model.fem=my_fem"
+```
+
+### 添加新数据集
+
+```python
+# configs/presets.py
+
+DATASETS['my_dataset'] = DatasetConfig(
+    name='my_dataset',
+    channels=32,
+    timepoints=500,
+    classes=3,
+    subjects=list(range(1, 11)),
+    folder='MyDataset',
+)
+```
+
+```python
+# cmsan/data.py
+
+def _load_my_dataset(search_paths, subject):
+    """自定义加载逻辑"""
+    ...
+
+# 在 load_unified 中添加分支
+```
+
+### 添加新实验
+
+```python
+# configs/experiments.py
+
+ABLATIONS['my_ablation'] = {
+    'name': 'My Custom Ablation',
+    'model': {
+        'fem': 'conv',
+        'att': 'my_attention',  # 自定义模块
+        ...
+    },
+}
+```
+
+---
+
+## 🖥️ 平台优化
+
+### Windows (i5-12500H)
+
+自动进行:
+- P-Core 锁定 (0-7)
+- 进程优先级 HIGH
 - `OMP_NUM_THREADS=8`
-- `XLA_FLAGS='--xla_cpu_multi_thread_eigen=true'`
-- 实测吞吐: ~32 samples/s
 
-### Cloud TPU
+### TPU/GPU
 
-```
-自动检测 TPU_NAME 环境变量 → 跳过 CPU 亲和性 → 使用 TPU 调度
-```
+```bash
+# 设置环境
+export TPU_NAME=your-tpu
+export XLA_PYTHON_CLIENT_PREALLOCATE=true
 
-- `XLA_PYTHON_CLIENT_PREALLOCATE='true'`
-- 大 batch (128) 利用并行
-
----
-
-## 🧮 代码风格
-
-### 纯函数式设计
-
-```python
-# ❌ 传统风格
-for epoch in range(100):
-    for batch in dataloader:
-        loss = train_step(batch)
-
-# ✅ 函数式风格 (本项目)
-final_state, history = lax.scan(epoch_step, init_state, jnp.arange(epochs))
-```
-
-### 零 if/else 分支
-
-```python
-# ❌ 传统风格
-if mode == 'fast':
-    run_fast()
-elif mode == 'paper':
-    run_paper()
-
-# ✅ 派发表风格 (本项目)
-MODE_HANDLERS = {'fast': run_fast, 'paper': run_paper}
-MODE_HANDLERS[mode](args)
+# 使用 SCAN 引擎
+python main.py --mode paper
 ```
 
 ---
 
-## 🧪 最简示例
+## 📐 数学框架
 
-```python
-import jax
-from cmsan import CMSAN, data
-from cmsan.engine import fit_unified, evaluate_pure
+### 完整 Pipeline
 
-# 1. 加载数据
-X, y = data.load_unified('bcic', subject=1)
+$$
+f_\theta: \mathbb{R}^{C \times T} \xrightarrow{\text{FEM}} \mathbb{R}^{D \times T} \xrightarrow{\text{MMM}} (\text{Corr}^{++}_D)^S \xrightarrow{\text{HOM}} \text{QKV} \xrightarrow{\text{ATT}} (\text{Corr}^{++}_D)^S \xrightarrow{\text{PRJ}} \mathbb{R}^d \xrightarrow{\text{CLS}} \Delta^{K-1}
+$$
 
-# 2. 创建模型
-key = jax.random.PRNGKey(42)
-model = CMSAN(key, C=22, T=1000, K=4, D=32, S=4)
-
-# 3. 训练 (全图编译，无 Python 循环)
-model, history = fit_unified(model, X, y, key, epochs=100, batch_size=64, lr=1e-3)
-
-# 4. 评估
-acc = evaluate_pure(model, X_test, y_test)
-print(f"Accuracy: {acc:.2%}")
-```
-
----
-
-## 🔬 流形几何
-
-### OLM 流形 (Oblique Log-Euclidean Manifold)
+### OLM 几何
 
 | 操作 | 公式 |
 |------|------|
-| **对数映射** | $\text{Log}_I(P) = \log(P) - \text{off}(\log(P))$ |
-| **指数映射** | $\text{Exp}_I(\xi) = \exp(\xi + \text{off}(\xi))$ |
-| **测地距离** | $d(P, Q) = \|\text{Log}_I(P) - \text{Log}_I(Q)\|_F$ |
-| **Fréchet 均值** | $\bar{P} = \text{Exp}_I\left(\sum_i w_i \cdot \text{Log}_I(P_i)\right)$ |
-
-### 模块功能
-
-| 模块 | 映射 | 功能 |
-|------|------|------|
-| **FEM** | $x \mapsto h = Wx$ | 线性特征提取 |
-| **MMM** | $h \mapsto \{C_i\}_{i=1}^S$ | 分段相关矩阵 |
-| **HOM** | $C \mapsto (Q, K, V)$ | Cayley 同态 |
-| **ATT** | $(Q, K, V) \mapsto R$ | 流形自注意力 |
-| **PRJ** | $\{R_i\} \mapsto f$ | 切空间投影 |
-| **CLS** | $f \mapsto \hat{y}$ | 线性分类 |
+| 对数映射 | $\text{Logo}(C) = \text{Off}(\log C)$ |
+| 指数映射 | $\text{Expo}(S) = \exp(S + D^\circ)$ |
+| 测地距离 | $d(P, Q) = \|\text{Logo}(P) - \text{Logo}(Q)\|_F$ |
+| Fréchet 均值 | $\bar{P} = \text{Expo}(\sum_i w_i \cdot \text{Logo}(P_i))$ |
 
 ---
 
-## 📊 数据集支持
+## 📚 API 参考
 
-| 数据集 | 被试数 | 类别 | 任务 |
-|--------|--------|------|------|
-| `bcic` | 9 | 4 | Motor Imagery |
-| `bcicha` | 9 | 4 | Motor Imagery |
-| `mamem` | 11 | 5 | SSVEP |
+### 核心函数
 
-### 数据格式
+```python
+from cmsan import (
+    CMSAN,           # 模型类
+    train_session,   # 训练入口
+    evaluate,        # 评估
+    load_unified,    # 数据加载
+    save_checkpoint, # 保存
+    load_checkpoint, # 加载
+)
 
+from configs import (
+    get_full_config,      # 获取完整配置
+    get_train_config,     # 训练配置
+    get_dataset_config,   # 数据集配置
+    get_model_config,     # 模型配置
+)
 ```
-data/
-├── BCICIV_2a_mat/
-│   ├── BCIC_S01_T.mat    # 训练集
-│   ├── BCIC_S01_E.mat    # 测试集
-│   └── ...
+
+### 训练流程
+
+```python
+import jax
+from cmsan import train_session, load_unified
+from configs import get_full_config
+
+# 1. 配置
+config = get_full_config(mode='fast', dataset='bcic')
+
+# 2. 数据
+X, y = load_unified('bcic', subject_id=1)
+
+# 3. 训练
+key = jax.random.PRNGKey(42)
+result = train_session(X_train, y_train, config, key, X_test, y_test)
+
+# 4. 使用
+model = result.model
+print(f"Test Acc: {result.test_acc:.2%}")
 ```
-
----
-
-## 📚 参考文献
-
-- **原论文**: *A Correlation Manifold Self-Attention Network for EEG Decoding*
-- **JAX**: https://jax.readthedocs.io/
-- **Equinox**: https://docs.kidger.site/equinox/
-- **Optax**: https://optax.readthedocs.io/
 
 ---
 

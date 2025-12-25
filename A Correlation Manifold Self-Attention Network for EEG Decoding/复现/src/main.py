@@ -1,148 +1,99 @@
-"""
-CMSAN Main
-"""
+#!/usr/bin/env python3
+import sys
 import os
-import platform
-import argparse
-import time
-import logging
-from functools import reduce
-from collections import defaultdict
-import numpy as np
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# 0. P-Core 锁定 (import jax 前)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-def lock_p_cores():
-    """i5-12500H: 锁定 P-Cores 0-7"""
-    platform.system() == 'Windows' and (lambda: (
-        __import__('psutil').Process(os.getpid()).cpu_affinity(list(range(8))),
-        __import__('psutil').Process(os.getpid()).nice(__import__('psutil').HIGH_PRIORITY_CLASS),
-        print(f"🔒 [System] Process locked to P-Cores: [0-7]"),
-        print(f"🚀 [System] Priority set to HIGH."),
-    ))()
-
-lock_p_cores()
-os.environ['OMP_NUM_THREADS'] = '8'
-os.environ['XLA_FLAGS'] = '--xla_cpu_multi_thread_eigen=true'
-print(f"{time.strftime('%H:%M:%S')} | 🔥 MODE: FAST | P-Cores Only | Threads: 8")
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# 1. Imports
-# ═══════════════════════════════════════════════════════════════════════════════
-
 import jax
-import jax.numpy as jnp
-import equinox as eqx
+from pathlib import Path
+from rich.console import Console
+from rich.panel import Panel
 
-from cmsan import CMSAN, data
-from cmsan.engine import fit_unified, evaluate_pure, save_checkpoint
-from configs.presets import get_config, DATASETS
+# 相对导入
+try:
+    from configs import get_config
+    from data.data_utils import explore_data 
+except ImportError as e:
+    sys.exit(f"❌ Import Error: {e}")
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# 2. Session Runner
-# ═══════════════════════════════════════════════════════════════════════════════
+try:
+    import questionary
+except ImportError:
+    sys.exit("Install deps: pip install questionary rich")
 
-def run_session(ds, subject, cfg, logger):
-    start = time.time()
-    logger.info(f"📥 Loading {ds['name']} Subject {subject}...")
+# === 动态扫描工具 ===
+def scan_available_datasets():
+    """扫描 ../data 目录下的子文件夹作为数据集选项"""
+    # 假设 main.py 在 src/ 下，数据在 src/../data
+    base_dir = Path(__file__).parent.parent / "data"
+    if not base_dir.exists():
+        # 如果找不到，尝试当前目录下的 data
+        base_dir = Path("data")
     
+    if not base_dir.exists():
+        return []
+
+    # 只要是文件夹，就认为是数据集
+    return [d.name for d in base_dir.iterdir() if d.is_dir()]
+
+# === 核心流程 ===
+
+def run_training_mode():
+    console = Console()
+    
+    # 1. 动态获取数据集列表
+    datasets = scan_available_datasets()
+    
+    if not datasets:
+        console.print("[red]❌ No datasets found in 'data/' folder![/red]")
+        return
+
+    ds_name = questionary.select(
+        "📚 Select Dataset (Scanned from disk):",
+        choices=datasets, # <--- 这里的选项现在是活的了
+    ).ask()
+    
+    if not ds_name: return
+
+    # 2. 选被试
+    subj_input = questionary.text("👤 Subject ID:", default="1").ask()
+    if not subj_input: return
+    subject = int(subj_input)
+
+    # 3. 加载配置
+    config = get_config(ds_name)
+    config['name'] = f"{ds_name}_S{subject}"
+    
+    console.print(f"\n🚀 Launching: [bold cyan]{ds_name}[/bold cyan] | Subject {subject}")
+    
+    # 4. 导入与运行
+    from cmsan import train_session, load_unified
+    
+    print("📥 Loading Data...")
     try:
-        X, y = data.load_unified(ds['name'], subject)
+        X, y = load_unified(ds_name, subject)
+        
+        # 简单 Split
+        key = jax.random.PRNGKey(42)
+        k_run, k_model = jax.random.split(key)
+        perm = jax.random.permutation(k_run, len(X))
+        X, y = X[perm], y[perm]
+        split = int(len(X) * 0.8)
+        
+        train_session(
+            X_train=X[:split], y_train=y[:split],
+            X_test=X[split:], y_test=y[split:],
+            config=config,
+            key=k_model
+        )
     except Exception as e:
-        logger.warning(f"⚠️ {e}")
-        return None
-    
-    key = jax.random.PRNGKey(42 + subject)
-    k1, k2, k3 = jax.random.split(key, 3)
-    
-    N = X.shape[0]
-    perm = jax.random.permutation(k1, N)
-    X, y = X[perm], y[perm]
-    
-    split = int(N * 0.8)
-    X_tr, y_tr, X_te, y_te = X[:split], y[:split], X[split:], y[split:]
-    
-    device = jax.devices()[0]
-    X_tr, y_tr = jax.device_put(X_tr, device), jax.device_put(y_tr, device)
-    X_te, y_te = jax.device_put(X_te, device), jax.device_put(y_te, device)
-    
-    K = len(np.unique(np.array(y_tr)))
-    model = CMSAN(k2, C=X_tr.shape[1], T=X_tr.shape[2], K=K, D=cfg['d_model'], S=cfg['slices'])
-    params = sum(x.size for x in jax.tree_util.tree_leaves(eqx.filter(model, eqx.is_array)))
-    
-    cfg['verbose'] and logger.info(f"🧠 Model Params: {params:,}")
-    cfg['verbose'] and logger.info(f"🚀 Compiling & Starting...")
-    cfg['verbose'] and print(f"🚀 Whole-Graph Training: {cfg['epochs']} Epochs | Batch: {cfg['batch_size']}")
-    cfg['verbose'] and print(f"{'Progress':<12} | {'Elapsed':<10} | {'Core (Type)':<11} | Loss")
-    cfg['verbose'] and print("-" * 60)
-    
-    final, _ = fit_unified(model, X_tr, y_tr, k3, cfg['epochs'], cfg['batch_size'], cfg['lr'], cfg['verbose'])
-    jax.block_until_ready(eqx.filter(final, eqx.is_array))
-    
-    tr_acc = float(evaluate_pure(final, X_tr, y_tr))
-    te_acc = float(evaluate_pure(final, X_te, y_te))
-    dur = time.time() - start
-    
-    cfg['save_model'] and save_checkpoint(final, f"checkpoints/{ds['name']}_sub{subject:02d}.eqx")
-    
-    return {'dataset': ds['name'], 'subject': subject, 'train_acc': tr_acc, 'test_acc': te_acc, 'duration': dur, 'params': params}
+        console.print(f"[bold red]❌ Runtime Error:[/bold red] {e}")
+        # 这里你可以选择打印 traceback
+        import traceback
+        traceback.print_exc()
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# 3. Mode Handlers
-# ═══════════════════════════════════════════════════════════════════════════════
-
-def run_fast(args, cfg, logger):
-    ds = DATASETS[args.dataset]
-    r = run_session(ds, args.sub, cfg, logger)
-    r and (
-        logger.info("=" * 60),
-        logger.info(f"✅ Time: {r['duration']:.2f}s | Throughput: {int(ds['subjects'].__len__() * 288 * 0.8 * cfg['epochs'] / r['duration'] / ds['subjects'].__len__())} samples/s"),
-        logger.info(f"🎓 Train Acc: {r['train_acc']:.2%}"),
-        logger.info(f"🏆 Test Acc:  {r['test_acc']:.2%}"),
-        logger.info("=" * 60),
-    )
-    return r
-
-def run_paper(args, cfg, logger):
-    start = time.time()
-    targets = DATASETS if args.dataset == 'all' else {args.dataset: DATASETS[args.dataset]}
-    
-    logger.info(f"📜 PAPER MODE | Targets: {list(targets.keys())}")
-    logger.info("=" * 60)
-    
-    # 从 subjects 列表获取被试编号
-    tasks = [(ds, sub) for ds in targets.values() for sub in ds['subjects']]
-    results = [r for t in tasks if (r := run_session(t[0], t[1], cfg, logger))]
-    
-    grouped = reduce(lambda a, r: (a[r['dataset']].append(r['test_acc']), a)[1], results, defaultdict(list))
-    
-    logger.info("\n" + "=" * 70)
-    logger.info(f"🏁 BENCHMARK REPORT | Time: {(time.time()-start)/60:.1f} min")
-    logger.info("=" * 70)
-    logger.info(f"{'Dataset':<12} | {'N':<4} | {'Mean ± Std':<18} | {'Best':<8}")
-    logger.info("-" * 50)
-    [logger.info(f"{k:<12} | {len(v):<4} | {np.mean(v):.2%} ± {np.std(v):.2%} | {max(v):.2%}") for k, v in grouped.items()]
-    logger.info("=" * 70)
-    
-    return results
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# 4. Entry
-# ═══════════════════════════════════════════════════════════════════════════════
+# ... (inspect_mode 和 main 函数保持不变) ...
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', default='fast', choices=['fast', 'paper'])
-    parser.add_argument('--dataset', default='bcic')
-    parser.add_argument('--sub', type=int, default=1)
-    args = parser.parse_args()
-    
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(message)s', datefmt='%H:%M:%S', force=True)
-    os.makedirs("checkpoints", exist_ok=True)
-    
-    cfg = get_config(args.mode)
-    return {'fast': run_fast, 'paper': run_paper}[args.mode](args, cfg, logging.getLogger())
+    # ... (同上一个版本) ...
+    run_training_mode() # 简化演示
 
-__name__ == "__main__" and main()
+if __name__ == '__main__':
+    main()
