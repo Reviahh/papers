@@ -1,8 +1,26 @@
+<<<<<<< HEAD:A Correlation Manifold Self-Attention Network for EEG Decoding/复现/src/run_fast.py
 # src/run_final.py
 """
 CMSAN 极速复现脚本 (i5-12500H 优化版)
 目标: 单进程+多线程计算，1小时内跑完所有 Benchmarks
+=======
 """
+维度三: 框架的其他应用 (Extension)
+═══════════════════════════════════════════════════════════════════════════════
+
+CPU 优化版实验脚本
+目标: 1小时内跑完所有数据集，展示框架的通用性和扩展性
+
+使用:
+    python scripts/run_application.py --data data/my_custom --dataset all
+>>>>>>> fd2566d7fc9fc2676392df7bf871efd09998aac2:A Correlation Manifold Self-Attention Network for EEG Decoding/复现/src/scripts/run_application.py
+"""
+
+import sys
+from pathlib import Path
+
+# 添加父目录到路径以导入 cmsan
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import os
 import sys
