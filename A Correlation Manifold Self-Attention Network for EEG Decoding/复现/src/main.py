@@ -1,14 +1,20 @@
 """
-CMSAN 主程序 (Equinox)
+CMSAN 统一入口程序 (Equinox)
 ═══════════════════════════════════════════════════════════════════════════════
 
 Correlation Manifold Self-Attention Network for EEG Decoding
 使用 Equinox + Optax 实现完全函数式训练
 
+三种实验模式:
+    1. paper      - 维度一: 作者原文实验 (使用作者数据和参数)
+    2. reproduce  - 维度二: 我自己的复现 (使用自己下载的数据)
+    3. fast       - 维度三: 框架应用 (CPU优化快速实验)
+
 使用:
-    python main.py              # 使用假数据测试
-    python main.py --data path  # 使用真实数据
-    python main.py --preset bcic  # 使用预设配置
+    python main.py --mode paper --data data/author_original/eeg_data.npz
+    python main.py --mode reproduce --data data/my_custom --dataset bcic
+    python main.py --mode fast --data data/my_custom --dataset all
+    python main.py  # 使用假数据测试 (默认)
 """
 
 import jax
@@ -16,6 +22,8 @@ import jax.numpy as jnp
 from jax import random
 import argparse
 import time
+import sys
+from pathlib import Path
 
 import equinox as eqx
 
@@ -46,19 +54,64 @@ def make_fake_data(key, C, T, K, n_train=100, n_val=20):
 # ═══════════════════════════════════════════════════════════════════════════
 
 def main():
-    parser = argparse.ArgumentParser(description='CMSAN Training')
+    parser = argparse.ArgumentParser(description='CMSAN 统一入口')
+    parser.add_argument('--mode', type=str, default='test', 
+                       choices=['test', 'paper', 'reproduce', 'fast'],
+                       help='''实验模式:
+                       test - 使用假数据测试
+                       paper - 维度一: 作者原文实验
+                       reproduce - 维度二: 我的复现
+                       fast - 维度三: 框架应用''')
     parser.add_argument('--data', type=str, default=None, help='数据路径')
+    parser.add_argument('--dataset', type=str, default='bcic',
+                       choices=['bcic', 'mamem', 'bcicha', 'all'],
+                       help='数据集选择 (用于 reproduce/fast 模式)')
     parser.add_argument('--preset', type=str, default='light', 
                        choices=list(PRESETS.keys()), help='预设配置')
     parser.add_argument('--epochs', type=int, default=50, help='训练轮数')
     parser.add_argument('--batch', type=int, default=8, help='批大小')
     parser.add_argument('--lr', type=float, default=5e-4, help='学习率')
-    parser.add_argument('--save', type=str, default='model.pkl', help='保存路径')
+    parser.add_argument('--save', type=str, default='checkpoints/model.pkl', help='保存路径')
     args = parser.parse_args()
     
-    print("═" * 60)
+    print("═" * 70)
     print("CMSAN - Correlation Manifold Self-Attention Network")
-    print("═" * 60)
+    print("═" * 70)
+    print(f"\n当前模式: {args.mode}")
+    
+    # 根据模式选择执行
+    if args.mode == 'paper':
+        print("\n→ 维度一: 作者原文实验复现")
+        print("提示: 建议直接运行 scripts/reproduce_paper.py")
+        print(f"命令: python scripts/reproduce_paper.py --data {args.data or 'data/author_original/eeg_data.npz'}")
+        if args.data:
+            import subprocess
+            subprocess.run([sys.executable, 'scripts/reproduce_paper.py', '--data', args.data])
+        return
+    
+    elif args.mode == 'reproduce':
+        print("\n→ 维度二: 我自己的复现 (10-fold CV)")
+        print("提示: 建议直接运行 scripts/my_reproduction.py")
+        print(f"命令: python scripts/my_reproduction.py --data {args.data or 'data/my_custom'} --dataset {args.dataset}")
+        if args.data:
+            import subprocess
+            subprocess.run([sys.executable, 'scripts/my_reproduction.py', 
+                          '--data', args.data, '--dataset', args.dataset])
+        return
+    
+    elif args.mode == 'fast':
+        print("\n→ 维度三: 框架应用 (CPU优化)")
+        print("提示: 建议直接运行 scripts/run_application.py")
+        print(f"命令: python scripts/run_application.py --data {args.data or 'data/my_custom'} --dataset {args.dataset}")
+        if args.data:
+            import subprocess
+            subprocess.run([sys.executable, 'scripts/run_application.py',
+                          '--data', args.data, '--dataset', args.dataset])
+        return
+    
+    # test 模式: 使用假数据
+    print("\n→ 测试模式: 使用假数据")
+    print("提示: 这是一个快速测试，用于验证代码是否正常工作")
     
     key = random.key(42)
     
@@ -153,8 +206,14 @@ def main():
     print(f"最终准确率 - 训练: {float(final_train):.2%} | 验证: {float(final_val):.2%}")
     
     # 保存 (Equinox 序列化)
-    save_model(trained_model, args.save)
+    save_path = Path(args.save)
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    save_model(trained_model, str(save_path))
     print(f"模型已保存: {args.save}")
+    
+    print("\n" + "═" * 70)
+    print("✓ 完成")
+    print("═" * 70)
 
 
 if __name__ == "__main__":
