@@ -1,11 +1,2 @@
 *.npz
 *.pkl
-*.pt
-__pycache__/
-.ipynb_checkpoints
-.DS_Store
-.vscode/
-env/
-venv/
-*.log
-*.mat
